@@ -16,7 +16,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "build:dev": "node --max-old-space-size=4096 scripts/packagedVersion.js && nuxt build --dotenv .env",
-    "build:test": "node --max-old-space-size=4096 scripts/packagedVersion.js && nuxt build --dotenv .env.test",
+    "build:test": "nuxt build",
     "build:green": "node --max-old-space-size=4096 scripts/packagedVersion.js && nuxt build --dotenv .env.green",
     "build:prod": "node --max-old-space-size=4096 scripts/packagedVersion.js && nuxt build --dotenv .env.prod",
     "ana": "set PORT=4000 && npx nuxi analyze",
