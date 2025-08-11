@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "nuxt.config.ts",
+      "use": "@nuxtjs/vercel-builder",
+      "config": {
+        "serverFiles": ["package.json", ".env.prod"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "env": {
+    "NUXT_PUBLIC_ENV": "production",
+    "NODE_ENV": "production"
+  }
+}
