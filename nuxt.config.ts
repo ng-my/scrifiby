@@ -27,7 +27,9 @@ export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+  output: 'server',
   nitro: { // 开发环境代理配置
+    preset: 'vercel',
     devProxy: {
       '/wapi': {
         target: 'https://dev.scribify.ai/wapi',
