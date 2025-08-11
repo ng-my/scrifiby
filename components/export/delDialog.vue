@@ -9,10 +9,14 @@
     >
       <div>{{ t("HomePage.export.dialog.content") }}</div>
       <template #footer>
-        <el-button class="mb-2" @click="handleCancel">
+        <el-button class="home-btn mb-2" @click="handleCancel">
           {{ t("HomePage.export.dialog.cancel") }}
         </el-button>
-        <el-button class="mb-2" @click="visible = false" type="primary">
+        <el-button
+          class="home-btn mb-2"
+          @click="visible = false"
+          type="primary"
+        >
           {{ t("HomePage.export.dialog.continue") }}
         </el-button>
       </template>
@@ -43,8 +47,8 @@ const handleCancel = async () => {
 :deep(.customer-dialog) {
 }
 :deep(.el-dialog) {
-  width: calc(100% - 2rem);
-  @apply w-[26.625rem] !rounded-lg p-5;
+  max-width: calc(100% - 2rem);
+  @apply w-[28rem] !rounded-lg p-5;
   box-shadow: 0 0 0.625rem 0 rgba(0, 0, 0, 0.14);
   padding-bottom: 0.75rem;
 }
@@ -68,15 +72,6 @@ const handleCancel = async () => {
 }
 :deep(.el-button) {
   @apply !rounded-lg border-borderColor text-sm hover:bg-mainColor-300;
-}
-:deep(.el-button--primary) {
-  @apply !rounded-lg border-mainColor-900 bg-mainColor-900 text-sm hover:bg-mainColor-900 hover:bg-opacity-90;
-}
-:deep(.el-button--danger) {
-  @apply hover:bg-subColor-normal hover:bg-opacity-90;
-}
-:deep(.el-button) {
-  @apply !rounded-lg;
 }
 :deep(.el-button + .el-button) {
   @apply !ms-3;

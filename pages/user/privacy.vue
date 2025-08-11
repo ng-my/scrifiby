@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen pt-[4.375rem]">
+  <div class="min-h-screen">
     <!-- 导航栏组件 -->
     <IndexNavBar :showMenu="false" />
-    <main class="bg-[#FFFFFF]">
+    <main class="bg-black text-white">
       <div class="mx-auto max-w-[62.5rem]">
         <IndexPrivacyPolicy></IndexPrivacyPolicy>
-        <IndexContactUs></IndexContactUs>
+        <IndexContactUs class="overflow-hidden"></IndexContactUs>
       </div>
     </main>
     <IndexFooter></IndexFooter>
@@ -14,12 +14,12 @@
 
 <script setup>
 // 隐私政策
-import { computed } from 'vue'
-const {  locale } = useI18n();
+import { computed } from "vue";
+const { locale } = useI18n();
 const activeLanguage = useState("locale", () => locale.value);
-const isRtl = computed(() => ['he-IL', 'ar-SA'].includes(activeLanguage.value));
+const isRtl = computed(() => ["he-IL", "ar-SA"].includes(activeLanguage.value));
 watchEffect(() => {
-  if(!process.client) return
+  if (!process.client) return;
   document?.body?.setAttribute("dir", isRtl.value ? "rtl" : "ltr");
   document?.documentElement?.setAttribute("dir", isRtl.value ? "rtl" : "ltr");
 });

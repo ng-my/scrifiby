@@ -1,5 +1,7 @@
 <template>
-  <section class="mx-auto max-w-[80rem] px-[2.5rem] pb-[3rem] pt-[0rem]">
+  <section
+    class="price-wrap mx-auto max-w-[80rem] px-[2.5rem] pb-[6rem] pt-[0rem]"
+  >
     <h2 class="mb-[2.5rem] text-center text-[2.4rem] font-medium">Pricing</h2>
     <div
       class="flex w-full max-w-[80rem] flex-col items-center justify-center gap-[1rem] md:flex-row md:items-stretch"
@@ -9,12 +11,12 @@
         v-for="item in list1"
         :key="item.id"
         style="
-          background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
-          box-shadow: 0px 2px 18px 0px rgba(60, 115, 240, 0.1);
+          background: #0e172b;
+          box-shadow: 0 0.125rem 1.125rem 0 rgba(60, 115, 240, 0.1);
         "
-        class="flex h-full min-h-[38rem] w-full max-w-[26rem] flex-1 flex-col items-center rounded-[1rem] border border-[#f0f0f0] px-[1.75rem] pb-[4.75rem] pt-[3rem]"
+        class="free-card-box flex h-full min-h-[38rem] w-full max-w-[26rem] flex-1 flex-col items-center rounded-[1rem] border border-[#35205A] px-[1.75rem] pb-[4.75rem] pt-[3rem]"
       >
-        <h3 class="mb-[1.2rem] text-[1.6rem] font-bold">
+        <h3 class="mb-[1.75rem] text-[2.375rem] font-bold leading-[3.375rem]">
           {{ item.type }}
         </h3>
         <ul class="mb-[2.4rem] w-full flex-1 text-lg">
@@ -35,7 +37,7 @@
               <br />
               <span
                 v-if="term.des"
-                class="mt-[0.5rem] font-normal text-[#9E9E9E]"
+                class="mt-[0.5rem] font-normal text-[rgba(255,255,255,0.7)]"
               >
                 {{ term.des }}
               </span></span
@@ -55,8 +57,7 @@
         </div>
         <div class="relative w-full">
           <index-try-for-free
-            show-arrow
-            class="absolute -bottom-11 w-full bg-mainColor-900 text-white"
+            class="absolute -bottom-11 w-full border border-[#C085FC] bg-transparent text-[#C085FC]"
           ></index-try-for-free>
         </div>
       </div>
@@ -65,12 +66,14 @@
         v-for="item in list2"
         :key="item.id"
         style="
-          background: linear-gradient(179deg, #7ca0fa 0%, #3c73f0 100%);
-          box-shadow: 0px 2px 20px 0px rgba(52, 112, 255, 0.2);
+          background: #1b0b30;
+          box-shadow: 0 0.125rem 1.25rem 0 rgba(52, 112, 255, 0.2);
         "
-        class="border-1 flex h-full min-h-[38rem] w-full max-w-[26rem] flex-1 flex-col items-center rounded-[1rem] border-[#4f8cff] px-[1.75rem] pb-[4.75rem] pt-[3rem] text-white"
+        class="border-1 flex h-full min-h-[38rem] w-full max-w-[26rem] flex-1 flex-col items-center rounded-[1rem] border border-[#512680] px-[1.75rem] pb-[4.75rem] pt-[3rem] text-white"
       >
-        <h3 class="mb-[1.2rem] text-[1.6rem] font-bold">{{ item.type }}</h3>
+        <h3 class="mb-[1.75rem] text-[2.375rem] font-bold leading-[3.375rem]">
+          {{ item.type }}
+        </h3>
         <ul class="mb-[2.4rem] w-full flex-1 text-lg">
           <li
             v-for="term in item.terms"
@@ -89,7 +92,7 @@
               <br />
               <span
                 v-if="term.des"
-                class="font-normal text-white text-opacity-50"
+                class="font-normal text-[rgba(255,255,255,0.7)]"
               >
                 {{ term.des }}
               </span></span
@@ -115,8 +118,7 @@
         </div>
         <div class="relative w-full">
           <index-try-for-free
-            show-arrow
-            class="absolute -bottom-11 w-full bg-white text-mainColor-900 hover:bg-opacity-90 hover:text-opacity-90"
+            class="absolute -bottom-11 w-full bg-[#9334EB] text-white hover:bg-opacity-90 hover:text-opacity-90"
           ></index-try-for-free>
         </div>
       </div>
@@ -167,7 +169,7 @@ let terms1 = [
 const list1 = ref([
   {
     id: 2,
-    icon: "black-hook.svg",
+    icon: "white-hook.svg",
     type: "Free",
     terms: terms1,
     price: ["Free", "100%", ""]
@@ -233,4 +235,22 @@ const list2 = ref([
 ]);
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.price-wrap {
+  position: relative;
+  &::after {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 0;
+    content: " ";
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      315deg,
+      rgba(0, 0, 0, 1),
+      rgba(105, 32, 122, 1),
+      rgba(0, 0, 0, 1)
+    );
+  }
+}
+</style>

@@ -1,5 +1,5 @@
 import { ref, reactive } from 'vue';
-import Utils from './tools';
+import { Decrypt, getUTCTime, timeUTCToLocal } from './tools';
 
 // 扩展 window 类型
 declare global {
@@ -12,6 +12,8 @@ declare global {
 interface WebhookUrl {
   testing: string;
   production: string;
+  customDataTesting: string;
+  customDataProduction: string;
   privatization?: string;
 }
 
@@ -22,18 +24,25 @@ export function useErrorReporting() {
 
   // webhook url
   const webhookUrl: WebhookUrl = {
-    testing: Utils.Decrypt('ebxaZVDU7KprTl8QqXbhxqRUZ7ipw5mZByuwwtc+er4HJj+vFnAujkKjoemPJVsWNn4icdt1nUeX210KDzKRw3IaYbrnWg8xg0bNQZxXq2QDzqnnQEERO9gCUepFBOgB'),
-    production: Utils.Decrypt('ebxaZVDU7KprTl8QqXbhxqRUZ7ipw5mZByuwwtc+er5z8kaTSbyjBzc7ujtTE1C0QR5DOwl4sBUxXe/2LSe61QmadvqX1fTc1W1YzrbD4u08jYUb0gBpdPk2/upNMsoV'),
+    testing: Decrypt('ebxaZVDU7KprTl8QqXbhxqRUZ7ipw5mZByuwwtc+er4HJj+vFnAujkKjoemPJVsWNn4icdt1nUeX210KDzKRw3IaYbrnWg8xg0bNQZxXq2QDzqnnQEERO9gCUepFBOgB'),
+    production: Decrypt('ebxaZVDU7KprTl8QqXbhxqRUZ7ipw5mZByuwwtc+er5z8kaTSbyjBzc7ujtTE1C0QR5DOwl4sBUxXe/2LSe61QmadvqX1fTc1W1YzrbD4u08jYUb0gBpdPk2/upNMsoV'),
+    customDataTesting: Decrypt('ebxaZVDU7KprTl8QqXbhxqRUZ7ipw5mZByuwwtc+er46sfroN5SV+DN5CoRHcr/lVtYH1E1VYJlHN0JifMZMdBzWJAv3yoASlH10SA5K3ZSR54eBhz9ttmOzxzZg1nIc'),
+    customDataProduction: Decrypt('ebxaZVDU7KprTl8QqXbhxqRUZ7ipw5mZByuwwtc+er6pzXM+Xgb1GvVTlQyso0uD5MqkdSNNL73IlTgvcNeRmFnIQZlMhXZAIV2YPjnNg07aHwEvAJ61aq38Jmwiqi8P'),
   };
 
   // 日志内容
   const logArr = ref<any[]>([]);
 
   // 获取 webhook url
-  function getWebhookUrl() {
+  function getWebhookUrl(customData = true) {
     const { hostname } = window.location;
-    if (productionEnvHosts.includes(hostname)) return webhookUrl.production;
-    if (testingEnvHosts.includes(hostname)) return webhookUrl.testing;
+    if (productionEnvHosts.includes(hostname)) {
+      return customData ? webhookUrl.customDataProduction : webhookUrl.production;
+    }
+    if (testingEnvHosts.includes(hostname)) {
+      return customData ? webhookUrl.customDataTesting : webhookUrl.testing;
+    }
+    // return customData ? webhookUrl.customDataTesting : webhookUrl.testing;
     return '';
   }
 
@@ -42,7 +51,7 @@ export function useErrorReporting() {
     const url = res?.url;
     const headers = res?.headers || new Map();
     const data = res?._data;
-    const webhook = getWebhookUrl();
+    const webhook = getWebhookUrl(customData);
     if (!webhook) return;
     let params: Record<string, any> = {
       访问服务: 'Scrify',
@@ -55,11 +64,10 @@ export function useErrorReporting() {
       statusText: res?.statusText,
       cardType3: 'hr',
       服务端debugID: headers?.get('x-debug-request-id'),
-      服务端logID: headers?.get('x-nws-log-uuid'),
       服务端date: headers?.get('date'),
       cardType4: 'hr',
-      客户端UTCTime: Utils.getUTCTime(),
-      客户端LocalTime: Utils.timeUTCToLocal(Utils.getUTCTime()),
+      客户端UTCTime: getUTCTime(),
+      客户端LocalTime: timeUTCToLocal(getUTCTime()),
       cardType5: 'hr',
       接口数据: JSON.stringify(res),
       cardType6: 'hr',
@@ -73,8 +81,8 @@ export function useErrorReporting() {
         上报类型: 'customData',
         页面地址: location.href,
         cardType1: 'hr',
-        客户端UTCTime: Utils.getUTCTime(),
-        客户端LocalTime: Utils.timeUTCToLocal(Utils.getUTCTime()),
+        客户端UTCTime: getUTCTime(),
+        客户端LocalTime: timeUTCToLocal(getUTCTime()),
         cardType2: 'hr',
         系统信息: window.navigator.userAgent,
         cardType3: 'hr',

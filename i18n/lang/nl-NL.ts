@@ -1,10 +1,10 @@
+// 荷兰语
 let message = {
   // Startpagina
   HomePage: {
     home: "Thuis",
     version: "Basisversie (Gratis):",
-    times:
-      "Gratis transcriptie {times} keer per dag, u heeft nog {left} transcripties over. ",
+    times: "{times} gratis transcripties per dag, {left} resterend vandaag. ",
     tips: "Upgrade naar Pro voor onbeperkte transcripties.",
     update: "Nu upgraden",
     folders: "Mappen",
@@ -16,6 +16,7 @@ let message = {
     confirm: "Aanmaken",
     dialogLabel: "Mapnaam",
     recently: "Recente bestanden",
+    loading: "Laden",
     tour: {
       step0: {
         title: "Welkom bij {name}",
@@ -72,7 +73,9 @@ let message = {
       collaborate:
         "Werk samen door uw getranscribeerde tekst met anderen te delen.",
       button: "Aan de slag",
-      tip: "Klaar om audio om te zetten in getranscribeerde tekst? Begin nu met verkennen!"
+      tip: "Klaar om audio om te zetten in getranscribeerde tekst? Begin nu met verkennen!",
+      tip2: "Begin nu met verkennen!",
+      tip1: "Klaar om audio om te zetten naar getranscribeerde tekst? "
     },
     subscriptionModal: {
       left: {
@@ -119,7 +122,8 @@ let message = {
       move: "Verplaatsen",
       failed: "Mislukt",
       selected: "Geselecteerd",
-      success: "Geslaagd"
+      success: "Geslaagd",
+      fileList: "Bestandslijst"
     },
     dialog: {
       move: {
@@ -153,7 +157,7 @@ let message = {
       },
       export: {
         title: "Exporteren",
-        select: "Selecteer een of meer formaten",
+        select: "Selecteer het formaat dat je nodig hebt",
         settings: "Instellingen",
         speaker: "Spreker opnemen",
         timecodes: "Tijdcodes opnemen",
@@ -185,6 +189,7 @@ let message = {
       pause: "Pauzeren",
       resume: "Hervatten",
       stop: "Stoppen",
+      endRecord: "Opname beëindigen",
       delete: "Verwijderen",
       transcribe: "Transcriberen",
       permissionDenied:
@@ -210,7 +215,7 @@ let message = {
         title: "Links plakken",
         label:
           "Plak de medialink van de volgende platforms maar niet beperkt tot: YouTube, Facebook, X, Dropbox, Google Drive, Vimeo",
-        confirm: "Transcriberen",
+        confirm: "Toevoegen",
         cancel: "Annuleren",
         // Voer de juiste link in
         errorTitle:
@@ -220,7 +225,8 @@ let message = {
       file: {
         orTitle: "Online media transcriberen",
         dialogTitle: "Bestanden transcriberen",
-        tip: "Klik om te uploaden of sleep en zet neer",
+        tip1: "Klik om te uploaden",
+        tip2: "of sleep en zet neer",
         or: "of"
       },
       del: {
@@ -232,16 +238,18 @@ let message = {
       },
       files: "Bestanden",
       resultDialogTitle: "Bestanden transcriberen",
+      resultDialogTitle2: "Bestand transcriberen",
       cancel: "Annuleren",
       confirm: "Transcriberen",
       return: "Terug",
       addMore: "Meer toevoegen",
-      language: "Audiotaal",
+      language: "Mediataal",
       failed: "Mislukt",
       tooLarge: "Het bestand is te groot.",
+      linkUpload: "Uploaden...",
       fileFormat: "Bestandsformaat is niet toegestaan",
       localFiles: "Lokale bestanden",
-      pasteLink: "Links plakken",
+      pasteLink: "Online link",
       uploadErr: "Uploadfout",
       hashErr: "Hashfout",
       table: {
@@ -252,7 +260,8 @@ let message = {
       },
       maxFileNum: "Het aantal bestanden kan niet meer zijn dan {num}.",
       speaker: "Sprekeridentificatie",
-      speakerLabel: "Labelt elk deel van het transcript met de spreker."
+      speakerLabel:
+        "Label elk segment van het transcript met de persoon die spreekt."
     }
   },
   // Transcriptiepagina
@@ -551,11 +560,20 @@ let message = {
     upgradeBtn: "Nu upgraden",
     upgradeTip30: "Dit bestand overschrijdt 30 minuten.",
     upgradeTipMore:
-      "Upgrade naar Scribify Pro om bestanden tot 10 uur lang te transcriberen"
+      "Upgrade naar Scribify Pro om bestanden tot 10 uur lang te transcriberen",
+    errorTips: "Er is iets fout gegaan.",
+    copiedLink: "Link gekopieerd",
+    copyGotIt: "wist"
   },
   // Inloggen, registreren, wachtwoord wijzigen
   IdentityInfoManage: {
     or: "of", // of
+    LoginBtn: "Inloggen met e-mail",
+    LoginGoogle: "Inloggen met Google",
+    SignupBtn: "Aanmelden met e-mail",
+    SignupGoogle: "Aanmelden met Google",
+    SignupDes: "Meld je vandaag aan en ervaar de magie — gratis.",
+    SignupTitle: "Nauwkeurige & onbeperkte transcriptie",
     signup: "Aanmelden", // registreren
     sign_up: "Aanmelden", // registreren
     loginByGoogle: "Doorgaan met Google", // inloggen met Google
@@ -563,17 +581,14 @@ let message = {
     createAccount: "Maak een nieuw account aan", // account aanmaken
     accountExists: "Heeft u al een account? ", // heeft u al een account? inloggen
     agreeTerm: {
-      // Ik ga akkoord met XXX servicevoorwaarden en privacybeleid
       agree:
-        "Door {proName} te gebruiken, gaat u akkoord met de {terms} en het {policy}.",
-      terms: "Servicevoorwaarden",
+        "Door verder te gaan, gaat u akkoord met onze {terms} en {policy}.",
+      terms: "Voorwaarden",
       policy: "Privacybeleid"
     },
     setPassword: "Stel een wachtwoord in", // wachtwoord instellen
     code: "Verificatiecode", // verificatiecode
     resend: "Opnieuw verzenden", // opnieuw verzenden
-    codeToEmail:
-      "We hebben zojuist een tijdelijke aanmeldcode naar uw e-mail gestuurd. Controleer uw inbox en plak de aanmeldcode hierboven.", // we hebben zojuist een verificatiecode naar uw e-mailadres gestuurd, controleer uw inbox en plak de verificatiecode hierboven
     enterPassword: "Voer uw wachtwoord in.", // voer uw wachtwoord in
     passwordLeval: "Wachtwoordniveau", // wachtwoordsterkte
     Weak: "Zwak", // zwak, gemiddeld, sterk
@@ -598,7 +613,15 @@ let message = {
     resetYourPassword: "Reset uw wachtwoord", // reset uw wachtwoord
     newOldCantSame:
       "Het nieuwe wachtwoord moet anders zijn dan het oude wachtwoord.", // nieuw wachtwoord mag niet hetzelfde zijn als oud wachtwoord
-    passwordResetOk: "Wachtwoord succesvol gereset!" // wachtwoord succesvol gereset!
+    passwordResetOk: "Wachtwoord succesvol gereset!", // wachtwoord succesvol gereset!
+    signupToSaveProgress: "Rond de registratie af om je voortgang op te slaan",
+    tip: "Tip",
+    tipContentEmail:
+      "We hebben zojuist het inlogwachtwoord voor je account naar je e-mailadres gestuurd.",
+    tipContentPassword:
+      "Controleer je inbox en log in met je e-mailadres en wachtwoord.",
+    codeToEmail:
+      "We hebben zojuist een verificatiecode naar uw e-mail gestuurd. Controleer uw inbox en plak de verificatiecode hierboven."
   },
   // Deelpagina
   Sharepage: {},
@@ -609,18 +632,12 @@ let message = {
     subscription: "Abonnementsplan",
     freeversion: "Gratis",
     transcribeTimesDay: "3 transcripties per dag",
-    freeThreeTimesDay: "Transcribeer dagelijks 3 bestanden gratis.",
     uploadMinutes: "Uploads van 30 minuten",
-    oneFileUploaded:
-      "Elk bestand kan maximaal 30 minuten duren, met één bestand per keer",
     lowerPriority: "Lagere prioriteit",
-    needsToWaitLonger:
-      "3 transcripties per dag Wacht langer voordat je bestanden worden getranscribeerd.",
     currentPlan: "Huidig plan",
     professionalEdition: "professionele editie",
     unlimitedTranscription: "Onbeperkte transcriptie",
-    unlimitedNumberOfTimes: "Onbeperkte transcripties voor één persoon.",
-    uploadWithinHours: "Upload tot 10 uur",
+    unlimitedNumberOfTimes: "Onbeperkte transcriptiefrequentie en -duur.",
     filesUploadedAtOnce:
       "Elk bestand kan maximaal 10 uur/5 GB zijn. Upload 50 bestanden tegelijk.",
     highestPriority: "hoogste prioriteit",
@@ -647,7 +664,6 @@ let message = {
     daily: "{start} van {end} dagelijkse transcripties gebruikt",
     upgradetoPro: "Upgraden naar Pro",
     accountSetting: "Accountinstellingen",
-    returnAccountSetting: "Terug naar accountinstellingen",
     logOut: "Uitloggen",
     account: "Account",
     email: "E-mail",
@@ -659,7 +675,6 @@ let message = {
     notFund: "Niet gevonden",
     couldntFind: "We konden niet vinden wat je zocht.",
     proAnnual: "Pro Jaarlijks",
-    yourSubscription: "Je abonnement wordt geannuleerd op",
     proMonthly: "Pro Maandelijks",
     perMonth: "per maand",
     afterwards: "daarna",
@@ -670,8 +685,20 @@ let message = {
     perYear: "per jaar",
     getProPlan: "Pro Plan krijgen",
     changeToAnnual: "Wijzig naar jaarlijks",
-    automaticRenewalon: "Automatische verlenging op"
-  },
+    automaticRenewalon: "Automatische verlenging op",
+    eachMonth: "Automatische verlenging op {time} van elke maand.",
+    automaticRenewal:
+      "Automatische verlenging mislukt, controleer de betalingsmethode.",
+    eachYear: "Automatische verlenging op {time} van elk jaar.",
+    returnAccountSetting: "Terug",
+    needsToWaitLonger:
+      "Wacht langer voordat uw bestanden worden getranscribeerd.",
+    freeThreeTimesDay: "3 bestanden per dag gratis transcriberen.",
+    oneFileUploaded:
+      "Elk bestand kan maximaal 30 minuten duren. Upload 1 bestand per keer.",
+    uploadWithinHours: "10 uur uploads",
+      yourSubscription: "Uw abonnement wordt op {time} geannuleerd."
+},
   // Taalkaart
   LanguageMap: {
     sysLanguagesMap: {
@@ -1052,8 +1079,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

@@ -8,21 +8,27 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <record v-if="recordStatus === 1" />
+      <record :parentId="parentId" v-if="recordStatus === 1" />
     </transition>
   </client-only>
 </template>
 
 <script setup lang="ts">
 const { recordStatus } = storeToRefs(useRecordStore());
-const { endRecord } = useRecordStore();
 
+const parentId = ref("");
 const route = useRoute();
-watchEffect(() => {
-  if (route?.path?.includes("/user") && recordStatus.value === 1) {
-    endRecord();
+const { selectedFolder } = storeToRefs(useFolderStore());
+watch(
+  () => recordStatus.value,
+  (_) => {
+    if (recordStatus.value === 1) {
+      parentId.value = route.path?.includes("home")
+        ? 0
+        : selectedFolder.value?.id || 0;
+    }
   }
-});
+);
 </script>
 
 <style scoped></style>

@@ -1,80 +1,84 @@
 <template>
-  <div ref="table" class="min-h-80 min-w-0 flex-1 overflow-y-hidden">
+  <div
+    ref="table"
+    :class="{
+      'min-h-80': isMounted && !isGuest,
+      'flex-1': isMounted && !isGuest,
+      'overflow-y-hidden': isMounted && !isGuest
+    }"
+    class="min-w-0"
+  >
     <div
-      class="flex flex-col-reverse lg:flex-row lg:items-center lg:justify-between"
+      :class="
+        inline ? 'min-h-[2.25rem] flex-row justify-between' : 'flex-col-reverse'
+      "
+      class="wrap-height flex lg:flex-row lg:items-center lg:justify-between"
     >
-      <transition
-        name="header-switch"
-        enter-active-class="transition-all duration-300 ease-out"
-        enter-from-class="opacity-0 transform translate-y-4 scale-95"
-        enter-to-class="opacity-100 transform translate-y-0 scale-100"
-        leave-active-class="transition-all duration-200 ease-in"
-        leave-from-class="opacity-100 transform translate-y-0 scale-100"
-        leave-to-class="opacity-0 transform -translate-y-2 scale-105"
-        mode="out-in"
+      <div
+        class="header me-0 flex min-h-8 flex-shrink flex-wrap items-center justify-start sm:flex-nowrap lg:me-2 lg:flex-shrink-0"
+        v-if="selectedList.length"
+        ref="header"
       >
-        <div
-          class="header me-0 flex min-h-8 flex-shrink flex-wrap items-center justify-start sm:flex-nowrap lg:me-2 lg:flex-shrink-0"
-          v-if="selectedList.length"
+        <span class="me-3 text-sm font-medium sm:me-5"
+          >{{ selectedList.length }} {{ t("FolderPage.table.selected") }}</span
         >
-          <span class="me-3 text-sm font-medium sm:me-5"
-            >{{ selectedList.length }}
-            {{ t("FolderPage.table.selected") }}</span
-          >
-          <div
-            v-if="!isSelectExecState"
-            @click="handleMulMove"
-            class="common-select"
-          >
-            <div class="flex h-5 items-center">
-              <span
-                class="iconfont icon-move me-1.5 text-xs text-fontColor"
-              ></span>
-            </div>
-            <span>{{ t("FolderPage.table.move") }}</span>
+        <div
+          v-if="!isSelectExecState"
+          @click="handleMulMove"
+          class="common-select"
+        >
+          <div class="flex h-5 items-center">
+            <span
+              class="iconfont icon-move me-1.5 text-xs text-fontColor"
+            ></span>
           </div>
-          <div
-            v-if="!isSelectExecState"
-            @click="handleMulExport"
-            class="common-select"
-          >
-            <div class="flex h-5 items-center">
-              <span
-                class="iconfont icon-xiazai me-1.5 text-xs text-fontColor"
-              ></span>
-            </div>
-            {{ t("FolderPage.table.export") }}
-          </div>
-          <div @click="handleMulDelete" class="common-select !sm:me-0 me-0">
-            <div class="flex h-5 items-center">
-              <span
-                class="iconfont icon-lajixiang relative me-1.5 text-xs text-fontColor"
-              ></span>
-            </div>
-            {{ t("FolderPage.table.delete") }}
-          </div>
+          <span>{{ t("FolderPage.table.move") }}</span>
         </div>
         <div
-          v-else-if="headerName"
-          class="me-2 flex h-8 items-center justify-start overflow-hidden lg:h-auto"
+          v-if="!isSelectExecState"
+          @click="handleMulExport"
+          class="common-select"
         >
-          <span
-            :title="headerName.length > 14 ? headerName : undefined"
-            class="overflow-hidden text-ellipsis text-nowrap text-sm font-medium text-gray-900"
-            >{{ headerName }}</span
-          >
+          <div class="flex h-5 items-center">
+            <span
+              class="iconfont icon-xiazai me-1.5 text-xs text-fontColor"
+            ></span>
+          </div>
+          {{ t("FolderPage.table.export") }}
         </div>
-      </transition>
-      <slot name="header-right"></slot>
+        <div @click="handleMulDelete" class="common-select !sm:me-0 me-0">
+          <div class="flex h-5 items-center">
+            <span
+              class="iconfont icon-lajixiang relative me-1.5 text-xs text-fontColor"
+            ></span>
+          </div>
+          {{ t("FolderPage.table.delete") }}
+        </div>
+      </div>
+      <div
+        v-else-if="headerName"
+        class="me-2 flex flex-1 flex-shrink-0 items-center justify-start overflow-hidden lg:h-auto"
+      >
+        <span
+          :title="headerName.length > 14 ? headerName : undefined"
+          class="h-8 overflow-hidden text-ellipsis text-nowrap text-sm font-medium text-gray-900"
+          >{{ headerName }}</span
+        >
+      </div>
+      <slot name="header-right" :isSelect="selectedList.length"></slot>
     </div>
 
-    <div dir="ltr" :class="{ mobile: isMobile }" class="transition-all">
+    <div
+      dir="ltr"
+      :class="{ mobile: isMobile }"
+      class="tableList transition-all"
+    >
       <client-only>
         <el-table-v2
           v-loading="loading"
-          :key="locale"
+          :key="tableHeight"
           :columns="columns"
-          :data="tableData"
+          :data="getData(tableData)"
           :width="size.width"
           :height="tableHeight"
           :header-height="headerHeight"
@@ -89,6 +93,7 @@
         >
           <template #empty>
             <div
+              v-show="!loading"
               class="flex flex-col items-center justify-center pt-10 md:pt-16"
             >
               <img
@@ -99,7 +104,6 @@
               <div class="mb-0.5 text-sm">
                 {{ t("FolderPage.table.empty1") }}
               </div>
-              <div class="text-sm">{{ t("FolderPage.table.empty2") }}</div>
             </div>
           </template>
           <template #header-cell="{ column }">
@@ -158,6 +162,8 @@
       <home-dialog-export
         :tableData="tableData"
         :selectIds="selectIds"
+        isShowSpeaker
+        isShowTimestamp
         v-model="exportDialogVisible"
       />
 
@@ -182,13 +188,13 @@ import { useTableColumnResizer } from "./useTableColumnResizer";
 import { type FileItem } from "~/api/type/folder";
 import { useRouter } from "#vue-router";
 import { useLocalePath } from "#imports";
+import { Msg } from "~/utils/tools";
 import { ElCheckbox, HomeStatusCell, ElPopover } from "#components";
-
-import Utils from "~/utils/tools";
 
 const props = defineProps<{
   search?: string;
   headerName?: string;
+  inline?: boolean;
 }>();
 
 type TableItem = FileItem & {
@@ -204,6 +210,28 @@ dayjs.extend(isYesterday);
 const { step } = storeToRefs(useTourStore());
 
 const showHeaderCheck = ref(false);
+
+const { userInfo } = storeToRefs(useUserStore());
+const beginnersTutorial = computed(() => {
+  return (userInfo.value as any)?.userInfoVO?.beginnersTutorial;
+});
+const getData = (data: TableItem[]) => {
+  if (beginnersTutorial.value) {
+    // 最后一个文件置顶
+    if (data.length > 1) {
+      const result = [...data];
+      const itemIndex = result.findIndex((e) => e.isDefaultFile);
+      if (itemIndex) {
+        [result[0], result[itemIndex]] = [result[itemIndex], result[0]];
+      }
+      return result;
+    }
+    return data;
+  } else {
+    // 恢复
+    return [...data];
+  }
+};
 
 const formatList = (list: FileItem[]): TableItem[] => {
   return list.map((item, index) => {
@@ -246,9 +274,13 @@ const fetchTableData = async () => {
     }
     controller = new AbortController();
     const res = await getFileList(params, controller);
-    tableData.value = [...tableData.value, ...formatList(res.list)];
-    total.value = res.total;
     stopTaskStatusPolling();
+    const localData = [...tableData.value, ...formatList(res.list)];
+    const data = await startTaskStatusPolling(true, localData);
+    tableData.value = localData;
+    setDataStatus(data);
+    total.value = res.total;
+
     startTaskStatusPolling();
   } catch (err) {
   } finally {
@@ -353,9 +385,10 @@ const handleMulExport = () => {
 };
 
 const handleDialogConfirm = (type: string, value?: string) => {
-  ElMessage.success({
+  Msg({
     message: t("FolderPage.table.success"),
-    customClass: "!z-[9999]"
+    customClass: "!z-[9999]",
+    type: "success"
   });
   resetTableData();
   fetchTableData();
@@ -379,16 +412,18 @@ const handleOperation = (type: string, value: any) => {
       handleExport();
       break;
   }
+  document.body.click()
 };
 
 // 表格列配置
-const isMobile = ref(false);
+const isMobile = useState("isMobile");
+const isMounted = ref(false);
 onMounted(() => {
-  isMobile.value = Utils.isMobile();
+  isMounted.value = true;
 });
 function formatTime(seconds: number) {
-  // 确保处理整数秒（向下取整）
-  const totalSeconds = Math.floor(seconds);
+  // 确保处理整数秒（向上取整）
+  const totalSeconds = Math.ceil(seconds);
 
   // 计算小时、分钟和剩余秒数
   const hours = Math.floor(totalSeconds / 3600);
@@ -400,12 +435,8 @@ function formatTime(seconds: number) {
   const formattedSeconds = secs.toString().padStart(2, "0");
 
   // 当小时大于0时，格式化小时并返回完整时间
-  if (hours > 0) {
-    const formattedHours = hours.toString().padStart(2, "0");
-    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-  }
-  // 小时为0时，只返回分钟和秒
-  return `${formattedMinutes}:${formattedSeconds}`;
+  const formattedHours = hours.toString().padStart(2, "0");
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 }
 
 // const isMobile = Utils.isMobile();
@@ -419,8 +450,11 @@ const isRtl = computed(() => {
 const rowClickJump = (rowData: TableItem) => {
   if (rowData.transcriptionStatus !== 1) return;
   if (step.value === 3) return;
+  window?.sessionStorage.setItem("GoToTranscript", JSON.stringify(Date.now()));
   router.push(
-    localePath("/transcript/" + rowData.fileId + "?taskId=" + rowData.taskId)
+    localePath(
+      `/transcript/${rowData.fileId}?taskId=${rowData.taskId}&from=${route?.name}`
+    )
   );
 };
 const getRowClass = (rowData: TableItem) => {
@@ -429,13 +463,17 @@ const getRowClass = (rowData: TableItem) => {
   }
   return "";
 };
-const columns = ref<Column<TableItem>[]>([
-  {
+
+const getNameColumn = () => {
+  return {
     key: "name",
-    title: t("FolderPage.table.name"),
+    title: isMobile.value
+      ? t("FolderPage.table.fileList")
+      : t("FolderPage.table.name"),
     dataKey: "fileName",
-    width: 650,
-    minWidth: 280,
+    width: 680,
+    maxWidth: 620,
+    minWidth: 150,
     cellRenderer: ({ rowData }) => {
       const baseClass =
         "w-full line-clamp-1 cursor-pointer text-sm leading-8 transition-all duration-200 ease-out sm:text-base break-all";
@@ -454,7 +492,10 @@ const columns = ref<Column<TableItem>[]>([
       return h(
         "div",
         {
-          class: `w-full flex items-center font-medium text-black ${selectClass} ${disabledClass}`
+          class: `w-full flex items-center font-medium text-black ${selectClass} ${disabledClass}`,
+          dataNoDetection: true,
+          xMsFormatDetection: true,
+          formatDetection: "telephone=no,date=no,address=no,email=no"
         },
         [
           h(
@@ -478,26 +519,49 @@ const columns = ref<Column<TableItem>[]>([
               })
             ]
           ),
-          h(
-            "div",
-            {
-              title: rowData.fileName,
-              onClick: () => rowClickJump(rowData),
-              class: className
-            },
-            rowData.fileName
-          )
+          isMobile.value
+            ? h("div", { class: "w-full" }, [
+                h(
+                  "div",
+                  {
+                    title: rowData.fileName,
+                    onClick: () => rowClickJump(rowData),
+                    class: className
+                  },
+                  h("span", { class: "content-file-name" }, rowData.fileName)
+                ),
+                h("div", { class: "text-[#999999] flex text-xs w-full" }, [
+                  h("div", { class: "me-1" }, formatTime(rowData.duration)),
+                  h("div", { class: "me-2" }, getTime(rowData.gmtCreateTime)),
+                  h(
+                    "div",
+                    { class: "flex-1" },
+                    h(HomeStatusCell, { row: rowData })
+                  )
+                ])
+              ])
+            : h(
+                "div",
+                {
+                  title: rowData.fileName,
+                  onClick: () => rowClickJump(rowData),
+                  class: className
+                },
+                h("span", { class: "content-file-name" }, rowData.fileName)
+              )
         ]
       );
     }
-  },
-  {
+  };
+};
+const getDurationColumn = () => {
+  return {
     key: "duration",
     title: t("FolderPage.table.duration"),
     dataKey: "duration",
     width: 130,
-    minWidth: 100,
-    align: "center",
+    maxWidth: 110,
+    minWidth: 110,
     cellRenderer: ({ rowData }) => {
       return h(
         "div",
@@ -508,13 +572,16 @@ const columns = ref<Column<TableItem>[]>([
         formatTime(rowData.duration)
       );
     }
-  },
-  {
+  };
+};
+const getStatusColumn = () => {
+  return {
     key: "transcriptionStatus",
     title: t("FolderPage.table.status"),
     dataKey: "transcriptionStatus",
     width: 130,
-    minWidth: 110,
+    maxWidth: 140,
+    minWidth: 120,
     cellRenderer: ({ rowData }) =>
       h(
         "div",
@@ -524,12 +591,15 @@ const columns = ref<Column<TableItem>[]>([
         },
         h(HomeStatusCell, { row: rowData })
       )
-  },
-  {
+  };
+};
+const getUploadColumn = () => {
+  return {
     key: "uploadTime",
     title: t("FolderPage.table.date"),
     dataKey: "gmtCreateTime",
     width: 150,
+    maxWidth: 180,
     minWidth: 140,
     cellRenderer: ({ rowData }) =>
       h(
@@ -540,12 +610,15 @@ const columns = ref<Column<TableItem>[]>([
         },
         getTime(rowData.gmtCreateTime)
       )
-  },
-  {
+  };
+};
+const getOperationColumn = () => {
+  return {
     key: "operations",
     title: "",
-    width: 40,
-    minWidth: 40,
+    width: 70,
+    maxWidth: isMobile.value ? 100 : 60,
+    minWidth: 100,
     cellRenderer: ({ rowData }) => {
       const popperStyle = {
         padding: "0",
@@ -644,8 +717,37 @@ const columns = ref<Column<TableItem>[]>([
             }
           );
     }
-  }
+  };
+};
+const columns = ref<Column<TableItem>[]>([
+  getNameColumn(),
+  getDurationColumn(),
+  getStatusColumn(),
+  getUploadColumn(),
+  getOperationColumn()
 ]);
+
+watch(
+  () => isMobile.value,
+  (_) => {
+    if (isMobile.value) {
+      columns.value = [getNameColumn(), getOperationColumn()];
+    } else {
+      if (columns.value.length < 3) {
+        columns.value = [
+          getNameColumn(),
+          getDurationColumn(),
+          getStatusColumn(),
+          getUploadColumn(),
+          getOperationColumn()
+        ];
+      }
+    }
+  },
+  {
+    immediate: true
+  }
+);
 
 const updateColumnsForRTL = () => {
   if (isRtl.value) {
@@ -677,20 +779,44 @@ const handleMouseenter = ({ rowData, rowIndex }: any) => {
 };
 
 const tableRef = useTemplateRef("table");
+const isGuest = computed(() => {
+  return (
+    userInfo.value?.userInfoVO?.userid && !userInfo.value?.userInfoVO?.email
+  );
+});
 const size = useElementSize(tableRef);
 const { isFreeUser } = storeToRefs(useSubscriptionStore());
+const headerHeight = ref(50);
+watchEffect(() => {
+  if (!isMobile.value) {
+    headerHeight.value = 50;
+    rowHeight.value = 50;
+  } else {
+    headerHeight.value = 44;
+    rowHeight.value = 56;
+  }
+});
+
+const headerRef = useTemplateRef("header");
 const tableHeight = computed(() => {
+  if (isGuest.value) {
+    if (!tableData.value.length) return 280;
+    return tableData.value.length * rowHeight.value + headerHeight.value;
+  }
+
   if (isMobile.value) {
     if (selectedList.value.length && !isSelectExecState.value) {
-      return size.value.height - 100;
+      if (headerRef.value && headerRef.value.offsetHeight > 37) {
+        return size.value.height - 60;
+      }
     }
     if (isFreeUser.value) {
-      return size.value.height - 100;
+      return size.value.height - 44;
     }
 
-    return size.value.height - 80;
+    return size.value.height - 10;
   }
-  return size.value.height - 50;
+  return size.value.height - 20;
 });
 const handleScroll = (e: any) => {
   const scrollTop = e.scrollTop;
@@ -701,30 +827,23 @@ const handleScroll = (e: any) => {
 };
 useTableColumnResizer(columns, size, isRtl);
 
-const isOver640 = useMediaQuery("(min-width: 640px)");
-const headerHeight = ref(50);
-watchEffect(() => {
-  if (isOver640.value) {
-    headerHeight.value = 50;
-    rowHeight.value = 50;
-  } else {
-    headerHeight.value = 44;
-    rowHeight.value = 44;
-  }
-});
-
 let statusPollingTimer: any = null;
+let statusAbortController: any = null;
 const stopTaskStatusPolling = () => {
+  if (statusAbortController) {
+    statusAbortController.abort();
+  }
   if (statusPollingTimer) {
     clearTimeout(statusPollingTimer);
     statusPollingTimer = null;
   }
 };
-const startTaskStatusPolling = async () => {
+const startTaskStatusPolling = async (isReturn = false, localData:any = []) => {
   try {
+    localData = tableData.value.length ? tableData.value : localData;
     // 找到需要查询的任务ID（transcriptionStatus === 0的记录）
-    const pendingTasks = tableData.value.filter(
-      (item) => item.transcriptionStatus === 0
+    const pendingTasks = localData.filter(
+      (item:any) => item.transcriptionStatus === 0
     );
 
     // 如果没有待处理的任务，停止轮询
@@ -739,30 +858,15 @@ const startTaskStatusPolling = async () => {
     // 调用接口查询状态
     const { useFolderApi } = await import("~/api/folder");
     const { queryTaskStatus } = useFolderApi;
-    const response = await queryTaskStatus(taskIds);
-
-    // 更新 tableData 中对应的数据
-    if (response && Array.isArray(response)) {
-      response.forEach((statusItem) => {
-        const targetIndex = tableData.value.findIndex(
-          (item) => item.taskId === statusItem.taskId
-        );
-        if (targetIndex !== -1) {
-          // 更新对应记录的状态和进度
-          tableData.value[targetIndex] = {
-            ...tableData.value[targetIndex],
-            transcriptionStatus:
-              statusItem.status === "COMPLETED"
-                ? 1
-                : statusItem.status === "FAILED_PERMANENT"
-                  ? -1
-                  : 0,
-            progress: statusItem.progress || 0,
-            duration: statusItem.duration || 0
-          };
-        }
-      });
+    if (statusAbortController) {
+      statusAbortController.abort();
     }
+    statusAbortController = new AbortController();
+    const response = await queryTaskStatus(taskIds, statusAbortController);
+
+    if (isReturn) return response;
+
+    setDataStatus(response);
 
     // 2秒后继续下一次轮询
     statusPollingTimer = setTimeout(() => {
@@ -775,6 +879,31 @@ const startTaskStatusPolling = async () => {
     // }, 10000);
   }
 };
+
+function setDataStatus(response: any) {
+  // 更新 tableData 中对应的数据
+  if (response && Array.isArray(response)) {
+    response.forEach((statusItem) => {
+      const targetIndex = tableData.value.findIndex(
+        (item) => item.taskId === statusItem.taskId
+      );
+      if (targetIndex !== -1) {
+        // 更新对应记录的状态和进度
+        tableData.value[targetIndex] = {
+          ...tableData.value[targetIndex],
+          transcriptionStatus:
+            statusItem.status === "COMPLETED"
+              ? 1
+              : statusItem.status === "FAILED_PERMANENT"
+                ? -1
+                : 0,
+          progress: statusItem.progress || 0,
+          duration: statusItem.duration || 0
+        };
+      }
+    });
+  }
+}
 
 onUnmounted(() => {
   stopTaskStatusPolling();
@@ -789,6 +918,7 @@ onUnmounted(() => {
 
 :deep(.mobile .el-table-v2__body) > div:nth-child(1) {
   overflow: auto !important;
+  overscroll-behavior: none;
 }
 :deep(.mobile .el-table-v2__body) > div:nth-child(1)::-webkit-scrollbar {
   display: none;
@@ -806,7 +936,7 @@ onUnmounted(() => {
 }
 
 :deep(.el-table-v2__row):hover {
-  background: rgba(52, 112, 255, 0.03);
+  background: rgba(111, 76, 240, 0.03);
 }
 
 :deep(.customer-button) {
@@ -841,7 +971,11 @@ onUnmounted(() => {
   top: 0.375rem;
 }
 .common-select {
-  @apply me-2 flex cursor-pointer items-center rounded-lg px-1.5 py-1 hover:bg-[#ECECEC] sm:me-4;
+  @apply me-2 flex cursor-pointer items-center rounded-lg px-1.5 py-1 hover:bg-[#ECECEC] sm:me-4 lg:px-2;
+}
+:deep(.el-progress__text) {
+  @apply me-1 !text-xs md:!text-sm;
+  min-width: auto;
 }
 </style>
 <style>

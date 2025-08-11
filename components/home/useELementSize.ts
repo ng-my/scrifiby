@@ -48,38 +48,42 @@ export function useElementSize(
     let width = targetRef.value.clientWidth;
     let height = targetRef.value.clientHeight;
 
-    if (includePadding) {
-      width += parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-      height += parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
-    }
+    // if (includePadding) {
+    //   width += parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    //   height += parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+    // }
+    //
+    // if (includeBorder) {
+    //   width +=
+    //     parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+    //   height +=
+    //     parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+    // }
+    //
+    // if (includeMargin) {
+    //   width += parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+    //   height += parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+    // }
 
-    if (includeBorder) {
-      width +=
-        parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
-      height +=
-        parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-    }
+    const wrapHeight =
+      targetRef.value.querySelector(".wrap-height")?.clientHeight || 0;
 
-    if (includeMargin) {
-      width += parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-      height += parseFloat(style.marginTop) + parseFloat(style.marginBottom);
-    }
-
-    return { width, height };
+    return { width, height: height - wrapHeight };
   };
 
   // 更新尺寸
   const updateSize = () => {
-    const newSize = calculateSize();
+    requestAnimationFrame(() => {
+      const newSize = calculateSize();
 
-    // 仅在尺寸变化时更新
-    if (
-      newSize.width !== size.value.width ||
-      newSize.height !== size.value.height
-    ) {
-      size.value = newSize;
-      onChange?.(newSize);
-    }
+      if (
+        newSize.width !== size.value.width ||
+        newSize.height !== size.value.height
+      ) {
+        size.value = newSize;
+        onChange?.(newSize);
+      }
+    });
   };
 
   // 初始化监听

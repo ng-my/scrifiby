@@ -1,13 +1,13 @@
 <template>
   <!--7、 FAQ -->
-  <section class="px-4">
+  <section class="px-4 text-white">
     <h2 class="mb-10 text-center text-[2.5rem] font-bold">
       Key Questions on Downloading YouTube Videos
     </h2>
     <div class="mx-auto max-w-[55rem]">
       <div v-for="(item, idx) in list" :key="item.id" class="mb-[1.25rem]">
         <div
-          class="flex cursor-pointer items-center justify-between rounded-[1rem] bg-[#F7FAFF] px-[2rem] py-[1.25rem] transition"
+          class="flex cursor-pointer items-center justify-between rounded-[1rem] border border-[#35205A] bg-[#0E172B] px-[2rem] py-[1.25rem] transition"
           @click="toggle(idx)"
         >
           <span class="me-4 text-[1.25rem] font-semibold leading-[1.75rem]">
@@ -16,17 +16,17 @@
           <span class="flex">
             <!-- 可用svg或图片 -->
             <el-image
-              src="/assets/images/downloadMp4/down.png"
+              src="/assets/images/downloadMp4/black_down.png"
               class="h-[1.25rem] w-[1.25rem] object-contain transition-transform duration-300"
               fit="contain"
-              :class="{ 'rotate-180': activeIdx === idx }"
+              :class="{ '-rotate-180': activeIdx === idx }"
             ></el-image>
           </span>
         </div>
         <transition name="faq-scale">
           <div
             v-show="activeIdx === idx"
-            class="origin-top overflow-hidden bg-white pb-[1.375rem] pe-[2rem] ps-[2.125rem] pt-[0.875rem] text-[1rem] leading-[1.75rem] text-[#9E9E9E]"
+            class="origin-top overflow-hidden bg-black pb-[1.375rem] pe-[2rem] ps-[2.125rem] pt-[0.875rem] text-[1rem] leading-[1.75rem] text-[rgba(255,255,255,0.7)]"
           >
             {{ item.answer }}
           </div>

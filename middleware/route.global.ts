@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
       "user-signup"
     ].includes(routeName)
   ) {
-    return navigateTo(localePath("/"));
+    // return navigateTo(localePath("/"));
   }
   const isClient = process.client;
   const defaultPath = localePath("/user/login");
@@ -43,12 +43,12 @@ export default defineNuxtRouteMiddleware((to, from) => {
     !window.localStorage.getItem("zzTest")
   ) {
     console.log("navigateTo_3");
-    return navigateTo(defaultPath);
+    // return navigateTo(defaultPath);
   }
   // 页面跳转
   if (from.name !== undefined) {
     const path = to.path;
-    if (path.includes("/transcript/")) {
+    if (path.includes("/transcript/") && !from.path.includes('/getPro')) {
       window.sessionStorage.setItem("jumpTranscriptOrigin", from.path);
     }
   }

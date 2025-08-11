@@ -33,7 +33,7 @@
         class="flex flex-shrink-0 justify-center md:flex-[0_0_38%] md:basis-[38%]"
       >
         <el-image
-          src="/assets/images/downloadMp4/maximize.png"
+          src="/assets/images/downloadMp4/black_maximize.png"
           class="h-72 w-72 object-contain md:h-96 md:w-96"
           fit="contain"
         ></el-image>

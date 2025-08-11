@@ -1,10 +1,11 @@
+// 波兰语
 let message = {
   // Strona główna
   HomePage: {
     home: "Strona główna",
     version: "Wersja podstawowa (Darmowa):",
     times:
-      "Darmowa transkrypcja {times} razy dziennie, pozostało Ci {left} transkrypcji. ",
+      "{times} darmowych transkrypcji dziennie, {left} pozostało dzisiaj. ",
     tips: "Przejdź na Pro, aby uzyskać nieograniczone transkrypcje.",
     update: "Ulepsz teraz",
     folders: "Foldery",
@@ -16,6 +17,7 @@ let message = {
     confirm: "Utwórz",
     dialogLabel: "Nazwa folderu",
     recently: "Ostatnie pliki",
+    loading: "Ładowanie",
     tour: {
       step0: {
         title: "Witamy w {name}",
@@ -70,7 +72,9 @@ let message = {
       edit: "Edytuj, udoskonalaj i eksportuj swoje transkrypcje w formatach dopasowanych do Twoich potrzeb.",
       collaborate: "Współpracuj, udostępniając swój przepisany tekst innym.",
       button: "Zacznij",
-      tip: "Gotowy na zamianę dźwięku w przepisany tekst? Zacznij eksplorować teraz!"
+      tip: "Gotowy na zamianę dźwięku w przepisany tekst? Zacznij eksplorować teraz!",
+      tip2: "Rozpocznij eksplorację już teraz!",
+      tip1: "Gotowy przekształcić audio w transkrypcję tekstu? "
     },
     subscriptionModal: {
       left: {
@@ -117,7 +121,8 @@ let message = {
       move: "Przenieś",
       failed: "Nieudane",
       selected: "Wybrane",
-      success: "Sukces"
+      success: "Sukces",
+      fileList: "Lista Plików"
     },
     dialog: {
       move: {
@@ -150,7 +155,7 @@ let message = {
       },
       export: {
         title: "Eksportuj",
-        select: "Wybierz jeden lub więcej formatów",
+        select: "Wybierz potrzebny format",
         settings: "Ustawienia",
         speaker: "Uwzględnij mówcę",
         timecodes: "Uwzględnij kody czasowe",
@@ -182,6 +187,7 @@ let message = {
       pause: "Pauza",
       resume: "Wznów",
       stop: "Stop",
+      endRecord: "Zakończ nagrywanie",
       delete: "Usuń",
       transcribe: "Transkrybuj",
       permissionDenied:
@@ -207,7 +213,7 @@ let message = {
         title: "Wklej linki",
         label:
           "Wklej link do mediów z następujących platform, ale nie tylko: YouTube, Facebook, X, Dropbox, Google Drive, Vimeo",
-        confirm: "Transkrybuj",
+        confirm: "Dodaj",
         cancel: "Anuluj",
         // Wprowadź poprawny link
         errorTitle:
@@ -217,7 +223,8 @@ let message = {
       file: {
         orTitle: "Transkrybuj media online",
         dialogTitle: "Transkrybuj pliki",
-        tip: "Kliknij, aby przesłać lub przeciągnij i upuść",
+        tip1: "Kliknij, aby przesłać",
+        tip2: "lub przeciągnij i upuść",
         or: "lub"
       },
       del: {
@@ -229,16 +236,18 @@ let message = {
       },
       files: "Pliki",
       resultDialogTitle: "Transkrybuj pliki",
+      resultDialogTitle2: "Transkrypcja pliku",
       cancel: "Anuluj",
       confirm: "Transkrybuj",
       return: "Powrót",
       addMore: "Dodaj więcej",
-      language: "Język audio",
+      language: "Język mediów",
       failed: "Nieudane",
       tooLarge: "Plik jest za duży.",
+      linkUpload: "Przesyłanie...",
       fileFormat: "Format pliku jest niedozwolony",
       localFiles: "Pliki lokalne",
-      pasteLink: "Wklej linki",
+      pasteLink: "Link online",
       uploadErr: "Błąd przesyłania",
       hashErr: "Błąd hash",
       table: {
@@ -249,7 +258,7 @@ let message = {
       },
       maxFileNum: "Liczba plików nie może przekroczyć {num}.",
       speaker: "Identyfikacja mówcy",
-      speakerLabel: "Oznacza każdej części transkrypcji osobę mówiącą."
+      speakerLabel: "Oznacz każdy segment transkrypcji osobą mówiącą."
     }
   },
   // Strona szczegółów transkrypcji
@@ -548,11 +557,20 @@ let message = {
     upgradeBtn: "Ulepsz teraz",
     upgradeTip30: "Ten plik przekracza 30 minut.",
     upgradeTipMore:
-      "Ulepsz do Scribify Pro, aby transkrybować pliki do 10 godzin"
+      "Ulepsz do Scribify Pro, aby transkrybować pliki do 10 godzin",
+    errorTips: "Coś poszło nie tak.",
+    copiedLink: "Link skopiowany",
+    copyGotIt: "wiedział"
   },
   // Logowanie, rejestracja, zmiana hasła
   IdentityInfoManage: {
     or: "lub", // lub
+    LoginBtn: "Zaloguj się przez e-mail",
+    LoginGoogle: "Zaloguj się przez Google",
+    SignupBtn: "Zarejestruj się przez e-mail",
+    SignupGoogle: "Zarejestruj się przez Google",
+    SignupDes: "Zarejestruj się już dziś i zobacz magię — za darmo.",
+    SignupTitle: "Dokładna i nieograniczona transkrypcja",
     signup: "Zarejestruj się", // rejestracja
     sign_up: "Zarejestruj się", // rejestracja
     loginByGoogle: "Kontynuuj z Google", // logowanie przez Google
@@ -560,16 +578,13 @@ let message = {
     createAccount: "Utwórz nowe konto", // utwórz konto
     accountExists: "Masz już konto? ", // masz już konto? zaloguj się
     agreeTerm: {
-      // zgadzam się z warunkami usługi i polityką prywatności XXX
-      agree: "Korzystając z {proName}, zgadzasz się z {terms} i {policy}.",
-      terms: "Warunkami korzystania z usługi",
+      agree: "Kontynuując, zgadzasz się z naszymi {terms} i {policy}.",
+      terms: "Warunkami",
       policy: "Polityką prywatności"
     },
     setPassword: "Ustaw hasło", // ustaw hasło
     code: "Kod weryfikacyjny", // kod weryfikacyjny
     resend: "Wyślij ponownie", // wyślij ponownie
-    codeToEmail:
-      "Właśnie wysłaliśmy tymczasowy kod rejestracyjny na Twój email. Sprawdź skrzynkę odbiorczą i wklej kod rejestracyjny powyżej.", // właśnie wysłaliśmy kod weryfikacyjny na Twój email, sprawdź skrzynkę odbiorczą i wklej kod weryfikacyjny powyżej
     enterPassword: "Wprowadź swoje hasło.", // wprowadź hasło
     passwordLeval: "Poziom hasła", // siła hasła
     Weak: "Słabe", // słabe, średnie, silne
@@ -593,7 +608,15 @@ let message = {
     resetPassword: "Zresetuj hasło", // zresetuj hasło
     resetYourPassword: "Zresetuj swoje hasło", // zresetuj swoje hasło
     newOldCantSame: "Nowe hasło musi być inne niż stare hasło.", // nowe hasło musi być inne niż stare hasło
-    passwordResetOk: "Hasło zostało pomyślnie zresetowane!" // hasło zostało pomyślnie zresetowane!
+    passwordResetOk: "Hasło zostało pomyślnie zresetowane!", // hasło zostało pomyślnie zresetowane!
+    signupToSaveProgress: "Dokończ rejestrację, aby zapisać swój postęp.",
+    tip: "Wskazówka",
+    tipContentEmail:
+      "Właśnie wysłaliśmy hasło logowania do Twojego konta na podany adres e-mail.",
+    tipContentPassword:
+      "Sprawdź swoją skrzynkę odbiorczą i zaloguj się za pomocą adresu e-mail oraz hasła.",
+    codeToEmail:
+      "Właśnie wysłaliśmy kod weryfikacyjny na Twój adres e-mail. Sprawdź swoją skrzynkę odbiorczą i wklej kod weryfikacyjny powyżej."
   },
   // Strona szczegółów udostępniania
   Sharepage: {},
@@ -604,18 +627,13 @@ let message = {
     subscription: "Plan subskrypcji",
     freeversion: "Darmowa",
     transcribeTimesDay: "3 transkrypcje dziennie",
-    freeThreeTimesDay: "Transkrybuj 3 pliki za darmo każdego dnia.",
     uploadMinutes: "Przesyłanie 30-minutowe",
-    oneFileUploaded:
-      "Każdy plik może mieć do 30 minut, przesyłany jeden na raz",
     lowerPriority: "Niższy priorytet",
-    needsToWaitLonger:
-      "3 transkrypcje dziennie Czekaj dłużej na transkrypcję plików.",
     currentPlan: "Obecny plan",
     professionalEdition: "wersja profesjonalna",
     unlimitedTranscription: "Nielimitowana transkrypcja",
-    unlimitedNumberOfTimes: "Nielimitowane transkrypcje dla jednej osoby.",
-    uploadWithinHours: "Przesyłanie do 10 godzin",
+    unlimitedNumberOfTimes:
+      "Nieograniczona częstotliwość i czas trwania transkrypcji.",
     filesUploadedAtOnce:
       "Każdy plik może mieć do 10 godzin/5 GB. Prześlij 50 plików naraz.",
     highestPriority: "najwyższy priorytet",
@@ -642,7 +660,6 @@ let message = {
     daily: "{start} z {end} dziennych transkrypcji wykorzystanych",
     upgradetoPro: "Ulepsz do Pro",
     accountSetting: "Ustawienia konta",
-    returnAccountSetting: "Powrót do ustawień konta",
     logOut: "Wyloguj się",
     account: "Konto",
     email: "Email",
@@ -654,7 +671,6 @@ let message = {
     notFund: "Nie znaleziono",
     couldntFind: "Nie znaleźliśmy tego, czego szukasz.",
     proAnnual: "Pro Roczna",
-    yourSubscription: "Twoja subskrypcja zostanie anulowana",
     proMonthly: "Pro Miesięczna",
     perMonth: "miesięcznie",
     afterwards: "następnie",
@@ -665,8 +681,20 @@ let message = {
     perYear: "rocznie",
     getProPlan: "Zdobądź plan Pro",
     changeToAnnual: "Zmień na roczny",
-    automaticRenewalon: "Automatyczne odnawianie"
-  },
+    automaticRenewalon: "Automatyczne odnawianie",
+    eachMonth: "Automatyczne odnawianie {time}. dnia każdego miesiąca.",
+    automaticRenewal:
+      "Automatyczne odnowienie nie powiodło się, sprawdź metodę płatności.",
+    eachYear: "Automatyczne odnawianie w dniu {time} każdego roku.",
+    returnAccountSetting: "Powrót",
+    needsToWaitLonger:
+      "Poczekaj dłużej, zanim Twoje pliki zostaną przetranskrybowane.",
+    freeThreeTimesDay: "Codziennie przetranskrybuj 3 pliki za darmo.",
+    oneFileUploaded:
+      "Każdy plik może trwać do 30 minut. Prześlij 1 plik na raz.",
+    uploadWithinHours: "10-godzinne przesyłanie",
+      yourSubscription: "Twoja subskrypcja zostanie anulowana {time}."
+},
   // Mapa języków
   LanguageMap: {
     sysLanguagesMap: {
@@ -1045,8 +1073,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

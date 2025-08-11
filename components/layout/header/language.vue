@@ -7,15 +7,20 @@
     trigger="click"
   >
     <template #reference>
-      <span class="me-1" style="cursor: pointer">
-        <i class="iconfont icon-quanqiu ng-quanqiu"></i>
+      <span
+        class="i18n-btn me-2 flex h-[2rem] w-[2rem] items-center justify-center rounded-[1rem] bg-mainColor-600 text-mainColor-900"
+        style="cursor: pointer"
+      >
+        <i class="iconfont icon-quanqiu text-xl"></i>
       </span>
     </template>
     <template #default>
       <div class="w-full">
         <div class="flex h-[2rem] items-center px-5 text-base">
           <i class="iconfont icon-quanqiu ng-quanqiu"></i>
-          {{ $t("AccountSettingsPage.displayLanguage") }}
+          <span class="text-black">
+            {{ $t("AccountSettingsPage.displayLanguage") }}
+          </span>
         </div>
         <div style="overflow: auto; height: 18rem">
           <div
@@ -25,8 +30,8 @@
             class="my-2 flex h-[2rem] cursor-pointer items-center px-5 py-2 transition hover:bg-hoverColor-normal"
             :class="{ 'bg-hoverColor-deepen': activeLanguage === item.value }"
           >
-            <span class="ms-2 font-medium">{{ item.label }}</span>
-            <span class="flex-1 text-end text-sm text-gray-400">
+            <span class="ms-2 font-medium text-black">{{ item.label }}</span>
+            <span class="flex-1 text-end text-sm text-black">
               {{ item.currentLangLabel }}
             </span>
           </div>

@@ -1,7 +1,7 @@
 <template>
-  <div class="video-down-container mx-[1rem]">
+  <div class="video-down-container mx-[1rem] overflow-auto">
     <div
-      class="mx-auto mb-[2.5rem] flex max-w-[28rem] flex-col rounded-[1rem] bg-white shadow-md"
+      class="mx-auto mt-[1.375rem] flex max-w-[28rem] flex-col rounded-[1rem] bg-black shadow-md"
     >
       <video
         :src="videoSrc"

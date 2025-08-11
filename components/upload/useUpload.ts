@@ -10,6 +10,7 @@ export interface UploadFile {
   status: "pending" | "hashing" | "uploading" | "merging" | "success" | "error";
   progress: number;
   errorText?: string;
+  uploadText?: string;
   worker?: Worker;
   chunks?: Blob[];
   chunkProgress?: number[];
@@ -25,17 +26,21 @@ export interface UploadFile {
   allowedPath?: string;
 }
 
+// 初始化COS实例
+let auth: any;
+let authPromise: Promise<any> | null = null;
 // 获取COS授权信息
 const getAuthorization = async () => {
   const { useFolderApi } = await import("~/api/folder");
   return await useFolderApi.getCosPreSignedUrl();
 };
 
-// 初始化COS实例
-let auth: any;
 const initCosInstance = async (file: UploadFile) => {
   if (!auth) {
-    auth = await getAuthorization();
+    if (!authPromise) {
+      authPromise = getAuthorization();
+    }
+    auth = await authPromise;
   }
   const bucket = auth.bucket;
   const region = auth.region;
@@ -62,8 +67,8 @@ const initCosInstance = async (file: UploadFile) => {
 export const useUpload = () => {
   const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
   const fileTypes = useUploadStore().fileTypes; // 允许的扩展名
-  const CHUNK_SIZE = 100 * 1024 * 1024; // 5MB分割
-  const NOTNEEDCHUNK_SIZE = 100 * 1024 * 1024; // 5MB
+  const CHUNK_SIZE = 50 * 1024 * 1024; // 5MB分割
+  const NOTNEEDCHUNK_SIZE = 20 * 1024 * 1024; // 5MB
   const { t } = useI18n();
   const { selectedFolder } = storeToRefs(useFolderStore());
 
@@ -74,16 +79,15 @@ export const useUpload = () => {
       file.errorText = t("FileUploadAndRecording.upload.tooLarge");
       return false;
     }
-
     const isMimeValid = [
       ...fileTypes,
-      "WEBM",
-      "X-M4A",
-      "QUICKTIME",
-      "VND.DLNA.ADTS",
-      "X-MS-WMA",
-      "X-MS-WMV"
-    ].includes(file.file.type.split("/")[1].toUpperCase());
+      "webm",
+      "x-m4a",
+      "quicktime",
+      "vnd.dlna.adts",
+      "x-ms-wma",
+      "x-ms-wmv"
+    ].includes(file.file.type?.split("/")[1]?.toLowerCase());
 
     // 返回结果
     if (!isMimeValid) {
@@ -133,6 +137,7 @@ export const useUpload = () => {
           Key: file.key,
           Body: file.file,
           ChunkSize: CHUNK_SIZE,
+          AsyncLimit: 6,
           SliceSize: NOTNEEDCHUNK_SIZE,
           onTaskReady: (taskId) => {
             file.taskId = taskId;
@@ -154,9 +159,10 @@ export const useUpload = () => {
         .catch(async (error) => {
           if (error?.toString().includes("expired")) {
             auth = null;
-            await initCosInstance(file);
+            authPromise = null;
+            await initCosInstance(reactive(file));
             file.key = `${file.allowedPath!}${file.hash}/${file.name || "filename"}`;
-            directUpload(file);
+            resolve(directUpload(file));
             return;
           }
           if (times > 0) {
@@ -217,6 +223,8 @@ export const useUpload = () => {
 
         await directUpload(file);
 
+        // await postTranscode(file);
+
         resolve(true);
       }
     });
@@ -265,10 +273,11 @@ export const useUpload = () => {
       }
 
       if (res.fileMetaInfo.fileUrl) {
-        file.progress = 99;
-        setTimeout(() => {
-          file.status = "success";
-        }, 300);
+        file.progress = 100;
+        file.uploadText = "";
+        file.status = "success";
+        // setTimeout(() => {
+        // }, 300);
         file.name = res.fileMetaInfo.fileName;
         file.size = res.fileMetaInfo.fileSize;
         file.detailSize = niceBytes(String(res.fileMetaInfo.fileSize));
@@ -293,7 +302,8 @@ export const useUpload = () => {
       __isHover: false,
       __isDelIng: false,
       uploadId: "",
-      key: ""
+      key: "",
+      uploadText: ""
     } as UploadFile;
     if ((file as any).localFileSize) {
       obj.size = (file as any).localFileSize;
@@ -301,7 +311,8 @@ export const useUpload = () => {
     }
     if ((file as any).localRequestId) {
       obj.status = "uploading";
-      simulateProgress(reactive(obj));
+      obj.uploadText = t("FileUploadAndRecording.upload.linkUpload");
+      // simulateProgress(reactive(obj));
       fetchFileUploadStatus((file as any).localRequestId, reactive(obj));
     }
     return obj;
@@ -375,6 +386,98 @@ export const useUpload = () => {
 
     // 启动模拟
     requestAnimationFrame(update);
+  }
+
+  function postTranscode(file: UploadFile) {
+    // sdk引入以及初始化请参考：https://cloud.tencent.com/document/product/436/11459
+    const config = {
+      // 需要替换成您自己的存储桶信息
+      Bucket: file.bucket, // 存储桶，必须字段
+      Region: file.region // 存储桶所在地域，必须字段 如 ap-beijing
+    };
+    const key = `jobs`; // 固定值，必须
+    const host = `${config.Bucket}.ci.${config.Region}.myqcloud.com`;
+    const url = `https://${host}/${key}`;
+    const body = COS.util.json2xml({
+      Request: {
+        // 创建任务的Tag：Transcode;是否必传：是
+        Tag: "Transcode",
+        // 待操作的文件信息;是否必传：是
+        Input: {
+          // 文件路径;是否必传：是
+          Object: file.key
+        },
+        // 操作规则;是否必传：是
+        Operation: {
+          // TemplateId与Transcode 二选一传入
+          // 转码模板 ID;是否必传：否，可通过控制台获取
+          TemplateId: "xxx",
+          // 转码模板参数;是否必传：否
+          // Transcode: {},
+          // 水印模板 ID，可以传多个水印模板 ID，最多传3个;是否必传：否
+          // WatermarkTemplateId: '',
+          // 去除水印参数,  H265、AV1编码暂不支持该参数;是否必传：否
+          // RemoveWatermark: {
+          //   // 距离左上角原点 x 偏移，范围为[1, 4096];是否必传：是
+          //   Dx: '',
+          //   // 距离左上角原点 y 偏移，范围为[1, 4096];是否必传：是
+          //   Dy: '',
+          //   // 宽，范围为[1, 4096];是否必传：是
+          //   Width: '',
+          //   // 高，范围为[1, 4096];是否必传：是
+          //   Height: '',
+          // },
+          // 字幕参数，H265、AV1编码和非mkv封装暂不支持该参数;是否必传：否
+          // Subtitles: {
+          //   // 字幕参数;是否必传：是
+          //   Subtitle: {
+          //     // 同 bucket 的字幕地址，需要 encode;是否必传：是
+          //     Url: '',
+          //   },
+          // },
+          // 结果输出配置;是否必传：是
+          Output: {
+            // 存储桶的地域;是否必传：是
+            Region: config.Region,
+            // 存储结果的存储桶;是否必传：是
+            Bucket: config.Bucket,
+            // 输出结果的文件名;是否必传：是
+            Object: "output/test.mp4"
+          },
+          // 透传用户信息，可打印的 ASCII 码，长度不超过1024;是否必传：否
+          UserData: "",
+          // 任务优先级，级别限制：0 、1 、2 。级别越大任务优先级越高，默认为0;是否必传：否
+          JobLevel: "0"
+        },
+        // 任务所在的队列类型，限制为 SpeedTranscoding, 表示为开启倍速转码;是否必传：否
+        QueueType: "SpeedTranscoding",
+        // 任务回调格式，JSON 或 XML，默认 XML，优先级高于队列的回调格式;是否必传：否
+        CallBackFormat: "",
+        // 任务回调类型，Url 或 TDMQ，默认 Url，优先级高于队列的回调类型;是否必传：否
+        CallBackType: "Url",
+        // 任务回调地址，优先级高于队列的回调地址。设置为 no 时，表示队列的回调地址不产生回调;是否必传：否
+        CallBack: ""
+      }
+    });
+
+    file.cosInstance!.request(
+      {
+        Method: "POST", // 固定值，必须
+        Key: key, // 必须
+        Url: url, // 请求的url，必须
+        Body: body, // 请求体参数，必须
+        ContentType: "application/xml" // 固定值，必须
+      },
+      function (err: any, data: any) {
+        if (err) {
+          // 处理请求失败
+          console.log(err);
+        } else {
+          // 处理请求成功
+          console.log(data.Response);
+        }
+      }
+    );
   }
 
   // todo 废弃的文件分片

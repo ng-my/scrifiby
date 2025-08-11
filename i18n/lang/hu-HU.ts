@@ -1,10 +1,10 @@
+// 匈牙利语
 let message = {
   // 首页
   HomePage: {
     home: "Főoldal",
     version: "Alapverzió (Ingyenes):",
-    times:
-      "Ingyenes átirat {times} alkalommal naponta, még {left} átiratod maradt. ",
+    times: "Napi {times} ingyenes átírás, ma {left} maradt.",
     tips: "Váltson Pro-ra a korlátlan átiratokhoz.",
     update: "Frissítés most",
     folders: "Mappák",
@@ -16,6 +16,7 @@ let message = {
     confirm: "Létrehozás",
     dialogLabel: "Mappa neve",
     recently: "Legutóbbi fájlok",
+    loading: "Betöltés",
     tour: {
       step0: {
         title: "Üdvözlünk a {name} alkalmazásban",
@@ -70,7 +71,9 @@ let message = {
       edit: "Szerkessze, finomítsa és exportálja átiratait az igényeinek megfelelő formátumokban.",
       collaborate: "Működjön együtt másokkal az átírt szöveg megosztásával.",
       button: "Kezdés",
-      tip: "Készen áll a hang átírt szöveggé alakítására? Kezdje el a felfedezést most!"
+      tip: "Készen áll a hang átírt szöveggé alakítására? Kezdje el a felfedezést most!",
+      tip2: "Kezdj el felfedezni most!",
+      tip1: "Készen állsz a hangot átirat szöveggé alakítani? "
     },
     subscriptionModal: {
       left: {
@@ -117,7 +120,8 @@ let message = {
       move: "Áthelyezés",
       failed: "Sikertelen",
       selected: "Kiválasztva",
-      success: "Sikeres"
+      success: "Sikeres",
+      fileList: "Fájllista"
     },
     dialog: {
       move: {
@@ -150,7 +154,7 @@ let message = {
       },
       export: {
         title: "Exportálás",
-        select: "Válassz egy vagy több formátumot",
+        select: "Válaszd ki a szükséges formátumot",
         settings: "Beállítások",
         speaker: "Beszélő megjelenítése",
         timecodes: "Időkódok megjelenítése",
@@ -182,6 +186,7 @@ let message = {
       pause: "Szünet",
       resume: "Folytatás",
       stop: "Leállítás",
+      endRecord: "Felvétel befejezése",
       delete: "Törlés",
       transcribe: "Átírás",
       permissionDenied:
@@ -207,7 +212,7 @@ let message = {
         title: "Linkek beillesztése",
         label:
           "Illeszd be a következő platformok médialinkjét (de nem csak ezekre korlátozódva): YouTube, Facebook, X, Dropbox, Google Drive, Vimeo",
-        confirm: "Átírás",
+        confirm: "Hozzáadás",
         cancel: "Mégse",
         // 请输入正确的链接
         errorTitle:
@@ -217,7 +222,8 @@ let message = {
       file: {
         orTitle: "Online média átírása",
         dialogTitle: "Fájlok átírása",
-        tip: "Kattints a feltöltéshez vagy húzd ide a fájlt",
+        tip1: "Kattintson a feltöltéshez",
+        tip2: "vagy húzza ide",
         or: "vagy"
       },
       del: {
@@ -228,16 +234,18 @@ let message = {
       },
       files: "Fájlok",
       resultDialogTitle: "Fájlok átírása",
+      resultDialogTitle2: "Fájl átirata",
       cancel: "Mégse",
       confirm: "Átírás",
       return: "Vissza",
       addMore: "További hozzáadása",
-      language: "Hang nyelve",
+      language: "Média nyelve",
       failed: "Sikertelen",
       tooLarge: "A fájl túl nagy.",
+      linkUpload: "Feltöltés...",
       fileFormat: "A fájlformátum nem engedélyezett",
       localFiles: "Helyi fájlok",
-      pasteLink: "Linkek beillesztése",
+      pasteLink: "Online link",
       uploadErr: "Feltöltési hiba",
       hashErr: "Hash hiba",
       table: {
@@ -248,7 +256,8 @@ let message = {
       },
       maxFileNum: "A fájlok száma nem haladhatja meg a {num} darabot.",
       speaker: "Beszélő azonosítás",
-      speakerLabel: "Feliratkozza az átirat minden részét a beszélővel."
+      speakerLabel:
+        "Címkézze meg az átirat minden szegmensét a beszélő személlyel."
     }
   },
   // 转录详情页
@@ -547,11 +556,20 @@ let message = {
     upgradeBtn: "Frissítés most",
     upgradeTip30: "Ez a fájl meghaladja a 30 percet.",
     upgradeTipMore:
-      "Frissítsen Scribify Pro-ra, hogy akár 10 órás hosszúságú fájlokat is átírjon"
+      "Frissítsen Scribify Pro-ra, hogy akár 10 órás hosszúságú fájlokat is átírjon",
+    errorTips: "Valami baj történt.",
+    copiedLink: "Link másolva",
+    copyGotIt: "értem"
   },
   // 登录、注册、修改密码
   IdentityInfoManage: {
     or: "vagy", // 或
+    LoginBtn: "Bejelentkezés e-maillel",
+    LoginGoogle: "Bejelentkezés Google-lel",
+    SignupBtn: "Regisztráció e-maillel",
+    SignupGoogle: "Regisztráció Google-lel",
+    SignupDes: "Regisztrálj ma, és tapasztald meg a varázslatot — ingyen.",
+    SignupTitle: "Pontos és korlátlan átirat",
     signup: "Regisztráció", // 注册
     sign_up: "Regisztráció", // 注册
     loginByGoogle: "Folytatás Google-fiókkal", // 使用Google登录
@@ -559,16 +577,13 @@ let message = {
     createAccount: "Új fiók létrehozása", // 创建账户
     accountExists: "Már van fiókod? ", // 已经有账户了？登录
     agreeTerm: {
-      // // 我同意 XXX 服务条款和隐私政策
-      agree: "A {proName} használatával elfogadod a {terms} és a {policy}.",
-      terms: "Szolgáltatási feltételeket",
-      policy: "Adatvédelmi szabályzatot"
+      agree: "Folytatásával elfogadod a feltételeinket és a {policy}.",
+      terms: "Feltételek",
+      policy: "Adatvédelmi szabályzat"
     },
     setPassword: "Jelszó beállítása", // 设置密码
     code: "Ellenőrző kód", // 验证码
     resend: "Újraküldés", // 重新发送
-    codeToEmail:
-      "Éppen most küldtünk egy ideiglenes regisztrációs kódot az e-mail címedre. Kérjük, ellenőrizd a postaládádat és illeszd be a regisztrációs kódot fent.", // 我们刚刚向您的邮箱发送了验证码，请查看收件箱并将验证码粘贴到上方。
     enterPassword: "Kérjük, add meg a jelszavadat.", // 请输入密码
     passwordLeval: "Jelszó erőssége", // 密码强度
     Weak: "Gyenge", // 弱 中 强
@@ -592,7 +607,15 @@ let message = {
     resetPassword: "Jelszó visszaállítása", // 重置密码
     resetYourPassword: "Jelszavad visszaállítása", // 重置你的密码
     newOldCantSame: "Az új jelszónak különböznie kell a régi jelszótól.", // 新密码与旧密码不能相同
-    passwordResetOk: "Jelszó sikeresen visszaállítva!" // 密码重置成功！
+    passwordResetOk: "Jelszó sikeresen visszaállítva!", // 密码重置成功！
+    signupToSaveProgress: "Fejezze be a regisztrációt a folyamat mentéséhez.",
+    tip: "Tipp",
+    tipContentEmail:
+      "Most küldtük el fiókja bejelentkezési jelszavát az Ön e-mail címére.",
+    tipContentPassword:
+      "Kérjük, ellenőrizze a beérkezett üzeneteit, majd jelentkezzen be e-mail címével és jelszavával.",
+    codeToEmail:
+      "Most küldtünk egy ellenőrző kódot az Ön e-mail címére. Kérjük, ellenőrizze a postaládáját, és illessze be az ellenőrző kódot a fenti mezőbe."
   },
   // 分享详情页
   Sharepage: {},
@@ -603,18 +626,13 @@ let message = {
     subscription: "Előfizetési csomag",
     freeversion: "Ingyenes",
     transcribeTimesDay: "3 átirat naponta",
-    freeThreeTimesDay: "Naponta 3 fájl ingyenes átirata.",
     uploadMinutes: "30 perces feltöltések",
-    oneFileUploaded:
-      "Minden fájl legfeljebb 30 perc hosszú lehet, egyszerre egy fájl tölthető fel",
     lowerPriority: "Alacsonyabb prioritás",
-    needsToWaitLonger:
-      "3 átirat naponta Hosszabb várakozás a fájlok átiratához.",
     currentPlan: "Jelenlegi csomag",
     professionalEdition: "professzionális verzió",
     unlimitedTranscription: "Korlátlan átirat",
-    unlimitedNumberOfTimes: "Korlátlan számú átirat egy személy számára.",
-    uploadWithinHours: "10 órás feltöltés",
+    unlimitedNumberOfTimes:
+      "Korlátlan átiratkészítési gyakoriság és időtartam.",
     filesUploadedAtOnce:
       "Minden fájl legfeljebb 10 óra hosszú / 5 GB lehet. Egyszerre 50 fájl tölthető fel.",
     highestPriority: "legmagasabb prioritás",
@@ -641,7 +659,6 @@ let message = {
     daily: "{start} / {end} napi átirat felhasználva",
     upgradetoPro: "Frissítés Pro verzióra",
     accountSetting: "Fiókbeállítások",
-    returnAccountSetting: "Vissza a fiókbeállításokhoz",
     logOut: "Kijelentkezés",
     account: "Fiók",
     email: "E-mail",
@@ -653,7 +670,6 @@ let message = {
     notFund: "Nem található",
     couldntFind: "Nem találtuk meg, amit keresett.",
     proAnnual: "Pro Éves",
-    yourSubscription: "Előfizetésed lemondásra kerül",
     proMonthly: "Pro Havi",
     perMonth: "havonta",
     afterwards: "azt követően",
@@ -664,8 +680,19 @@ let message = {
     perYear: "évente",
     getProPlan: "Pro csomag igénylése",
     changeToAnnual: "Váltás évesre",
-    automaticRenewalon: "Automatikus megújítás"
-  },
+    automaticRenewalon: "Automatikus megújítás",
+    eachMonth: "Automatikus megújítás minden hónap {time}. napján.",
+    automaticRenewal:
+      "Az automatikus megújítás sikertelen volt, kérjük, ellenőrizze a fizetési módot.",
+    eachYear: "Automatikus megújítás minden év {time} napján.",
+    returnAccountSetting: "Vissza",
+    needsToWaitLonger: "Várjon tovább, amíg fájljai átírást kapnak.",
+    freeThreeTimesDay: "Naponta 3 fájl ingyenes átírása.",
+    oneFileUploaded:
+      "Minden fájl legfeljebb 30 perc hosszú lehet. Töltsön fel egyszerre 1 fájlt.",
+    uploadWithinHours: "10 órás feltöltések",
+      yourSubscription: "Az előfizetése {time} törlésre kerül."
+},
   // 语言对应关系
   LanguageMap: {
     sysLanguagesMap: {
@@ -1043,8 +1070,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

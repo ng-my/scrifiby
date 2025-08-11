@@ -3,7 +3,7 @@ let message = {
   HomePage: {
     home: "首頁",
     version: "基礎版本（免費）：",
-    times: "每天免費轉錄 {times} 次，您還有 {left} 次轉錄機會。",
+    times: "每天{times}次免費轉錄，今天剩餘{left}次。",
     tips: "升級到專業版以獲得無限轉錄。",
     update: "立即升級",
     folders: "資料夾",
@@ -15,6 +15,7 @@ let message = {
     confirm: "建立",
     dialogLabel: "資料夾名稱",
     recently: "最近檔案",
+    loading: "載入中",
     tour: {
       step0: {
         title: "歡迎使用 {name}",
@@ -64,7 +65,9 @@ let message = {
       edit: "編輯、完善並以適合您需求的格式匯出轉錄文字。",
       collaborate: "通過與他人共享轉錄文字進行協作。",
       button: "開始使用",
-      tip: "準備好將音訊轉換為轉錄文字了嗎？現在就開始探索！"
+      tip: "準備好將音訊轉換為轉錄文字了嗎？現在就開始探索！",
+      tip2: "立即開始探索！",
+      tip1: "準備好將音訊轉換為轉錄文字嗎？ "
     },
     subscriptionModal: {
       left: {
@@ -111,7 +114,8 @@ let message = {
       move: "移動",
       failed: "失敗",
       selected: "已選擇",
-      success: "成功"
+      success: "成功",
+      fileList: "檔案清單"
     },
     dialog: {
       move: {
@@ -143,7 +147,7 @@ let message = {
       },
       export: {
         title: "匯出",
-        select: "選擇一個或多個格式",
+        select: "選擇你需要的格式",
         settings: "設定",
         speaker: "包含說話人",
         timecodes: "包含時間碼",
@@ -175,6 +179,7 @@ let message = {
       pause: "暫停",
       resume: "繼續",
       stop: "停止",
+      endRecord: "結束錄製",
       delete: "刪除",
       transcribe: "轉錄",
       permissionDenied: "麥克風權限被拒絕或設備不存在",
@@ -198,7 +203,7 @@ let message = {
         title: "貼上連結",
         label:
           "貼上以下平台但不限於：YouTube、Facebook、X、Dropbox、Google Drive、Vimeo 的媒體連結",
-        confirm: "轉錄",
+        confirm: "新增",
         cancel: "取消",
         errorTitle: "您輸入的連結地址不正確。請檢查後重試。",
         linkName: "連結"
@@ -206,7 +211,8 @@ let message = {
       file: {
         orTitle: "轉錄線上媒體",
         dialogTitle: "轉錄檔案",
-        tip: "點擊上傳或拖拽放置",
+        tip1: "點擊上傳",
+        tip2: "或拖曳檔案",
         or: "或"
       },
       del: {
@@ -217,16 +223,18 @@ let message = {
       },
       files: "檔案",
       resultDialogTitle: "轉錄檔案",
+      resultDialogTitle2: "轉錄檔案",
       cancel: "取消",
       confirm: "轉錄",
       return: "返回",
       addMore: "添加更多",
-      language: "音頻語言",
+      language: "媒體語言",
       failed: "失敗",
       tooLarge: "檔案太大。",
+      linkUpload: "上傳中...",
       fileFormat: "檔案格式不被允許",
       localFiles: "本地檔案",
-      pasteLink: "貼上連結",
+      pasteLink: "線上連結",
       uploadErr: "上傳錯誤",
       hashErr: "哈希錯誤",
       table: {
@@ -237,7 +245,7 @@ let message = {
       },
       maxFileNum: "檔案數量不能超過 {num}。",
       speaker: "說話者辨識",
-      speakerLabel: "標註轉錄文本中各片段的說話者身份"
+      speakerLabel: "為轉錄的每個片段標記說話的人。"
     }
   },
   // 轉錄詳情頁
@@ -534,11 +542,20 @@ let message = {
     closeTrans: "取消翻譯",
     upgradeBtn: "立即升級",
     upgradeTip30: "此文件長度超過30分鐘。",
-    upgradeTipMore: "升級到Scrify 專業版即可轉錄長達10小時的文件"
+    upgradeTipMore: "升級到Scrify 專業版即可轉錄長達10小時的文件",
+    errorTips: "出了點問題。",
+    copiedLink: "已複製連結",
+    copyGotIt: "知道了"
   },
   // 登錄、註冊、修改密碼
   IdentityInfoManage: {
     or: "或", // 或
+    LoginBtn: "使用信箱登入",
+    LoginGoogle: "使用 Google 登入",
+    SignupBtn: "使用信箱註冊",
+    SignupGoogle: "使用 Google 註冊",
+    SignupDes: "立即註冊，免費體驗神奇效果。",
+    SignupTitle: "高精度且無限量轉錄",
     signup: "註冊", // 註冊
     sign_up: "註冊", // 註冊
     loginByGoogle: "使用Google登錄", // 使用Google登錄
@@ -546,16 +563,14 @@ let message = {
     createAccount: "建立帳戶", // 建立帳戶
     accountExists: "已經有帳戶了? ", // 已經有帳戶了？登錄
     agreeTerm: {
-      // // 我同意 XXX 服務條款和隱私政策
-      agree: "我同意{proName}{terms}和{policy}。",
-      terms: "服務條款",
+      // // 我同意 XXX 服务条款和隐私政策
+      agree: "繼續操作，即表示您同意我們的{terms}和{policy}。",
+      terms: "條款",
       policy: "隱私政策"
     },
     setPassword: "設置密碼", // 設置密碼
     code: "驗證碼", // 驗證碼
     resend: "重新發送", // 重新發送
-    codeToEmail:
-      "我們剛剛向您的郵箱發送了驗證碼，請查看收件箱並將驗證碼粘貼到上方。", // 我們剛剛向您的郵箱發送了驗證碼，請查看收件箱並將驗證碼粘貼到上方。
     enterPassword: "請輸入密碼。", // 請輸入密碼
     passwordLeval: "密碼強度", // 密碼強度
     Weak: "弱", // 弱 中 強
@@ -579,7 +594,12 @@ let message = {
     resetPassword: "重置密碼", // 重置密碼
     resetYourPassword: "重置密碼", // 重置你的密碼
     newOldCantSame: "新密碼與舊密碼不能相同。", // 新密碼與舊密碼不能相同
-    passwordResetOk: "密碼重置成功！" // 密碼重置成功！
+    passwordResetOk: "密碼重置成功！", // 密碼重置成功！
+    signupToSaveProgress: "完成註冊以保存您的進度",
+    tip: "提示",
+    tipContentEmail: "我們已將您的帳號登入密碼傳送至您的電子信箱。",
+    tipContentPassword: "請檢查收件匣，使用電子郵件和密碼登入。",
+    codeToEmail: "我們已向您的信箱發送了驗證碼。請查收郵件並在上方貼上驗證碼。"
   },
   // 分享詳情頁
   Sharepage: {},
@@ -590,16 +610,12 @@ let message = {
     subscription: "訂閱方案",
     freeversion: "免費版",
     transcribeTimesDay: "每日3次轉錄",
-    freeThreeTimesDay: "每天免費轉錄3個檔案。",
     uploadMinutes: "30分鐘上傳",
-    oneFileUploaded: "每個檔案最長30分鐘，每次僅能上傳一個檔案",
     lowerPriority: "低優先級",
-    needsToWaitLonger: "每日3次轉錄。檔案轉錄前需要等待較長時間。",
     currentPlan: "當前方案",
     professionalEdition: "專業版",
     unlimitedTranscription: "無限次轉錄",
-    unlimitedNumberOfTimes: "單人無限次轉錄服務。",
-    uploadWithinHours: "10小時以內上傳",
+    unlimitedNumberOfTimes: "轉錄頻率與時長無限制。",
     filesUploadedAtOnce: "單個檔案最長10小時/5GB。可同時上傳50個檔案。",
     highestPriority: "最高優先級",
     weWillGiveTheHighest: "我們將始終以最高優先級盡快轉錄您的檔案。",
@@ -624,7 +640,6 @@ let message = {
     daily: "已用{start}次，每日限額{end}次",
     upgradetoPro: "升級至專業版",
     accountSetting: "帳戶設定",
-    returnAccountSetting: "返回帳戶設定",
     logOut: "登出",
     account: "帳戶",
     email: "電子郵件",
@@ -636,7 +651,6 @@ let message = {
     notFund: "找不到",
     couldntFind: "找不到您要的內容。",
     proAnnual: "專業年費版",
-    yourSubscription: "您的訂閱將於以下日期取消",
     proMonthly: "專業月費版",
     perMonth: "每月",
     afterwards: "之後",
@@ -647,8 +661,17 @@ let message = {
     perYear: "每年",
     getProPlan: "獲取專業版",
     changeToAnnual: "切換為年費",
-    automaticRenewalon: "自動續費日期"
-  },
+    automaticRenewalon: "自動續費日期",
+    eachMonth: "每月{time}日自動續訂",
+    automaticRenewal: "自動續費失敗，請檢查支付方式。",
+    eachYear: "每年{time}自動續費",
+    returnAccountSetting: "返回",
+    needsToWaitLonger: "在文件轉錄完成前請稍作等待。",
+    freeThreeTimesDay: "每天免費轉錄3個文件。",
+    oneFileUploaded: "每個文件最長30分鐘。每次上傳1個文件。",
+    uploadWithinHours: "10小時上傳",
+      yourSubscription: "您的訂閱將於{time}取消"
+},
   // 語言對應關係
   LanguageMap: {
     sysLanguagesMap: {
@@ -1005,8 +1028,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

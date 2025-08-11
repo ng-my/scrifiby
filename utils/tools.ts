@@ -15,56 +15,130 @@ const EncryptRSAPublicKey = [
   "CDy3641RTEaEsCJxBocDwm2QYkNq0Z7hbrTqFB7dVKtuGQIDAQAB"
 ].join("/");
 
-const Utils = {
-  EncryptRSA(str: string) {
-    const encrypt = new JSEncrypt();
-    encrypt.setPublicKey(EncryptRSAPublicKey);
-    return encrypt.encrypt(str);
-  },
-  getAuthorization(username: string, password: string) {
-    let str = `${username}:uKE8e1${password}`;
-    return "rsa " + Utils.EncryptRSA(str);
-  },
-  timeUTCToLocal(utcTime: string, format: string = "YYYY-MM-DD HH:mm:ss") {
-    if (!utcTime) {
-      return utcTime;
-    }
-    const dayjs = useDayjs();
-    // 假设后端返回的 UTC 时间字符串
-    // const utcTime = '2024-06-21T08:00:00Z'
-    // 输出 localDateTime为 2024-06-21 16:00:00 //（北京时间，东八区）
+/**
+ * RSA加密函数
+ * @param {string} str - 要加密的字符串
+ * @returns {string} 加密后的字符串
+ */
+export function EncryptRSA(str: string) {
+  const encrypt = new JSEncrypt();
+  encrypt.setPublicKey(EncryptRSAPublicKey);
+  return encrypt.encrypt(str);
+}
 
-    // 1. 解析为 dayjs 对象（此时是 UTC 时间对象）
-    const utcObj = dayjs.utc(utcTime);
-    // 2. 转成本地时间对象
-    const localObj = utcObj.local();
-    // 3. 转成本地时间 // 2024-06-21 16:00:00
-    const localDateTime = localObj.format(format);
-    return localDateTime;
-  },
-  getUTCTime() {
-    // 获取当前 UTC 时间
-    const dayjs = useDayjs();
-    const localObj = dayjs();
-    const utcObj = localObj.utc();
-    const utcTime = utcObj.format(); // 以 UTC 格式输出
+/**
+ * 获取授权信息
+ * @param {string} username - 用户名
+ * @param {string} password - 密码
+ * @returns {string} 授权信息
+ */
+export function getAuthorization(username: string, password: string) {
+  let str = `${username}:uKE8e1${password}`;
+  return "rsa " + EncryptRSA(str);
+}
+
+/**
+ * 将UTC时间转换为本地时间
+ * @param {string} utcTime - UTC时间字符串
+ * @param {string} format - 时间格式，默认为"YYYY-MM-DD HH:mm:ss"
+ * @returns {string} 本地时间字符串
+ */
+export function timeUTCToLocal(utcTime: string, format: string = "YYYY-MM-DD HH:mm:ss") {
+  if (!utcTime) {
     return utcTime;
-  },
-  Decrypt(content: string) {
-    const config = {
-      key: ["4", "%Y", "kW!", "@g5L", "Gcf", "9Ut"].join("")
-    };
-    try {
-      return CryptoJS?.Decrypt(content, config);
-    } catch (e) {
-      return content;
-    }
-  },
-  isMobile() {
-    return /Android|webOS|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
   }
+  const dayjs = useDayjs();
+  const utcObj = dayjs.utc(utcTime);
+  const localObj = utcObj.local();
+  const localDateTime = localObj.format(format);
+  return localDateTime;
+}
+
+/**
+ * 获取当前UTC时间
+ * @returns {string} 当前UTC时间字符串
+ */
+export function getUTCTime() {
+  const dayjs = useDayjs();
+  const localObj = dayjs();
+  const utcObj = localObj.utc();
+  const utcTime = utcObj.format();
+  return utcTime;
+}
+
+/**
+ * 解密函数
+ * @param {string} content - 要解密的内容
+ * @returns {string} 解密后的内容
+ */
+export function Decrypt(content: string) {
+  const config = {
+    key: ["4", "%Y", "kW!", "@g5L", "Gcf", "9Ut"].join("")
+  };
+  try {
+    return CryptoJS?.Decrypt(content, config);
+  } catch (e) {
+    return content;
+  }
+}
+
+/**
+ * 判断是否为移动设备
+ * @returns {boolean} 是否为移动设备
+ */
+export function isMobile() {
+  return /Android|webOS|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
+
+/**
+ * 使用Object.prototype.toString.call判断对象类型
+ * @param {any} obj - 要判断类型的对象
+ * @returns {string} 对象类型
+ */
+export function getObjType(obj: any) {
+  return Object.prototype.toString.call(obj).slice(8, -1);
+}
+
+/**
+ * 显示通知消息 https://element-plus.org/zh-CN/component/notification.html
+ */
+export function Msg(options: {
+  title?: string;
+  message: string;
+  dangerouslyUseHTMLString?: boolean;
+  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+  duration?: number;
+  showClose?: boolean;
+  type?: 'success' | 'warning' | 'info' | 'error';
+  customClass?: string;
+  appendTo?: any;
+}) {
+  const defaultOptions = {
+    dangerouslyUseHTMLString: false,
+    position: 'bottom-right',
+    duration: 4500,
+    showClose: true,
+    type: 'info'
+  };
+
+  const mergedOptions = { ...defaultOptions, ...options };
+
+  ElNotification({
+    ...mergedOptions
+  });
+}
+
+const Utils = {
+  EncryptRSA,
+  getAuthorization,
+  timeUTCToLocal,
+  getUTCTime,
+  Decrypt,
+  isMobile,
+  getObjType,
+  Msg
 };
 
 export default Utils;

@@ -9,20 +9,23 @@
   >
     <template #reference>
       <div
-        class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-mainColor-900 text-white sm:h-9 sm:w-9"
+        class="flex h-[2rem] w-[2rem] cursor-pointer items-center justify-center rounded-full bg-mainColor-900 text-white hover:bg-mainColor-990"
       >
-        <span class="text-base font-semibold">{{ firstLetter }}</span>
+        <span class="text-base font-semibold" v-if="userNameEmail">{{
+          firstLetter
+        }}</span>
+        <span class="iconfont icon-jiangyanzhe text-xl" v-else></span>
       </div>
     </template>
     <template #default>
       <div class="w-full">
-        <div class="mb-[0.625rem] flex items-center">
+        <div class="mb-[0.625rem] flex items-center" v-if="userNameEmail">
           <div
-            class="me-[0.75rem] flex h-[2.5rem] w-[2.5rem] items-center justify-center rounded-full bg-mainColor-900 text-[1.25rem] font-bold text-white"
+            class="me-[0.75rem] flex h-[2.25rem] w-[2.25rem] items-center justify-center rounded-full bg-mainColor-900 text-[1.25rem] font-bold text-white"
           >
             {{ t(`${firstLetter}`) }}
           </div>
-          <span class="font-medium" v-if="userNameEmail?.length < 15">{{
+          <span class="font-bold" v-if="userNameEmail?.length < 15">{{
             userNameEmail
           }}</span>
           <el-popover
@@ -32,7 +35,7 @@
             v-else
           >
             <template #reference>
-              <span class="font-medium">{{
+              <span class="font-bold">{{
                 userNameEmailFiter(userNameEmail)
               }}</span>
             </template>
@@ -46,9 +49,17 @@
         <loginInfoCard @change="upgrade" ref="loginInfoCardRef" />
         <button
           class="mt-[0.5rem] flex w-full items-center py-[0.5rem] hover:text-mainColor-900"
+          @click="backHome"
+        >
+          <i class="iconfont icon-home ng-shezhi iconfont-common-class"></i>
+          {{ t("HomePage.home") }}
+        </button>
+        <hr class="my-[0.5rem]" />
+        <button
+          class="mt-[0.5rem] flex w-full items-center py-[0.5rem] hover:text-mainColor-900"
           @click="settingAccount"
         >
-          <i class="iconfont icon-shezhi ng-shezhi"></i>
+          <i class="iconfont icon-shezhi ng-shezhi iconfont-common-class"></i>
           {{ $i("accountSetting") }}
         </button>
         <hr class="my-[0.5rem]" />
@@ -57,7 +68,7 @@
           class="flex w-full items-center py-[0.5rem] hover:text-mainColor-900"
           @click="loginOut"
         >
-          <i class="iconfont icon-tuichu ng-tuichu"></i>
+          <i class="iconfont icon-tuichu ng-tuichu iconfont-common-class"></i>
           {{ $i("logOut") }}
         </button>
       </div>
@@ -113,11 +124,14 @@ const firstLetter = computed(() => {
 });
 const popoverRef = ref();
 const loginInfoCardRef = ref();
-
+const isIndexPage = inject("isIndexPage");
 //退出登录
 const loginOut = () => {
   unref(popoverRef).hide();
   userStore.setUserInfo("");
+  if (isIndexPage) {
+    return;
+  }
   setTimeout(() => {
     router.push({
       path: localePath("/user/login")
@@ -142,6 +156,9 @@ const upgrade = () => {
 const showPopover = async () => {
   loginInfoCardRef.value?.getDailyCount &&
     loginInfoCardRef.value.getDailyCount();
+  const subscriptionStore = useSubscriptionStore();
+  await subscriptionStore.getStatusUserIdFetch();
+  console.log("🚀===");
 };
 const userNameEmailFiter = (val: string) => {
   if (val?.length > 15) {
@@ -150,10 +167,16 @@ const userNameEmailFiter = (val: string) => {
   }
   return val;
 };
+const backHome = () => {
+  unref(popoverRef).hide();
+  router.push({
+    path: localePath("/home")
+  });
+};
 </script>
 
 <style scoped>
-.iconfont {
+.iconfont-common-class {
   @apply me-[0.625rem];
 }
 

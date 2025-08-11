@@ -25,15 +25,7 @@ const router = useRouter();
 
 const localePath = useLocalePath();
 const safeGoBack = () => {
-  const referrer = document.referrer;
-
-  // 检查referrer是否为空或是否属于当前域名
-  if (!referrer || !isSameDomain(referrer)) {
-    router.push(localePath("/home"));
-  } else {
-    // 如果来自本站，正常返回上一页
-    router.go(-1);
-  }
+  router.go(-1);
 };
 
 function isSameDomain(url: any) {

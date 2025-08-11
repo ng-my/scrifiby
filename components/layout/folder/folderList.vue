@@ -176,7 +176,7 @@ onMounted(() => {
   isMounted.value = true;
 });
 
-const isMobile = inject<Ref<boolean>>("isMobile");
+const isMobile = useState("isMobile")
 
 const isScroll = ref(false);
 const { isJumpFromHome } = storeToRefs(useFolderListStore());

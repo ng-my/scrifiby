@@ -8,20 +8,30 @@
 
 <script setup>
 import { useUserStore } from "~/stores/useUserStore";
+import { useVisitor } from "~/hooks/useVisitor.js";
+import { Msg } from "~/utils/tools";
 const userStore = useUserStore();
 const router = useRouter();
 const localePath = useLocalePath();
 // google登录
+const { getVisitorId, visitorId } = useVisitor();
 const handleGoogleCallback = async (idToken) => {
   try {
     const { userApi } = await import("~/api/user");
-    const response = await userApi.loginGoogle({ idToken });
+    if (!visitorId.value) await getVisitorId();
+    const response = await userApi.loginGoogle({
+      idToken,
+      visitorClientId: visitorId.value
+    });
     userStore.setUserInfo(response);
     router.push({
       path: localePath("/home")
     });
   } catch (error) {
-    ElMessage.error(error?.message || error?.code);
+    Msg({
+      message: error?.message || error?.code,
+      type: "error"
+    });
     setTimeout(() => {
       router.push({
         path: localePath("/home")

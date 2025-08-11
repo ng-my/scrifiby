@@ -2,23 +2,32 @@
   <div class="bg-white px-[2rem] pt-[1.5rem]">
     <!-- 返回和标题 -->
     <div class="mb-[2rem] flex items-center justify-between">
-      <span class="cursor-pointer text-[1rem] text-gray-500" @click="goBack">&lt; {{ t("AccountSettingsPage.return")
-        }}</span>
+      <span class="cursor-pointer text-[1rem] text-gray-500" @click="goBack"
+        >&lt; {{ t("AccountSettingsPage.return") }}</span
+      >
       <span class="text-[1.1rem] font-medium">订阅XXXXXX无限版</span>
       <span></span>
     </div>
     <!-- 方案卡片 -->
     <div class="mx-auto flex w-full max-w-xl flex-col items-center">
-      <div v-for="(plan, idx) in plans" :key="plan.type" :class="[
-        'relative mb-[1.5rem] w-full min-w-[28rem] rounded-xl p-[2rem] shadow-sm',
-        active === plan.type
-          ? 'border border-blue-400 bg-blue-50'
-          : 'bg-gray-100',
-        active === plan.type ? 'border border-blue-400' : ''
-      ]" @click="chooseType(plan)">
+      <div
+        v-for="(plan, idx) in plans"
+        :key="plan.type"
+        :class="[
+          'relative mb-[1.5rem] w-full min-w-[28rem] rounded-xl p-[2rem] shadow-sm',
+          active === plan.type
+            ? 'border border-blue-400 bg-blue-50'
+            : 'bg-gray-100',
+          active === plan.type ? 'border border-blue-400' : ''
+        ]"
+        @click="chooseType(plan)"
+      >
         <!-- 节省标签 -->
-        <div v-if="active === plan.type && plan.tag && discount"
-          class="absolute right-[1.5rem] top-[1.2rem] rounded px-2 py-0.5 text-xs" :class="plan.tagClass">
+        <div
+          v-if="active === plan.type && plan.tag && discount"
+          class="absolute right-[1.5rem] top-[1.2rem] rounded px-2 py-0.5 text-xs"
+          :class="plan.tagClass"
+        >
           {{ plan.tag }}
         </div>
         <div class="mb-2 text-[1.1rem] font-medium">{{ plan.title }}</div>
@@ -28,24 +37,44 @@
           <span class="ms-3 text-[1rem] text-gray-400 line-through">{{
             plan.oldPrice
           }}</span>
-          <span v-if="plan.oldPriceDesc" class="ms-2 text-[1rem] text-gray-500">{{ plan.oldPriceDesc }}</span>
+          <span
+            v-if="plan.oldPriceDesc"
+            class="ms-2 text-[1rem] text-gray-500"
+            >{{ plan.oldPriceDesc }}</span
+          >
         </div>
         <div class="mb-2 text-[1.1rem] text-gray-700">{{ plan.total }}</div>
         <!-- 选中图标 -->
-        <div v-if="active === plan.type" class="absolute bottom-[1.2rem] right-[1.2rem]">
+        <div
+          v-if="active === plan.type"
+          class="absolute bottom-[1.2rem] right-[1.2rem]"
+        >
           <el-icon :class="plan.iconClass">
             <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
-              <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" />
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M9 12l2 2 4-4"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </el-icon>
         </div>
       </div>
       <!-- 订阅按钮 -->
-      <el-button type="primary"
+      <el-button
+        type="primary"
         class="!mb-0 !h-[2.8rem] !w-[24rem] !rounded-lg !border-[#3576f8] !bg-[#3576f8] !text-[1.1rem] !font-medium"
-        @click="goSubscribe()">
+        @click="goSubscribe()"
+      >
         {{ t("AccountSettingsPage.subscribeTo") }}
       </el-button>
     </div>
@@ -115,7 +144,7 @@ const plans = ref<Plan[]>([
     money: "215.88"
   }
 ]);
-const discount = ref<boolean>(true)
+const discount = ref<boolean>(true);
 const goSubscribe = async () => {
   const version = plans.value.find((item: any) => item.type === active.value);
   if (!version) {
@@ -124,10 +153,10 @@ const goSubscribe = async () => {
   }
   const { useSubscription } = await import("~/api/subscription");
   const res: any = await useSubscription.createCheckoutSession({
-    priceType: version.type == 'month' ? 0 : 1
+    priceType: version.type == "month" ? 0 : 1
   });
   if (res) {
-    window.location.href = res
+    window.location.href = res;
   }
 };
 const chooseType = (plan: { type: string }) => {
@@ -149,11 +178,9 @@ onMounted(async () => {
         : {};
     const res: any = await useSubscription.paymentGetUser(userInfo.userid);
     if (res) {
-      discount.value = res
-
+      discount.value = res;
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 });
 </script>
 <style scoped></style>

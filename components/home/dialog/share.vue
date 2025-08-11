@@ -2,22 +2,39 @@
   <div class="customer-dialog overflow-hidden">
     <el-dialog
       v-model="visible"
+      :close-on-click-modal="false"
+      @open="handleOpen"
       @closed="handleClosed"
       :title="t('FolderPage.dialog.share.title')"
     >
       <div class="mb-2.5">
-        {{ t("FolderPage.dialog.share.label") }}
+        {{ t("TranscriptionPage.shareTips") }}
       </div>
       <div
-        :title="copyText"
-        class="h-[2.125rem] w-full items-center overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-boxBgColor px-4 leading-[2.125rem]"
+        class="flex p-4 sm:p-0 items-center  h-auto flex-col sm:flex-row sm:flex-nowrap sm:h-[2.125rem] w-full overflow-hidden rounded-lg border border-borderColor bg-boxBgColor "
       >
-        {{ copyText }}
+        <div class="flex-1 sm:truncate sm:px-4 sm:h-[2.125rem] sm:leading-[2.125rem] break-all mb-3 sm:mb-0 " :title="copyText">
+          {{ copyText }}
+        </div>
+        <div
+          v-if="hasCopy"
+          class="flex sm:h-[1.625rem] items-center rounded-xl sm:rounded-lg justify-center bg-mainColor-600 py-2 px-7 sm:px-3 sm:py-2.5 me-1 text-mainColor-900"
+        >
+          <span class="iconfont icon-duihao me-2 text-xs"></span>
+          <span> {{ t("TranscriptionPage.copiedLink") }}</span>
+        </div>
+        <div
+          v-else
+          class="flex sm:h-[1.625rem] items-center rounded-xl sm:rounded-lg justify-center bg-subColor-light py-2 px-7 sm:px-3 sm:py-2.5 me-1 text-subColor-normal"
+        >
+          <span class="iconfont icon-shanchu me-2 text-xs"></span>
+          <span> {{ t("TranscriptionPage.copyFail") }}</span>
+        </div>
       </div>
       <template #footer>
         <div class="flex justify-center">
-          <el-button @click="handleConfirm" type="primary">
-            {{ t("FolderPage.dialog.share.confirm") }}
+          <el-button class="customer-button !h-[2.75rem] !w-[16.25rem] !rounded-3xl sm:!rounded-lg sm:!w-72 sm:!h-8 home-btn" @click="handleConfirm" type="primary">
+            {{ t("TranscriptionPage.copyGotIt") }}
           </el-button>
         </div>
       </template>
@@ -26,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { Msg } from "~/utils/tools";
 import { useLocalePath, useUserStore } from "#imports";
 
 const { t } = useI18n();
@@ -48,28 +66,38 @@ const { userInfo } = storeToRefs(useUserStore());
 const requestURL = useRequestURL();
 const copyText = ref("");
 const baseUrl = `${requestURL.protocol}//${requestURL.host}`;
-const path = ref("");
-watchEffect(() => {
-  path.value = localePath(
-    `/transcript/${props.row?.fileId}?shareId=${userInfo.value?.userInfoVO?.userid}&shareName=${encodeURI(userInfo.value?.userInfoVO?.email || "")}&taskId=${props.row?.taskId}`
-  );
-  copyText.value = baseUrl + path.value;
-});
+const hasCopy = ref(false);
+const handleCopy = async () => {
+  copyText.value =
+    baseUrl +
+    localePath(
+      `/transcript/${props.row?.fileId}?shareId=${userInfo.value?.userInfoVO?.userid}&shareName=${encodeURI(userInfo.value?.userInfoVO?.email || "Scribify")}&taskId=${props.row?.taskId}`
+    );
 
-const handleClosed = () => {
-  path.value = "";
-};
-
-const handleConfirm = async () => {
   const { copy } = useClipboard({
     source: copyText.value
   });
   await copy();
-  ElMessage.success({
-    message: t("FolderPage.dialog.share.success"),
-    customClass: "!z-[9999]"
-  });
-  emit("confirm");
+  hasCopy.value = true;
+};
+
+function handleKeyPress(e: any) {
+  if (e.key === "Enter") {
+    handleConfirm();
+  }
+}
+
+const handleOpen = () => {
+  window.addEventListener("keydown", handleKeyPress);
+  handleCopy();
+};
+
+const handleClosed = () => {
+  window.addEventListener("keydown", handleKeyPress);
+};
+
+const handleConfirm = async () => {
+  visible.value = false;
 };
 </script>
 

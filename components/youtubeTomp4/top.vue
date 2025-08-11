@@ -1,15 +1,15 @@
 <template>
   <!-- 顶部导航栏 -->
   <header
-    class="m-auto flex h-[4.375rem] max-w-[75rem] items-center justify-between bg-white px-[1rem]"
+    class="m-auto flex h-[4.375rem] max-w-[75rem] items-center justify-between bg-black px-[1rem]"
   >
-    <div class="flex items-center space-x-2">
+    <div class="flex cursor-pointer items-center space-x-2" @click="goToHome()">
       <el-image
-        src="/assets/logo.svg"
-        class="h-6 w-6 rounded-full"
+        src="/assets/images/index_black/logo.svg"
+        alt="Scribify Logo"
+        class="h-6 w-auto sm:h-[1.875rem]"
         fit="cover"
       ></el-image>
-      <span class="text-xl font-bold">Scribify</span>
     </div>
     <div>
       <!-- <lazy-layout-header-language></lazy-layout-header-language> -->
@@ -21,6 +21,13 @@
 
 <script setup lang="ts">
 /* header 组件 */
+const router = useRouter();
+const localePath = useLocalePath();
+const goToHome = () => {
+  router.push({
+    path: localePath("/")
+  });
+};
 </script>
 
 <style scoped>

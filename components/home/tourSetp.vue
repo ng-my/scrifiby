@@ -17,9 +17,13 @@ const { t } = useI18n();
 const { step } = storeToRefs(useTourStore());
 const { nextStep, nextStepWithOperation } = useTourStore();
 
-const isMobile = inject<Ref<boolean>>("isMobile", ref(false));
+const isMobile = useState("isMobile");
 
 const { userInfo } = storeToRefs(useUserStore());
+const beginnersTutorial = computed(() => {
+  return (userInfo.value as any)?.userInfoVO?.beginnersTutorial;
+});
+
 const handleNext = async () => {
   if (isMobile.value && [1, 2].includes(step.value!)) {
     nextStepWithOperation();
@@ -45,6 +49,22 @@ const content = computed(() => {
 const buttonName = computed(() => {
   return step.value === 3 ? t("HomePage.tour.finish") : t("HomePage.tour.next");
 });
+
+function handleKeyPress(e: any) {
+  if (e.key === "Enter" && beginnersTutorial.value) {
+    handleNext();
+  }
+}
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyPress);
+});
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyPress);
+});
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-button {
+  @apply rounded-lg !border-borderColor !bg-white !text-black hover:!border-borderColor hover:!bg-fontHover hover:!text-black;
+}
+</style>

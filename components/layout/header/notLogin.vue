@@ -1,19 +1,26 @@
 <template>
-  <div class="flex items-center">
+  <div class="not-login-box flex items-center">
     <language v-if="showI18n"></language>
     <div
+      v-if="showLoginBtn"
       type="primary"
       @click="login"
-      class="me-[0.5rem]  flex !h-[2.125rem] w-[5.375rem] cursor-pointer items-center justify-center !rounded-[0.5rem] !border-boxBgColor bg-boxBgColor !px-[1.375rem] !py-[0.5rem] !text-[0.875rem] text-black hover:bg-[#F1F2F5]"
+      class="login-btn min-login-width max-login-width me-[0.5rem] flex !h-[2.125rem] cursor-pointer items-center justify-center !rounded-[0.5rem] !border-boxBgColor bg-boxBgColor !px-[1.375rem] !py-[0.5rem] !text-[0.875rem] text-black hover:bg-[#F1F2F5]"
     >
-      <span class="truncate w-full text-center">{{ t("AccountSettingsPage.logIn") }}</span>
+      <span
+        class="w-full truncate text-center md:overflow-visible md:text-clip md:whitespace-normal"
+        >{{ t("AccountSettingsPage.logIn") }}</span
+      >
     </div>
     <div
       type="success"
       @click="signup"
-      class="flex !h-[2.125rem] w-[6.875rem] cursor-pointer items-center justify-center !rounded-[0.5rem] !border-0 bg-mainColor-900 !px-[1rem] !py-[0.5rem] !text-[0.875rem] text-white hover:bg-[#719BFF]"
+      class="signup-btn min-signup-width max-signup-width flex !h-[2.125rem] cursor-pointer items-center justify-center !rounded-[0.5rem] !border-0 bg-mainColor-900 !px-[1rem] !py-[0.5rem] !text-[0.875rem] text-white hover:bg-[#719BFF]"
     >
-    <span class="truncate w-full text-center">{{ t("AccountSettingsPage.tryForFree") }}</span>
+      <span
+        class="w-full truncate text-center md:overflow-visible md:text-clip md:whitespace-normal"
+        >{{ t("AccountSettingsPage.tryForFree") }}</span
+      >
     </div>
   </div>
 </template>
@@ -31,6 +38,7 @@ const props = defineProps({
     default: true
   }
 });
+const showLoginBtn = inject("showLoginBtn") ?? true;
 //登录
 const login = () => {
   router.push({
@@ -43,3 +51,21 @@ const signup = () => {
   });
 };
 </script>
+<style lang="scss">
+@media (min-width: 768px) {
+  .min-login-width {
+    min-width: 5.375rem;
+  }
+  .min-signup-width {
+    min-width: 6.875rem;
+  }
+}
+@media (max-width: 768px) {
+  .min-login-width {
+    width: 5.375rem;
+  }
+  .max-signup-width {
+    width: 6.875rem;
+  }
+}
+</style>

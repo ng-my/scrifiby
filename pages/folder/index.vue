@@ -46,11 +46,11 @@
                 :class="{
                   disable: recordStatus === 1
                 }"
-                class="iconfont icon-yuyin ms-4 text-[#999]"
+                class="iconfont icon-yuyin ms-4 text-base text-black"
               ></span>
               <span
                 @click="beforeClick(openFileAndLinkDialog)"
-                class="iconfont icon-yidongduantianjia ms-4 text-[#999]"
+                class="iconfont icon-yidongduantianjia ms-4 text-base text-black"
               ></span>
             </div>
           </div>
@@ -58,6 +58,11 @@
       </home-transcribe-list>
     </div>
   </top-left-layout>
+
+  <client-only>
+    <!--  文件上传  -->
+    <upload />
+  </client-only>
 </template>
 
 <script setup>
@@ -88,6 +93,7 @@ const beforeClick = (fn) => {
 </script>
 
 <style scoped>
+@import "~/layouts/homeMixin.css";
 /* 自定义表格样式 */
 :deep(.el-table) .el-table__header th {
   background-color: #f9fafb;

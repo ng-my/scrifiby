@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto max-w-[80rem] px-[2.5rem] pb-[6rem] pt-[3.5rem]">
+  <section class="mx-auto max-w-[80rem] px-[2.5rem] pb-[6rem] pt-[2.25rem]">
     <h2 class="mb-[3rem] text-center text-[2.5rem] font-medium">
       {{ data.title }}
     </h2>
@@ -14,16 +14,22 @@
       >
         <!-- Q1 -->
         <div v-for="it in item" :key="it.id">
-          <div class="mb-2 text-[1.25rem] font-semibold">
-            {{ it.question }}
+          <div class="question-wrap mb-2 flex text-[1.25rem] font-semibold">
+            <div class="question-ra me-[0.625rem]"></div>
+            <div>{{ it.question }}</div>
           </div>
-          <div class="text-lg font-normal leading-[1.5rem] text-[#9E9E9E]">
+          <div
+            class="text-lg font-normal leading-[1.5rem] text-[rgba(255,255,255,0.7)]"
+          >
             {{ it.answer }}
           </div>
         </div>
         <!-- A1 -->
       </div>
       <!-- 右列 -->
+    </div>
+    <div class="divide-bottom-wrap mt-[3.375rem] flex w-full justify-center">
+      <div class="divide-bottom"></div>
     </div>
   </section>
 </template>
@@ -85,4 +91,43 @@ const data = ref({
 });
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.question-ra {
+  position: relative;
+  width: 0.6875rem;
+  height: 1.875rem;
+  &::after {
+    position: absolute;
+    content: "";
+    top: 50%;
+    width: 0.6875rem;
+    height: 0.6875rem;
+    background: linear-gradient(90deg, #7d39ed 0%, #be26d4 100%);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+}
+.divide-bottom {
+  width: 8.75rem;
+  height: 0.3125rem;
+  background: linear-gradient(90deg, #7e3bee 0%, #d847f0 100%);
+  border-radius: 0.1875rem;
+}
+.divide-bottom-wrap {
+  position: relative;
+  &::after {
+    position: absolute;
+    bottom: -3.375rem;
+    left: 0;
+    content: " ";
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      315deg,
+      rgba(0, 0, 0, 1),
+      rgba(105, 32, 122, 1),
+      rgba(0, 0, 0, 1)
+    );
+  }
+}
+</style>

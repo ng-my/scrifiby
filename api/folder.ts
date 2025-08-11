@@ -200,9 +200,9 @@ export const useFolderApi = {
       if (res.code === 0) {
         return res.data;
       }
-      throw new Error(res as any);
+      throw res;
     } catch (e) {
-      throw new Error(e as any);
+      throw e;
     }
   },
 
@@ -236,7 +236,7 @@ export const useFolderApi = {
   },
 
   // 任务状态查询
-  async queryTaskStatus(taskIds: string[]) {
+  async queryTaskStatus(taskIds: string[], controller: any) {
     try {
       const res = await request<
         HttpResponse<
@@ -259,7 +259,8 @@ export const useFolderApi = {
         method: "POST",
         body: {
           taskIds
-        }
+        },
+        signal: controller.signal
       });
       if (res.code === 0) {
         return res.data;
@@ -279,9 +280,9 @@ export const useFolderApi = {
       if (res.code === 0) {
         return res.data;
       }
-      throw new Error(res as any);
+      throw res;
     } catch (e) {
-      throw new Error(e as any);
+      throw e;
     }
   },
 

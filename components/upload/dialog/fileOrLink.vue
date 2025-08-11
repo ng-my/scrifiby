@@ -1,6 +1,11 @@
 <template>
   <div class="customer-dialog">
-    <el-dialog :close-on-click-modal="false" :close-on-press-escape="false" @closed="handleClose" v-model="visible">
+    <el-dialog
+      :close-on-click-modal="false"
+      @closed="handleClose"
+      @open="handleOpen"
+      v-model="visible"
+    >
       <template #header>
         <div class="flex cursor-pointer items-center" @click="showLink = false">
           <span v-if="showLink" class="me-2 flex cursor-pointer items-center">
@@ -11,11 +16,13 @@
           {{
             showLink
               ? t("FileUploadAndRecording.upload.return")
-              : t("FileUploadAndRecording.upload.file.dialogTitle")
+              : t("FileUploadAndRecording.upload.confirm")
           }}
         </div>
       </template>
-      <upload-file v-if="!showLink" show-link @showLink="handleShowLink" />
+      <div class="mb-4">
+        <upload-file v-if="!showLink" show-link @showLink="handleShowLink" />
+      </div>
 
       <upload-link v-if="showLink" v-model:link="link">
         <div class="mb-3 text-sm font-normal text-black">
@@ -24,10 +31,15 @@
       </upload-link>
 
       <template v-if="showLink" #footer>
-        <el-button @click="visible = false">
+        <el-button class="home-btn" @click="visible = false">
           {{ t("FileUploadAndRecording.upload.link.cancel") }}
         </el-button>
-        <el-button :loading="loading" @click="handleConfirm" type="primary">
+        <el-button
+          class="home-btn"
+          :loading="loading"
+          @click="handleConfirm"
+          type="primary"
+        >
           {{ t("FileUploadAndRecording.upload.link.confirm") }}
         </el-button>
       </template>
@@ -58,12 +70,24 @@ const handleShowLink = () => {
   showLink.value = true;
 };
 
+function handleKeyPress(e: any) {
+  if (e.key === "Enter" && showLink.value && !loading.value ) {
+    handleConfirm()
+  }
+}
+
+const handleOpen = () => {
+  window.addEventListener("keypress", handleKeyPress);
+};
 const handleClose = () => {
   link.value = "";
   showLink.value = false;
+  window.removeEventListener("keypress", handleKeyPress);
 };
+
 </script>
 
 <style scoped>
+@import "~/layouts/homeMixin.css";
 @import "./common.css";
 </style>

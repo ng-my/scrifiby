@@ -1,10 +1,10 @@
+//挪威语
 let message = {
   // 首页
   HomePage: {
     home: "Hjem",
     version: "Basisversjon (Gratis):",
-    times:
-      "Gratis transkribering {times} ganger per dag, du har {left} transkriberinger igjen. ",
+    times: "{times} gratis transkripsjoner per dag, {left} igjen i dag. ",
     tips: "Oppgrader til Pro for ubegrenset transkripsjon.",
     update: "Oppgrader nå",
     folders: "Mapper",
@@ -16,6 +16,7 @@ let message = {
     confirm: "Opprett",
     dialogLabel: "Mappenavn",
     recently: "Nylige filer",
+    loading: "Laster",
     tour: {
       step0: {
         title: "Velkommen til {name}",
@@ -70,7 +71,9 @@ let message = {
       edit: "Rediger, forbedre og eksporter transkripsjoner i formater som passer dine behov.",
       collaborate: "Samarbeid ved å dele din transkriberte tekst med andre.",
       button: "Kom i gang",
-      tip: "Klar til å gjøre lyd om til transkribert tekst? Begynn å utforske nå!"
+      tip: "Klar til å gjøre lyd om til transkribert tekst? Begynn å utforske nå!",
+      tip2: "Begynn å utforske nå!",
+      tip1: "Klar til å gjøre om lyd til transkribert tekst? "
     },
     subscriptionModal: {
       left: {
@@ -117,7 +120,8 @@ let message = {
       move: "Flytt",
       failed: "Mislykket",
       selected: "Valgt",
-      success: "Vellykket"
+      success: "Vellykket",
+      fileList: "Filliste"
     },
     dialog: {
       move: {
@@ -150,7 +154,7 @@ let message = {
       },
       export: {
         title: "Eksporter",
-        select: "Velg ett eller flere formater",
+        select: "Velg formatet du trenger",
         settings: "Innstillinger",
         speaker: "Inkluder taler",
         timecodes: "Inkluder tidskoder",
@@ -182,6 +186,7 @@ let message = {
       pause: "Pause",
       resume: "Fortsett",
       stop: "Stopp",
+      endRecord: "Avslutt opptak",
       delete: "Slett",
       transcribe: "Transkriber",
       permissionDenied:
@@ -207,7 +212,7 @@ let message = {
         title: "Lim inn lenker",
         label:
           "Lim inn medielenken fra følgende plattformer, men ikke begrenset til: YouTube, Facebook, X, Dropbox, Google Drive, Vimeo",
-        confirm: "Transkriber",
+        confirm: "Legg til",
         cancel: "Avbryt",
         // 请输入正确的链接
         errorTitle:
@@ -217,7 +222,8 @@ let message = {
       file: {
         orTitle: "Transkriber et nettmedium",
         dialogTitle: "Transkriber filer",
-        tip: "Klikk for å laste opp eller dra og slipp",
+        tip1: "Klikk for å laste opp",
+        tip2: "eller dra og slipp",
         or: "eller"
       },
       del: {
@@ -229,16 +235,18 @@ let message = {
       },
       files: "Filer",
       resultDialogTitle: "Transkriber filer",
+      resultDialogTitle2: "Transkriber fil",
       cancel: "Avbryt",
       confirm: "Transkriber",
       return: "Tilbake",
       addMore: "Legg til mer",
-      language: "Lydens språk",
+      language: "Mediaspråk",
       failed: "Mislykket",
       tooLarge: "Filen er for stor.",
+      linkUpload: "Laster opp...",
       fileFormat: "Filformatet er ikke tillatt",
       localFiles: "Lokale filer",
-      pasteLink: "Lim inn lenker",
+      pasteLink: "Online lenke",
       uploadErr: "Opplastingsfeil",
       hashErr: "Hash-feil",
       table: {
@@ -249,7 +257,8 @@ let message = {
       },
       maxFileNum: "Antall filer kan ikke overstige {num}.",
       speaker: "Taleridentifikasjon",
-      speakerLabel: "Merk hver del av transkripsjonen med hvem som snakker."
+      speakerLabel:
+        "Merk hvert segment av transkriptet med personen som snakker."
     }
   },
   // 转录详情页
@@ -548,11 +557,20 @@ let message = {
     upgradeBtn: "Oppgrader nå",
     upgradeTip30: "Denne filen overstiger 30 minutter.",
     upgradeTipMore:
-      "Oppgrader til Scribify Pro for å transkribere filer opptil 10 timer"
+      "Oppgrader til Scribify Pro for å transkribere filer opptil 10 timer",
+    errorTips: "Noe gikk galt.",
+    copiedLink: "Lenken er kopiert",
+    copyGotIt: "visste"
   },
   // 登录、注册、修改密码
   IdentityInfoManage: {
     or: "eller", // 或
+    LoginBtn: "Logg inn med e-post",
+    LoginGoogle: "Logg inn med Google",
+    SignupBtn: "Registrer med e-post",
+    SignupGoogle: "Registrer med Google",
+    SignupDes: "Registrer deg i dag og opplev magien — gratis.",
+    SignupTitle: "Nøyaktig og ubegrenset transkribering",
     signup: "Registrer deg", // 注册
     sign_up: "Registrer deg", // 注册
     loginByGoogle: "Fortsett med Google", // 使用Google登录
@@ -560,16 +578,13 @@ let message = {
     createAccount: "Opprett en ny konto", // 创建账户
     accountExists: "Har du allerede en konto? ", // 已经有账户了？登录
     agreeTerm: {
-      // // 我同意 XXX 服务条款和隐私政策
-      agree: "Ved å bruke {proName}, godtar du {terms} og {policy}.",
-      terms: "Brukervilkår",
+      agree: "Ved å fortsette, godtar du våre {terms} og {policy}.",
+      terms: "Vilkår",
       policy: "Personvernregler"
     },
     setPassword: "Angi et passord", // 设置密码
     code: "Bekreftelseskode", // 验证码
     resend: "Send på nytt", // 重新发送
-    codeToEmail:
-      "Vi har nettopp sendt en midlertidig registreringskode til e-posten din. Vennligst sjekk innboksen din og lim inn registreringskoden ovenfor.", // 我们刚刚向您的邮箱发送了验证码，请查看收件箱并将验证码粘贴到上方。
     enterPassword: "Vennligst oppgi passordet ditt.", // 请输入密码
     passwordLeval: "Passordstyrke", // 密码强度
     Weak: "Svak", // 弱 中 强
@@ -595,7 +610,15 @@ let message = {
     resetYourPassword: "Tilbakestill passordet ditt", // 重置你的密码
     newOldCantSame:
       "Det nye passordet må være forskjellig fra det gamle passordet.", // 新密码与旧密码不能相同
-    passwordResetOk: "Passordet er tilbakestilt!" // 密码重置成功！
+    passwordResetOk: "Passordet er tilbakestilt!", // 密码重置成功！
+    signupToSaveProgress: "Fullfør registreringen for å lagre fremgangen din",
+    tip: "Tips",
+    tipContentEmail:
+      "Vi har nettopp sendt innloggingspassordet for kontoen din til e-postadressen din.",
+    tipContentPassword:
+      "Vennligst sjekk innboksen din og logg inn med e-postadressen og passordet ditt.",
+    codeToEmail:
+      "Vi har nettopp sendt en verifiseringskode til e-posten din. Vennligst sjekk innboksen din og lim inn verifiseringskoden ovenfor."
   },
   // 分享详情页
   Sharepage: {},
@@ -606,18 +629,12 @@ let message = {
     subscription: "Abonnementsplan",
     freeversion: "Gratis",
     transcribeTimesDay: "3 transkripsjoner daglig",
-    freeThreeTimesDay: "Transkriber 3 filer gratis hver dag.",
     uploadMinutes: "30-minutters opplastinger",
-    oneFileUploaded:
-      "Hver fil kan være opptil 30 minutter lang, med én fil lastet opp om gangen",
     lowerPriority: "Lavere prioritet",
-    needsToWaitLonger:
-      "3 transkripsjoner daglig Vent lenger før filene dine transkriberes.",
     currentPlan: "Nåværende plan",
     professionalEdition: "profesjonell utgave",
     unlimitedTranscription: "Ubegrenset transkripsjon",
-    unlimitedNumberOfTimes: "Ubegrensede transkripsjoner for én person.",
-    uploadWithinHours: "Last opp innen 10 timer",
+    unlimitedNumberOfTimes: "Ubegrenset transkripsjonsfrekvens og varighet.",
     filesUploadedAtOnce:
       "Hver fil kan være opptil 10 timer lang / 5 GB. Last opp 50 filer samtidig.",
     highestPriority: "høyeste prioritet",
@@ -644,7 +661,6 @@ let message = {
     daily: "{start} av {end} daglige transkripsjoner brukt",
     upgradetoPro: "Oppgrader til Pro",
     accountSetting: "Kontoinnstillinger",
-    returnAccountSetting: "Tilbake til kontoinnstillinger",
     logOut: "Logg ut",
     account: "Konto",
     email: "E-post",
@@ -656,7 +672,6 @@ let message = {
     notFund: "Ikke funnet",
     couldntFind: "Vi kunne ikke finne det du lette etter.",
     proAnnual: "Pro Årlig",
-    yourSubscription: "Abonnementet ditt vil bli avsluttet",
     proMonthly: "Pro Månedlig",
     perMonth: "per måned",
     afterwards: "etterpå",
@@ -667,8 +682,19 @@ let message = {
     perYear: "per år",
     getProPlan: "Få Pro-planen",
     changeToAnnual: "Bytt til årlig",
-    automaticRenewalon: "Automatisk fornyelse"
-  },
+    automaticRenewalon: "Automatisk fornyelse",
+    eachMonth: "Automatisk fornyelse den {time}. hver måned.",
+    automaticRenewal:
+      "Automatisk fornyelse mislyktes, vennligst sjekk betalingsmetoden.",
+    eachYear: "Automatisk fornyelse den {time} hvert år.",
+    returnAccountSetting: "Tilbake",
+    needsToWaitLonger: "Vent lenger før filene dine blir transkribert.",
+    freeThreeTimesDay: "Transkriber 3 filer gratis hver dag.",
+    oneFileUploaded:
+      "Hver fil kan være opptil 30 minutter lang. Last opp 1 fil om gangen.",
+    uploadWithinHours: "10 timers opplastinger",
+      yourSubscription: "Abonnementet ditt vil bli avsluttet {time}."
+},
   // 语言对应关系
   LanguageMap: {
     sysLanguagesMap: {
@@ -1046,8 +1072,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

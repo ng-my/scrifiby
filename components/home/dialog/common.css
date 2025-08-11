@@ -28,7 +28,7 @@
     @apply hover:bg-opacity-90 hover:bg-subColor-normal
 }
 
-:deep(.el-button) {
+:deep(.el-button:not(.customer-button)) {
     @apply !rounded-lg;
 }
 :deep(.el-button + .el-button) {

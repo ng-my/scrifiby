@@ -1,6 +1,6 @@
 <template>
   <!--5、 下载器特色 -->
-  <section class="m-auto mb-[3.5rem] max-w-[75rem] px-4">
+  <section class="m-auto max-w-[75rem] px-4">
     <h2 class="mb-10 text-center text-[2.5rem] font-bold">
       Why Our Downloader Stands Out
     </h2>
@@ -11,18 +11,17 @@
         class="card-warp flex flex-col items-start rounded-2xl bg-white p-[2.25rem] transition"
       >
         <div
-          class="mb-[1.25rem] flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-full"
-          :style="{ backgroundColor: item.color }"
+          class="card-item-icon mb-[1.25rem] flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-full"
         >
           <el-image
-            :src="`/assets/images/downloadMp4/advantage_${item.icon}.png`"
+            :src="`/assets/images/downloadMp4/black_advantage_${item.icon}.png`"
             class="h-[1.875rem] w-[1.875rem]"
           ></el-image>
         </div>
         <div class="mb-[0.875rem] text-[1.25rem] font-semibold">
           {{ item.title }}
         </div>
-        <div class="text-lg">
+        <div class="text-lg text-[rgba(255,255,255,0.7)]">
           {{ item.content }}
         </div>
       </div>
@@ -74,7 +73,14 @@ const list = ref([
 </script>
 
 <style scoped lang="scss">
-.card-warp:hover {
-  box-shadow: 0px 2px 18px 0px rgba(0, 92, 255, 0.07);
+.card-warp {
+  background: #0e172b;
+  box-shadow: 0 0.125rem 1.125rem 0 rgba(60, 115, 240, 0.1);
+  border-radius: 1rem;
+  border: 1px solid #35205a;
+}
+.card-item-icon {
+  background: linear-gradient(90deg, #9332ea 0%, #be26d4 100%);
+  box-shadow: 0 0.125rem 1.25rem 0 rgba(52, 112, 255, 0.16);
 }
 </style>

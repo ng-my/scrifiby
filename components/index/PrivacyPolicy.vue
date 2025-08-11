@@ -1,5 +1,7 @@
 <template>
-  <section class="mx-auto max-w-[62.5rem] px-[2.5rem] pb-[6rem] pt-[3.5rem]">
+  <section
+    class="mx-auto max-w-[62.5rem] rounded-2xl bg-[#0F1523] px-[3.375rem] pb-[6rem] pt-[3.5rem]"
+  >
     <h2 class="mb-[3rem] text-center text-[2.5rem] font-medium">
       Privacy Policy
     </h2>
@@ -11,9 +13,14 @@
         This Policy describes how Scribify (hereinafter referred to as
         “Scribify”, “our”, “we”, “us”) collects, uses, and discloses your
         personal information when you use our services, websites
-        <a href="https://www.scribify.ai/" target="_blank" rel="noopener noreferrer"
-          class="text-blue-500 hover:text-blue-500">
-          (https://www.scribify.ai/) </a>, and software (collectively, the “Services”).
+        <a
+          href="https://www.scribify.ai/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-500 hover:text-blue-500"
+        >
+          (https://www.scribify.ai/) </a
+        >, and software (collectively, the “Services”).
       </p>
       <p class="important-content">
         Please read this Privacy Policy carefully and ensure that you understand
@@ -142,8 +149,12 @@
       <p class="title-h1">4. How we secure your data</p>
       <p class="content">
         All data is encrypted via
-        <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener noreferrer"
-          class="text-blue-500 hover:text-blue-500">
+        <a
+          href="https://en.wikipedia.org/wiki/Transport_Layer_Security"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-500 hover:text-blue-500"
+        >
           SSL/TLS
         </a>
         when transmitted from our servers to your browser.
@@ -179,8 +190,16 @@
       <p class="title-h1">9. Contact Us</p>
       <p class="content">
         If you have any questions, comments or complaints about our Privacy
-        Policy, please contact us (notification@scribify.ai) and we will
-        endeavor to deal with your complaint as soon as possible.
+        Policy, please
+        <a
+          href="mailto:support@scribify.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-500 hover:text-blue-500"
+        >
+          contact us
+        </a>
+        and we will endeavor to deal with your complaint as soon as possible.
       </p>
     </div>
   </section>
@@ -192,7 +211,7 @@
 
 <style scoped lang="scss">
 .important-content {
-  @apply text-[1.125rem] font-normal leading-[1.5rem] text-[#4B4B4B];
+  @apply text-[1.125rem] font-normal leading-[1.5rem] text-white;
 }
 
 .title-h1,
@@ -201,6 +220,6 @@
 }
 
 .content {
-  @apply mb-[1.875rem] text-[1.125rem] font-normal leading-[1.5rem] text-[#4B4B4B];
+  @apply mb-[1.875rem] text-[1.125rem] font-normal leading-[1.5rem] text-[rgba(255,255,255,0.7)];
 }
 </style>

@@ -1,5 +1,7 @@
 <template>
-  <section class="mx-auto max-w-[80rem] px-[2.5rem] py-[4.75rem] pt-[1rem]">
+  <section
+    class="review-wrap mx-auto max-w-[80rem] px-[2.5rem] py-[4.75rem] pt-[1rem] text-white"
+  >
     <h2 class="mb-8 text-center text-[2.5rem] font-medium">
       {{ data.title }}
     </h2>
@@ -8,7 +10,7 @@
       <div
         v-for="item in data.list"
         :key="item.id"
-        class="mb-5 flex break-inside-avoid flex-col items-start rounded-2xl bg-white p-8"
+        class="mb-5 flex break-inside-avoid flex-col items-start rounded-2xl border border-[#512680] bg-[#1B0B30] p-8"
       >
         <div class="text-lg leading-[1.625rem]">
           {{ item.content }}
@@ -94,4 +96,22 @@ const data = ref({
 });
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.review-wrap {
+  position: relative;
+  &::after {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 0;
+    content: " ";
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      315deg,
+      rgba(0, 0, 0, 1),
+      rgba(105, 32, 122, 1),
+      rgba(0, 0, 0, 1)
+    );
+  }
+}
+</style>

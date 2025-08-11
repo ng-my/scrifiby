@@ -3,7 +3,6 @@
     <el-dialog
       v-model="visible"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       :title="t('FileUploadAndRecording.upload.file.dialogTitle')"
     >
       <upload-file />
@@ -23,7 +22,7 @@ const emit = defineEmits(["update:modelValue", "confirm"]);
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
+  set: (value) => emit("update:modelValue", value)
 });
 </script>
 

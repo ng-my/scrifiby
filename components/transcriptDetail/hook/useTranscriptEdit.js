@@ -12,8 +12,8 @@ export default function useTranscriptEdit(
 ) {
   // 编辑模式状态
   const isEditRightTranscript = ref(false);
-  transcriptData.isEdit = isEditRightTranscript
-
+  transcriptData.isEdit = isEditRightTranscript;
+  const isComposing = ref(false);
   // 当前活跃的编辑元素
   const activeEditElement = ref({
     paraId: null,
@@ -31,6 +31,7 @@ export default function useTranscriptEdit(
     sentIndex: null,
     contentIndex: null
   });
+  const enterCursorPosition = ref(-1);
 
   // 点击状态
   const isClick = ref(false);
@@ -43,26 +44,25 @@ export default function useTranscriptEdit(
   const canRedo = computed(() => {
     return currentHistoryIndex.value < editHistory.value.length - 1;
   });
-  const isAtStartOfContent =  (element)=> {
+  const isAtStartOfContent = (element) => {
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return false;
-
     const range = selection.getRangeAt(0);
     return range.startOffset === 0 && range.collapsed;
-  }
+  };
   const isAtEndOfContent = (element) => {
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return false;
 
     const range = selection.getRangeAt(0);
-
     if (range.startContainer.nodeType === Node.TEXT_NODE) {
-      return range.startOffset === range.startContainer.length && range.collapsed;
+      const content = range.startContainer.nodeValue.replace(/[\r\n]+$/, "");
+      return range.startOffset === content.length && range.collapsed;
     }
-    return false
+    return false;
     // 如果是元素节点
     // return element.childNodes.length === 0 || (range.startOffset === element.childNodes.length && range.collapsed);
-  }
+  };
   const findPreviousNonEmptySibling = (element) => {
     let sibling = element.previousElementSibling;
     while (sibling) {
@@ -73,7 +73,7 @@ export default function useTranscriptEdit(
       sibling = sibling.previousElementSibling;
     }
     return null;
-  }
+  };
   const findNextNonEmptySibling = (element) => {
     let sibling = element.nextElementSibling;
     while (sibling) {
@@ -84,8 +84,8 @@ export default function useTranscriptEdit(
       sibling = sibling.nextElementSibling;
     }
     return null;
-  }
-  const placeCursorAtBeginning  = (element) => {
+  };
+  const placeCursorAtBeginning = (element) => {
     const selection = window.getSelection();
     const range = document.createRange();
 
@@ -98,7 +98,7 @@ export default function useTranscriptEdit(
     range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
-  }
+  };
   const placeCursorAtEnd = (element) => {
     const selection = window.getSelection();
     const range = document.createRange();
@@ -118,27 +118,39 @@ export default function useTranscriptEdit(
     range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
-  }
+  };
   // 移动焦点到下一个或上一个元素
-  const moveFocus = (currentElement, direction, e) => {
+  const moveFocus = (currentElement, direction, e, type = "") => {
     let targetElement = null;
-    if(direction === -1) {
-      targetElement = findPreviousNonEmptySibling(currentElement)
-      console.log("🚀 ~ file: useTranscriptEdit.js method: moveFocus line: 127 🚀",targetElement )
-      if(!targetElement) return
-      placeCursorAtEnd(targetElement)
-    } else if(direction === 1){
+    if (direction === -1) {
+      targetElement = findPreviousNonEmptySibling(currentElement);
+      if (!targetElement) return;
+      // 如果当前元素的文本元素最后是换行，则直接删掉换行
+      if (type === "Backspace") {
+        targetElement.innerText = targetElement.innerText.replace(
+          /[\r\n]+$/,
+          ""
+        );
+        // 创建input事件
+        const event = new Event("input", {
+          bubbles: false, // 事件是否冒泡
+          cancelable: true // 事件能否被取消
+        });
+        targetElement.dispatchEvent(event);
+      }
+      placeCursorAtEnd(targetElement);
+    } else if (direction === 1) {
       targetElement = findNextNonEmptySibling(currentElement);
-      if(!targetElement) return
-      placeCursorAtBeginning(targetElement)
+      if (!targetElement) return;
+      placeCursorAtBeginning(targetElement);
     }
     // 更新当前状态
-    if(targetElement) {
+    if (targetElement) {
       targetElement.focus();
       const { cid, contentIndex, pid, sentIndex } = targetElement.dataset;
-      setActiveEditElement(pid, +sentIndex, +contentIndex, { cid } , e);
+      setActiveEditElement(pid, +sentIndex, +contentIndex, { cid }, e);
     }
-  }
+  };
   // 启用编辑模式
   const handleEditRightTranscript = () => {
     isEditRightTranscript.value = true;
@@ -186,7 +198,7 @@ export default function useTranscriptEdit(
     e
   ) => {
     if (e) {
-      if(lastContentId.value && lastContentId.value !== content.cid){
+      if (lastContentId.value && lastContentId.value !== content.cid) {
         handleContentEdit.flush();
       }
     }
@@ -197,7 +209,7 @@ export default function useTranscriptEdit(
       handleWordClick(paraId, sentIndex, contentIndex, content);
     }
   };
-  const filterEnterStr =  str => str.replace(/\r\n|\n|\r/g, '')
+  const filterEnterStr = (str) => str.replace(/\r\n|\n|\r/g, "");
   // 检查是否为当前活跃的编辑元素
   const isActiveEditElement = (paraId, sentIndex, contentIndex) => {
     return (
@@ -213,19 +225,27 @@ export default function useTranscriptEdit(
     contentIndex,
     contentObj
   ) => {
+    if (isComposing.value) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 10));
     // 获取编辑元素
     const editElement = event.target;
-
     // 保存当前选区位置
     const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    const offset = range.endOffset;
-
-    // 获取编辑后的内容
+    let offset = 0;
+    let range;
+    if (selection.rangeCount > 0) {
+      range = selection.getRangeAt(0);
+      offset = range.endOffset;
+    }
+    if (enterCursorPosition.value > -1) {
+      offset = enterCursorPosition.value + 1;
+      enterCursorPosition.value = -1;
+    }
+    console.log("🚀 ~ file: 最终的 offset 🚀", offset);
+    // 获取编辑后的内容并过滤换行符
     let newContent = editElement.innerText;
-    newContent = filterEnterStr(newContent)
-    editElement.innerText = newContent;
-
     // 获取原始内容
     let oldContent = contentObj.content;
 
@@ -238,7 +258,10 @@ export default function useTranscriptEdit(
       paragraph.sentences[sentIndex] &&
       paragraph.sentences[sentIndex].contents[contentIndex]
     ) {
-      paragraph.sentences[sentIndex].contents[contentIndex].content = newContent;
+      // 确保存储的内容也是过滤后的
+      paragraph.sentences[sentIndex].contents[contentIndex].content =
+        newContent;
+
       // 获取当前时间戳
       const currentTime = Date.now();
       // 如果不同的编辑位置，创建新记录
@@ -255,7 +278,7 @@ export default function useTranscriptEdit(
     nextTick(() => {
       try {
         // 如果当前内容为空
-        if(!newContent){
+        if (!newContent) {
           moveFocus(editElement, -1, event);
         } else {
           // 重新聚焦到编辑元素
@@ -272,7 +295,9 @@ export default function useTranscriptEdit(
           // 应用选区
           selection.removeAllRanges();
           selection.addRange(newRange);
-          console.log("🚀 ~ file: useTranscriptEdit.js method:  line: 197 🚀 selection end");
+          console.log(
+            "🚀 ~ file: useTranscriptEdit.js method:  line: 197 🚀 selection end"
+          );
         }
       } catch (e) {
         console.error("Error restoring cursor position:", e);
@@ -550,20 +575,35 @@ export default function useTranscriptEdit(
     }
   };
 
-  const handleKeyDown = async (e) => {
-    const editable = e.target;
-    if (e.key === 'ArrowLeft' && isAtStartOfContent(editable)) {
-      e.preventDefault();
-      moveFocus(e.target, -1,e);
-    } else if (e.key === 'ArrowRight' && isAtEndOfContent(editable)) {
-      e.preventDefault();
-      moveFocus(e.target, 1,e);
-    } if (e.key === 'Backspace' && isAtStartOfContent(editable)) {
-      e.preventDefault();
-      moveFocus(e.target, -1, e);
+  const getSelectionInfo = (editableSpan) => {
+    const selection = window.getSelection();
+
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const preCaretRange = range.cloneRange();
+
+      // 计算光标位置
+      preCaretRange.selectNodeContents(editableSpan);
+      preCaretRange.setEnd(range.endContainer, range.endOffset);
+      return preCaretRange.toString().length;
     }
   };
-  const isClickParent = ref(false)
+  const handleKeyDown = async (e) => {
+    const editable = e.target;
+    if (e.key === "Enter") {
+      enterCursorPosition.value = getSelectionInfo(e.target);
+    } else if (e.key === "ArrowLeft" && isAtStartOfContent(editable)) {
+      e.preventDefault();
+      moveFocus(e.target, -1, e);
+    } else if (e.key === "ArrowRight" && isAtEndOfContent(editable)) {
+      e.preventDefault();
+      moveFocus(e.target, 1, e);
+    } else if (e.key === "Backspace" && isAtStartOfContent(editable)) {
+      e.preventDefault();
+      moveFocus(e.target, -1, e, "Backspace");
+    }
+  };
+  const isClickParent = ref(false);
   // 处理文档点击事件 - 点击非编辑区域时重置活跃编辑元素
   const handleDocumentClick = (e) => {
     // 只有在编辑模式时才需要检查
@@ -572,7 +612,7 @@ export default function useTranscriptEdit(
       isClick.value = false;
       return;
     }
-    isClickParent.value = false
+    isClickParent.value = false;
     const target = e.target;
     // 检查点击的元素是否在transcript-content-wrap类下
     const isInContentWrap = target.closest(
@@ -586,26 +626,24 @@ export default function useTranscriptEdit(
         target.getAttribute("contenteditable") === "true"
       ) {
         return;
-      } else if (target.tagName ===  "DIV" &&
-          target.hasAttribute("data-pid")
-      ) {
-        const children = target.children
-        let el = null
+      } else if (target.tagName === "DIV" && target.hasAttribute("data-pid")) {
+        const children = target.children;
+        let el = null;
         for (let i = children.length - 1; i >= 0; i--) {
           const child = children[i];
-          if (child.textContent && child.textContent.trim() !== '') {
+          if (child.textContent && child.textContent.trim() !== "") {
             el = child;
-            break
+            break;
           }
         }
-        if(!el) el = target.firstChild
-        if(el) {
+        if (!el) el = target.firstChild;
+        if (el) {
           el.focus();
-          const dataset = el.dataset
-          const { cid, contentIndex, pid, sentIndex } = dataset
-          setActiveEditElement(pid, +sentIndex, +contentIndex, { cid } , e);
-          isClickParent.value = true
-          return
+          const dataset = el.dataset;
+          const { cid, contentIndex, pid, sentIndex } = dataset;
+          setActiveEditElement(pid, +sentIndex, +contentIndex, { cid }, e);
+          isClickParent.value = true;
+          return;
         }
       }
       resetActiveEditElement();
@@ -614,8 +652,16 @@ export default function useTranscriptEdit(
     }
   };
   const handleEnterEdit = () => {
-    console.log("🚀 handleEnterEdit 🚀" )
-  }
+    console.log("🚀 handleEnterEdit 🚀");
+  };
+  const handleCompositionStart = () => {
+    isComposing.value = true;
+  };
+  const handleCompositionEnd = (e) => {
+    isComposing.value = false;
+    const event = new Event("input", { bubbles: false });
+    e.target.dispatchEvent(event);
+  };
   return {
     isEditRightTranscript,
     activeEditElement,
@@ -634,6 +680,8 @@ export default function useTranscriptEdit(
     currentHistoryIndex,
     handleKeyDown,
     handleEnterEdit,
-    filterEnterStr
+    filterEnterStr,
+    handleCompositionStart,
+    handleCompositionEnd
   };
 }

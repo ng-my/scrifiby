@@ -1,4 +1,6 @@
 import i18nConfig from './i18Config'
+import removeConsole from 'vite-plugin-remove-console'
+console.log(process.env.NUXT_PUBLIC_ENV, '---NUXT_PUBLIC_GTAG_ID---gtagId---', process.env.NUXT_PUBLIC_GTAG_ID, process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID)
 export default defineNuxtConfig({
   appConfig: { // useAppConfig 获取
     title: 'Transcribe Meetings & Audio: Speaker Identification, Translate, Share | 100+ Languages - Scribify',
@@ -17,8 +19,7 @@ export default defineNuxtConfig({
       script: [
         { src: '/assets/iconfont/iconfont.js' },
         { src: '/assets/js/aes.js' },
-        { src: '/assets/js/jsencrypt.js' },
-        { src: "https://www.googletagmanager.com/gtag/js?id=G-Z1V73NNS35", async: true }
+        { src: '/assets/js/jsencrypt.js' }
       ]
     }
   },
@@ -60,7 +61,8 @@ export default defineNuxtConfig({
   ],
   plugins: [
     { src: '~/plugins/gtag.js', mode: 'client' },
-    { src: '~/plugins/global-error.js', mode: 'client' }
+    { src: '~/plugins/global-error.js', mode: 'client' },
+    { src: '~/plugins/vconsole.js', mode: 'client' }
   ],
   modules: [
     '@nuxtjs/tailwindcss',
@@ -141,7 +143,7 @@ export default defineNuxtConfig({
     //此处定义的属性只能在服务端获取到
     // Server
     name: 'SCRIBIFY',
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.NODE_ENV || 'production',
     stripe: {
       key: process.env.NUXT_STRIPE_SECRET_KEY,
       options: {},
@@ -150,9 +152,10 @@ export default defineNuxtConfig({
     ipinfoToken: process.env.IPINFO_TOKEN,
     //public中定义的属性既可以在服务端，也可以在客户端获取到
     public: {
-      isServer: true,
-      env: process.env.NUXT_PUBLIC_ENV || 'development',
+      env: process.env.NUXT_PUBLIC_ENV || 'production',
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
+      gtagId: process.env.NUXT_PUBLIC_GTAG_ID,
+      googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID,
       plausible: {
         domain: process.env.NUXT_PUBLIC_PLAUSIBLE_DOMAIN,
         // apiHost: process.env.NUXT_PUBLIC_PLAUSIBLE_API_HOST,
@@ -177,27 +180,57 @@ export default defineNuxtConfig({
     host: '0.0.0.0' // 允许所有 IP 访问
   },
   vite: {
+    // 开发环境优化
+    optimizeDeps: {
+      include: [
+        'vue',
+        'pinia',
+        // 明确包含经常使用的依赖
+      ]
+    },
     server: {
+      // 预构建优化
+      preTransformRequests: true,
       allowedHosts: true // 允许指定域名
     },
-    // build: {
-    //   rollupOptions: {
-    //     output: {
-    //       manualChunks(id) {
-    //         if (id.includes('node_modules')) {
-    //           if (id.includes('element-plus')) return 'element-plus'
-    //           if (id.includes('xgplayer')) return 'xgplayer'
-    //           if (id.includes('vue')) return 'vue'
-    //           if (id.includes('@vueuse')) return 'vueuse'
-    //           if (id.includes('dayjs')) return 'dayjs'
-    //           if (id.includes('cos-js-sdk-v5')) return 'cos-sdk'
-    //           // 其他大库单独分包
-    //           return 'vendor'
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    plugins: [
+      ...(process.env.NUXT_PUBLIC_ENV === 'production'
+        ? [removeConsole({ includes: ['log', 'info', 'warn', 'error'] })]
+        : [])
+    ],
+    build: {
+      sourcemap: true,
+      minify: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // 按功能分组
+            'vendor-reactive': ['vue', '@vue/reactivity', '@vue/runtime-core'],
+            'vendor-utils': ['lodash', 'dayjs'],
+            'vendor-ui': ['element-plus'],
+            'vendor-player': ['xgplayer']
+          }
+        }
+      }
+    }
+  },
+  // 启用组件自动导入和懒加载
+  components: {
+    dirs: [
+      '~/components'
+    ],
+    // 启用懒加载
+    transform: {
+      exclude: [/node_modules/]
+    }
+  },
+  // 启用实验性功能
+  experimental: {
+    payloadExtraction: true
+  },
+  // 配置构建优化
+  build: {
+    transpile: ['element-plus'] // 只转译必要的依赖
   },
   elementPlus: {
     /** Options */

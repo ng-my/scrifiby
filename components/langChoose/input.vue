@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="mb-2 text-sm">
-      {{ t("FileUploadAndRecording.upload.language") }}
+    <div class="lang-title mb-2 text-sm">
+      {{ title ? title : t("FileUploadAndRecording.upload.language") }}
     </div>
 
     <el-popover
@@ -10,7 +10,8 @@
       :popper-style="{
         width: 'auto',
         maxWidth: '33rem',
-        padding: '0'
+        padding: '0',
+        ...popperStyle
       }"
       placement="bottom-start"
       ref="popoverRef"
@@ -41,7 +42,8 @@
         :recentLanguageKeys="recentLanguageKeys"
         :only-trans-code="true"
         :cancel="false"
-        :customerClass="'!max-h-[36vh] !w-[15rem] lang-choose-input-20250711'"
+        :isScroll="false"
+        :customerClass="`!max-h-[40vh] !w-[15rem] lang-choose-input-20250711 ${customerClass}`"
         @choose="handleChoose"
       />
     </el-popover>
@@ -59,15 +61,32 @@ const { t } = useI18n();
 
 const show = ref(false);
 
-const props = defineProps<{
-  lang: any;
-}>();
+const props = defineProps({
+  lang: {
+    type: Object,
+    default: () => ({})
+  },
+  popperStyle: {
+    type: Object,
+    default: () => ({})
+  },
+  title: {
+    type: String,
+    default: ""
+  },
+  customerClass: {
+    type: String,
+    default: ""
+  }
+});
 
 watchEffect(() => {
-  if (show.value) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "auto";
+  if (process.client) {
+    // if (show.value) {
+    //   document.body.style.overflow = "hidden";
+    // } else {
+    //   document.body.style.overflow = "auto";
+    // }
   }
 });
 
@@ -75,7 +94,22 @@ const emit = defineEmits(["choose", "update:lang"]);
 
 const popoverRef = useTemplateRef("popoverRef");
 
-const value = ref<any>({});
+const internalValue = ref({});
+const value = computed({
+  get: () => {
+    // 先检查 props.lang 是否有值
+    if (props.lang && Object.keys(props.lang).length > 0) {
+      return props.lang;
+    }
+    // 如果没有，返回内部默认值
+    return internalValue.value;
+  },
+  set: (newValue) => {
+    internalValue.value = newValue;
+    emit("update:lang", newValue);
+  }
+});
+
 const handleChoose = (val: any) => {
   value.value = {
     ...val,
@@ -83,42 +117,52 @@ const handleChoose = (val: any) => {
   };
   popoverRef.value?.hide();
   emit("choose", value.value);
-  emit("update:lang", value.value);
 };
 
 const recentLanguageKeys = ref([]);
 const langChooseV1Ref = useTemplateRef("langChooseV1Ref");
-const getRecentLang = async () => {
-  const { transcriptApi } = await import("~/api/transcript");
-  const res = await transcriptApi.getTranRecentLang();
-  recentLanguageKeys.value = res
-    .map((item: any) => {
-      const [lang, name] = item.split("#");
-      return name !== "null" ? name : (languageTransMap as any)?.[lang];
-    })
-    .filter(Boolean);
 
-  const select = languageData.find(
-    (item) => item.lang === recentLanguageKeys.value?.[0]
-  );
-
-  if (select) {
-    value.value = {
-      name: select.lang,
-      id: select.lang,
-      ...select
-    };
-  } else {
-    await nextTick();
-    const obj = (langChooseV1Ref.value!.popularLanguages[0] || {}) as any;
-    value.value = {
-      ...obj,
-      lang: obj.name
-    };
-  }
-
-  emit("update:lang", value.value);
+const getLocalRecent = async () => {
+  await nextTick();
+  const obj = (langChooseV1Ref.value!.popularLanguages[0] || {}) as any;
+  value.value = {
+    ...obj,
+    lang: obj.name
+  };
 };
+
+const getRecentLang = async () => {
+  try {
+    const token = useCookie("token");
+    if (token.value) {
+      const { transcriptApi } = await import("~/api/transcript");
+      const res = await transcriptApi.getTranRecentLang();
+      recentLanguageKeys.value = res
+        .map((item: any) => {
+          const [lang, name] = item.split("#");
+          return name !== "null" ? name : (languageTransMap as any)?.[lang];
+        })
+        .filter(Boolean);
+    }
+
+    const select = languageData.find(
+      (item) => item.lang === recentLanguageKeys.value?.[0]
+    );
+
+    if (select) {
+      value.value = {
+        name: select.lang,
+        id: select.lang,
+        ...select
+      };
+    } else {
+      getLocalRecent();
+    }
+  } catch (e) {
+    getLocalRecent();
+  }
+};
+
 getRecentLang();
 </script>
 

@@ -1,10 +1,10 @@
+// 俄语
 let message = {
   // Главная страница
   HomePage: {
     home: "Главная",
     version: "Базовая версия (Бесплатно):",
-    times:
-      "Бесплатная расшифровка {times} раз в день, у вас осталось {left} раз.",
+    times: "{times} бесплатных расшифровок в день, {left} осталось сегодня. ",
     tips: "Обновитесь до Pro для неограниченных транскрипций.",
     update: "Обновить сейчас",
     folders: "Папки",
@@ -17,6 +17,7 @@ let message = {
     confirm: "Создать",
     dialogLabel: "Имя папки",
     recently: "Недавние файлы",
+    loading: "Загрузка",
     tour: {
       step0: {
         title: "Добро пожаловать в {name}",
@@ -71,7 +72,9 @@ let message = {
       collaborate:
         "Сотрудничайте, делясь транскрибированным текстом с другими.",
       button: "Начать",
-      tip: "Готовы превратить аудио в транскрибированный текст? Начните исследовать сейчас!"
+      tip: "Готовы превратить аудио в транскрибированный текст? Начните исследовать сейчас!",
+      tip2: "Начинайте исследовать прямо сейчас!",
+      tip1: "Готовы превратить аудио в транскрибированный текст? "
     },
     subscriptionModal: {
       left: {
@@ -118,7 +121,8 @@ let message = {
       move: "Переместить",
       failed: "Не удалось",
       selected: "Выбрано",
-      success: "Успешно"
+      success: "Успешно",
+      fileList: "Список файлов"
     },
     dialog: {
       move: {
@@ -151,7 +155,7 @@ let message = {
       },
       export: {
         title: "Экспорт",
-        select: "Выберите один или несколько форматов",
+        select: "Выберите нужный формат",
         settings: "Настройки",
         speaker: "Включить говорящего",
         timecodes: "Включить тайм-коды",
@@ -183,6 +187,7 @@ let message = {
       pause: "Пауза",
       resume: "Продолжить",
       stop: "Остановить",
+      endRecord: "Завершить запись",
       delete: "Удалить",
       transcribe: "Расшифровать",
       permissionDenied: "Доступ к микрофону запрещен или устройство недоступно",
@@ -207,7 +212,7 @@ let message = {
         title: "Вставить ссылку",
         label:
           "Вставьте ссылки на медиа с таких платформ, как YouTube, Facebook, X, Dropbox, Google Drive, Vimeo и других",
-        confirm: "Расшифровать",
+        confirm: "Добавить",
         cancel: "Отмена",
         errorTitle:
           "Введенный URL-адрес некорректен. Пожалуйста, проверьте и попробуйте снова.",
@@ -216,7 +221,8 @@ let message = {
       file: {
         orTitle: "Расшифровать онлайн-медиа",
         dialogTitle: "Расшифровать файл",
-        tip: "Нажмите для загрузки или перетащите файлы",
+        tip1: "Нажмите, чтобы загрузить",
+        tip2: "или перетащите",
         or: "или"
       },
       del: {
@@ -227,16 +233,18 @@ let message = {
       },
       files: "Файлы",
       resultDialogTitle: "Расшифровать файлы",
+      resultDialogTitle2: "Транскрибировать файл",
       cancel: "Отмена",
       confirm: "Расшифровать",
       return: "Вернуться",
       addMore: "Добавить ещё",
-      language: "Язык аудио",
+      language: "Язык медиа",
       failed: "Не удалось",
       tooLarge: "Файл слишком большой.",
+      linkUpload: "Загрузка...",
       fileFormat: "Формат файла не разрешен",
       localFiles: "Локальные файлы",
-      pasteLink: "Вставить ссылку",
+      pasteLink: "Онлайн-ссылка",
       uploadErr: "Ошибка загрузки",
       hashErr: "Ошибка хеширования",
       table: {
@@ -247,7 +255,7 @@ let message = {
       },
       maxFileNum: "Количество файлов не может превышать {num}.",
       speaker: "Идентификация говорящего",
-      speakerLabel: "Помечает каждый раздел расшифровки указанием говорящего."
+      speakerLabel: "Пометьте каждый сегмент расшифровки говорящим человеком."
     }
   },
   // Страница деталей расшифровки
@@ -546,11 +554,20 @@ let message = {
     upgradeBtn: "Обновить сейчас",
     upgradeTip30: "Этот файл превышает 30 минут.",
     upgradeTipMore:
-      "Обновитесь до Scribify Pro для расшифровки файлов длиной до 10 часов"
+      "Обновитесь до Scribify Pro для расшифровки файлов длиной до 10 часов",
+    errorTips: "Что-то пошло не так.",
+    copiedLink: "Ссылка скопирована",
+    copyGotIt: "знал"
   },
   // Вход, регистрация, смена пароля
   IdentityInfoManage: {
     or: "или",
+    LoginBtn: "Войти через Email",
+    LoginGoogle: "Войти через Google",
+    SignupBtn: "Зарегистрироваться через Email",
+    SignupGoogle: "Зарегистрироваться через Google",
+    SignupDes: "Зарегистрируйтесь сегодня и увидьте магию — бесплатно.",
+    SignupTitle: "Точная и неограниченная транскрипция",
     signup: "Регистрация",
     sign_up: "Регистрация",
     loginByGoogle: "Войти через Google",
@@ -558,15 +575,13 @@ let message = {
     createAccount: "Создать аккаунт",
     accountExists: "Уже есть аккаунт? ",
     agreeTerm: {
-      agree: "Я согласен с {proName}{terms} и {policy}.",
-      terms: "Условиями использования",
+      agree: "Продолжая, вы соглашаетесь с нашими {terms} и {policy}.",
+      terms: "Условиями",
       policy: "Политикой конфиденциальности"
     },
     setPassword: "Установить пароль",
     code: "Код подтверждения",
     resend: "Отправить повторно",
-    codeToEmail:
-      "Мы только что отправили код подтверждения на ваш email, пожалуйста, проверьте входящие и вставьте код выше.",
     enterPassword: "Пожалуйста, введите пароль.",
     passwordLeval: "Надежность пароля",
     Weak: "Слабый",
@@ -591,7 +606,16 @@ let message = {
     resetPassword: "Сбросить пароль",
     resetYourPassword: "Сбросьте ваш пароль",
     newOldCantSame: "Новый пароль не может совпадать со старым.",
-    passwordResetOk: "Пароль успешно сброшен!"
+    passwordResetOk: "Пароль успешно сброшен!",
+    signupToSaveProgress:
+      "Завершите регистрацию, чтобы сохранить ваш прогресс.",
+    tip: "Совет",
+    tipContentEmail:
+      "Мы только что отправили пароль для входа в ваш аккаунт на вашу электронную почту.",
+    tipContentPassword:
+      "Пожалуйста, проверьте вашу почту и войдите, используя адрес электронной почты и пароль.",
+    codeToEmail:
+      "Мы только что отправили код подтверждения на вашу электронную почту. Пожалуйста, проверьте свой почтовый ящик и вставьте код подтверждения выше."
   },
   // Страница общего доступа
   Sharepage: {},
@@ -602,19 +626,13 @@ let message = {
     subscription: "План подписки",
     freeversion: "Бесплатно",
     transcribeTimesDay: "3 транскрипции в день",
-    freeThreeTimesDay: "Транскрибируйте 3 файла бесплатно каждый день.",
     uploadMinutes: "Загрузки до 30 минут",
-    oneFileUploaded:
-      "Каждый файл может быть длиной до 30 минут, загружайте по одному файлу за раз",
     lowerPriority: "Низкий приоритет",
-    needsToWaitLonger:
-      "3 транскрипции в день Ожидайте дольше перед транскрибацией файлов.",
     currentPlan: "Текущий план",
     professionalEdition: "профессиональная версия",
     unlimitedTranscription: "Безлимитная транскрибация",
     unlimitedNumberOfTimes:
-      "Неограниченное количество транскрибаций для одного человека.",
-    uploadWithinHours: "Загрузка до 10 часов",
+      "Неограниченная частота и продолжительность транскрипции.",
     filesUploadedAtOnce:
       "Каждый файл может быть длиной до 10 часов / 5 ГБ. Загружайте до 50 файлов одновременно.",
     highestPriority: "высший приоритет",
@@ -641,7 +659,6 @@ let message = {
     daily: "{start} из {end} дневных транскрипций использовано",
     upgradetoPro: "Обновить до Pro",
     accountSetting: "Настройки аккаунта",
-    returnAccountSetting: "Вернуться к настройкам аккаунта",
     logOut: "Выйти",
     account: "Аккаунт",
     email: "Email",
@@ -653,7 +670,6 @@ let message = {
     notFund: "Не найдено",
     couldntFind: "Мы не смогли найти то, что вы искали.",
     proAnnual: "Pro Годовая",
-    yourSubscription: "Ваша подписка будет отменена",
     proMonthly: "Pro Месячная",
     perMonth: "в месяц",
     afterwards: "впоследствии",
@@ -664,8 +680,20 @@ let message = {
     perYear: "в год",
     getProPlan: "Получить Pro план",
     changeToAnnual: "Перейти на годовую",
-    automaticRenewalon: "Автопродление"
-  },
+    automaticRenewalon: "Автопродление",
+    eachMonth: "Автопродление {time}-го числа каждого месяца.",
+    automaticRenewal:
+      "Автоматическое продление не удалось, проверьте способ оплаты.",
+    eachYear: "Автоматическое продление {time} каждого года.",
+    returnAccountSetting: "Назад",
+    needsToWaitLonger:
+      "Подождите дольше, прежде чем ваши файлы будут расшифрованы.",
+    freeThreeTimesDay: "Расшифруйте 3 файла бесплатно каждый день.",
+    oneFileUploaded:
+      "Каждый файл может длиться до 30 минут. Загружайте по 1 файлу за раз.",
+    uploadWithinHours: "10-часовые загрузки",
+      yourSubscription: "Ваша подписка будет отменена {time}."
+},
   // Языковые соответствия
   LanguageMap: {
     sysLanguagesMap: {
@@ -1045,8 +1073,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

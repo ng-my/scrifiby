@@ -8,59 +8,35 @@ export default function useFileInfo(props) {
     isShowTimestamp,
     gmtCreateTime: fileUploadTime
   } = toRefs(props.fileBaseInfo);
+  const originName = fileName.value;
   isShowTimestamp.value ??= true;
   fileUploadTime.value ??= "";
   const isEditing = ref(false);
   const fileNameElement = ref(null);
+  const fileNameInputRef = ref(null);
+  const fileNamePopoverRef = ref(null);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   // 文件名编辑相关方法
   const startEditing = () => {
-    if (isEditing.value) return;
-
-    isEditing.value = true;
-    // 使用setTimeout确保DOM已更新后再聚焦
     setTimeout(() => {
-      if (fileNameElement.value) {
-        fileNameElement.value.focus();
-        // 创建选区，将光标定位到文本末尾
-        const range = document.createRange();
-        const sel = window.getSelection();
-        range.selectNodeContents(fileNameElement.value);
-        range.collapse(false); // 将光标定位到末尾
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-    }, 10);
+      fileNameInputRef.value?.focus();
+    }, 100);
   };
-
   const saveFileName = async () => {
     try {
-      if (fileNameElement.value) {
-        const newName = fileNameElement.value.textContent.trim();
-        const { useFolderApi } = await import("~/api/folder");
-        await useFolderApi.renameFile({
-          id: props.fileBaseInfo.id,
-          taskId: props.fileBaseInfo.taskId,
-          fileName: newName
-        });
-        fileName.value = newName;
-      }
-      isEditing.value = false;
+      const newName = fileName.value.trim();
+      const { useFolderApi } = await import("~/api/folder");
+      await useFolderApi.renameFile({
+        id: props.fileBaseInfo.id,
+        taskId: props.fileBaseInfo.taskId,
+        fileName: newName
+      });
+      fileName.value = newName;
     } catch (e) {
-      console.log("🚀 ~ file: useFileInfo.js method: saveFileName line: 48 🚀",e )
-    }
-  };
-
-  const cancelEditing = () => {
-    if(isDesktop.value){
-      // 取消编辑，恢复原来的值
-      if (fileNameElement.value) {
-        fileNameElement.value.textContent = fileName.value;
-      }
-      isEditing.value = false;
-    } else {
-      // 手机端保存
-      saveFileName()
+      fileName.value = originName;
+      console.log("🚀 ~ 文件名保存异常 🚀", e);
+    } finally {
+      fileNamePopoverRef.value?.hide();
     }
   };
 
@@ -87,17 +63,21 @@ export default function useFileInfo(props) {
     }
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   };
+  const fileNameInput = (val) => {
+    fileName.value = val.replace(/\//g, "");
+  };
 
   return {
     fileName,
     fileUploadTime,
-    isEditing,
     fileNameElement,
     isShowTimestamp,
     startEditing,
     saveFileName,
-    cancelEditing,
     handleShowTimestamp,
-    formatSecondsFromMs
+    formatSecondsFromMs,
+    fileNameInputRef,
+    fileNamePopoverRef,
+    fileNameInput
   };
 }

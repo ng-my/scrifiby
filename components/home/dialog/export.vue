@@ -4,10 +4,10 @@
       v-model="visible"
       :title="t('FolderPage.dialog.export.title')"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       :destroy-on-close="true"
       width="30%"
       @closed="handleClosed"
+      @open="handleOpen"
     >
       <div class="mb-5">
         <div class="mb-2.5 text-sm">
@@ -22,24 +22,35 @@
           />
         </el-checkbox-group>
       </div>
-      <div>
+      <div v-if="hasTimestamp || hasSpeaker">
         <div class="mb-2.5 text-sm">
           {{ t("FolderPage.dialog.export.settings") }}
         </div>
         <el-checkbox-group v-model="settings">
           <el-checkbox
-            v-for="item in settingOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-if="hasTimestamp"
+            key="timecodes"
+            :label="t('FolderPage.dialog.export.timecodes')"
+            value="timecodes"
+          />
+          <el-checkbox
+            v-if="hasSpeaker"
+            key="speaker"
+            :label="t('FolderPage.dialog.export.speaker')"
+            value="speaker"
           />
         </el-checkbox-group>
       </div>
       <template #footer>
-        <el-button @click="visible = false">
+        <el-button class="home2-btn" @click="visible = false">
           {{ t("FolderPage.dialog.move.cancel") }}
         </el-button>
-        <el-button :loading="loading" @click="handleConfirm" type="primary">
+        <el-button
+          class="sys-btn"
+          :loading="loading"
+          @click="handleConfirm"
+          type="primary"
+        >
           {{ t("FolderPage.dialog.export.confirm") }}
         </el-button>
       </template>
@@ -50,6 +61,7 @@
 <script setup lang="ts">
 import type { FileItem } from "~/api/type/folder";
 import { useTool } from "~/components/export/useTool";
+import { Msg } from "~/utils/tools";
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { useUserStore } from "~/stores/useUserStore";
@@ -63,6 +75,8 @@ const props = defineProps<{
   taskId?: string;
   fileId?: string;
   translateLang?: string;
+  isShowSpeaker?: boolean;
+  isShowTimestamp?: boolean;
 }>();
 
 const emit = defineEmits(["update:modelValue", "confirm"]);
@@ -82,57 +96,111 @@ const formatOptions = ref([
   { value: "srt", label: "SRT" }
 ]);
 
-const settingOptions = ref([
-  { value: "speaker", label: t("FolderPage.dialog.export.speaker") },
+const settingOptions = ref<any[]>([
   { value: "timecodes", label: t("FolderPage.dialog.export.timecodes") }
 ]);
-const settings = ref<string[]>(["timecodes", "speaker"]);
+const settings = ref<string[]>(["timecodes"]);
 
 let timer: any = null;
+const taskIds = ref<any>([]);
+const fileIds = ref<string[]>([]);
+const isShowSpeaker = ref(false);
+const reset = () => {
+  isShowSpeaker.value = false;
+  settingOptions.value = [
+    { value: "timecodes", label: t("FolderPage.dialog.export.timecodes") }
+  ];
+  settings.value = ["timecodes"];
+  taskIds.value = [];
+  fileIds.value = [];
+};
 const handleClosed = () => {
+  window.removeEventListener("keydown", handleKeyPress);
   formats.value = [];
-  settings.value = ["timecodes", "speaker"];
+  reset();
   clearTimeout(timer);
   loading.value = false;
+  isOver.value = false;
+};
+const setNoSpeaker = (flag: boolean) => {
+  if (route.query.shareId && !props.isShowSpeaker) return
+  if (flag && !isShowSpeaker.value) {
+    isShowSpeaker.value = true;
+    settingOptions.value.unshift({
+      value: "speaker",
+      label: t("FolderPage.dialog.export.speaker")
+    });
+    settings.value.push("speaker");
+  }
+};
+
+const hasSpeaker = computed(() => {
+  return !!settingOptions.value.find((e) => e.value === "speaker");
+});
+const hasTimestamp = computed(() => {
+  return !!settingOptions.value.find((e) => e.value === "timecodes");
+});
+
+const handleOpen = () => {
+  window.addEventListener("keydown", handleKeyPress);
+
+  if (route.query.shareId && !props.isShowTimestamp) {
+    settingOptions.value = settingOptions.value.filter(
+      (e) => e.value !== "timecodes"
+    );
+    settings.value = settings.value.filter((e) => e !== "timecodes");
+  }
+
+  if (props.selectIds?.length) {
+    for (const id of props.selectIds) {
+      const item = props.tableData?.find((item) => item.id === id);
+      if (item) {
+        taskIds.value.push({
+          taskId: item.taskId,
+          paragraphsLang: item.language
+        });
+        fileIds.value.push(item.fileId);
+      }
+      setNoSpeaker(!!item?.diarizeEnabled);
+    }
+  } else {
+    fileIds.value.push(props.fileId!);
+    const item = props.tableData?.find((item) => item.taskId === props.taskId!);
+    taskIds.value.push({
+      taskId: item?.taskId,
+      paragraphsLang: item?.language
+    });
+    setNoSpeaker(!!item?.diarizeEnabled);
+  }
 };
 
 const { userInfo } = storeToRefs(useUserStore());
-const isLogin = computed(() => !!userInfo.value);
+const isLogin = computed(() => {
+  return !route.query.shareId;
+});
 
 const loading = ref(false);
 const route = useRoute();
 const { addExportTask } = useExportStore();
+const isOver = ref(false)
 const handleConfirm = async () => {
   try {
     if (!formats.value.length) {
-      ElMessage.error({
+      Msg({
         message: t("FolderPage.dialog.export.selectErr"),
-        customClass: "!z-[9999]"
+        customClass: "!z-[9999]",
+        type: "error"
       });
       return;
     }
 
     loading.value = true;
-    const taskIds: string[] = [];
-    const fileIds: string[] = [];
-
-    if (props.selectIds?.length) {
-      for (const id of props.selectIds) {
-        const item = props.tableData?.find((item) => item.id === id);
-        if (item) {
-          taskIds.push(item.taskId);
-          fileIds.push(item.fileId);
-        }
-      }
-    } else {
-      taskIds.push(props.taskId!);
-      fileIds.push(props.fileId!);
-    }
 
     const params = {
       fileType: formats.value.join(","),
-      taskIds: taskIds.join(","),
-      fileIds: fileIds.join(","),
+      exportTaskList: taskIds.value,
+      taskIds: taskIds.value.map((e: any) => e.taskId).join(","),
+      fileIds: fileIds.value.join(","),
       haveSpeaker: +settings.value.includes("speaker"),
       haveTimestamp: +settings.value.includes("timecodes")
     } as any;
@@ -161,6 +229,7 @@ const handleConfirm = async () => {
       !props.translateLang
     ) {
       await fetchExportStatus([exportId]);
+      isOver.value = true;
     } else {
       addExportTask({
         [exportId as string]: {
@@ -170,10 +239,13 @@ const handleConfirm = async () => {
             (props.translateLang ? 2 : 1)
         }
       });
+      isOver.value = true;
       visible.value = false;
+      loading.value = false;
     }
-  } finally {
+  } catch (_) {
     loading.value = false;
+    isOver.value = false;
   }
 };
 
@@ -196,17 +268,19 @@ const fetchExportStatus = async (exportTaskIdList: any) => {
   if (res.length) {
     for (const item of res) {
       if (item.status.toString() === "-1") {
-        ElMessage.error({
+        Msg({
           message: t("HomePage.export.error"),
-          customClass: "!z-[9999]"
+          customClass: "!z-[9999]",
+          type: "error"
         });
         loading.value = false;
         return;
       }
       if (item.targetUrl) {
         downloadFile(item.targetUrl);
-        loading.value = false;
         visible.value = false;
+        loading.value = false;
+        return
       }
     }
   }
@@ -215,6 +289,12 @@ const fetchExportStatus = async (exportTaskIdList: any) => {
     fetchExportStatus(exportTaskIdList);
   }, 3000);
 };
+
+function handleKeyPress(e: any) {
+  if (e.key === "Enter" && !loading.value && !isOver.value) {
+    handleConfirm();
+  }
+}
 </script>
 
 <style scoped>
@@ -231,5 +311,8 @@ const fetchExportStatus = async (exportTaskIdList: any) => {
 }
 :deep(.el-checkbox__label) {
   @apply ps-2 !text-black;
+}
+:deep(.home2-btn.el-button) {
+  @apply !border-borderColor !bg-white !text-black hover:!border-borderColor hover:!bg-fontHover hover:!text-black;
 }
 </style>

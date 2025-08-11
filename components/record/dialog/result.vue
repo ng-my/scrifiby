@@ -3,23 +3,35 @@
     <el-dialog
       v-model="visible"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :title="t('FileUploadAndRecording.upload.resultDialogTitle')"
+      :title="t('FileUploadAndRecording.upload.confirm')"
+      @closed="handleClose"
+      @close="emit('close')"
     >
       <div class="w-full">
         <div class="mt-4">
           <lang-choose-input v-model:lang="lang" />
         </div>
+
+        <div class="mt-5">
+          <div class="mb-0.5">
+            {{ t("FileUploadAndRecording.upload.speaker") }}
+          </div>
+          <el-checkbox v-model="diarizeEnabled">
+            <span class="max-w-full whitespace-normal break-words text-sm">{{
+              t("FileUploadAndRecording.upload.speakerLabel")
+            }}</span>
+          </el-checkbox>
+        </div>
       </div>
 
       <template #footer>
         <div class="flex w-full items-center">
-          <el-button class="flex-1" @click="visible = false">{{
+          <el-button class="home-btn flex-1" @click="visible = false">{{
             t("FileUploadAndRecording.upload.cancel")
           }}</el-button>
           <el-button
             :loading="transcribing"
-            class="flex-1"
+            class="home-btn flex-1"
             type="primary"
             @click="handleTranscribe"
             >{{ t("FileUploadAndRecording.upload.confirm") }}</el-button
@@ -28,11 +40,14 @@
       </template>
     </el-dialog>
   </div>
+
+  <subscription-modal v-model="showSubModal" />
 </template>
 
 <script setup lang="ts">
 import { type UploadFile, useUpload } from "~/components/upload/useUpload";
 import { useSubscript } from "~/components/layout/header/useSubscript";
+import Utils from "~/utils/tools";
 
 const { t } = useI18n();
 
@@ -40,9 +55,10 @@ const props = defineProps<{
   modelValue: boolean;
   audioBlob: Blob | null;
   recordTitle: string;
+  parentId?: string | number;
 }>();
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "close"]);
 
 const visible = computed({
   get: () => props.modelValue,
@@ -75,6 +91,23 @@ const { updateNewFileList } = useUploadStore();
 const { fetchSubscript } = useSubscript();
 const { isFreeUser } = storeToRefs(useSubscriptionStore());
 const route = useRoute();
+const diarizeEnabled = ref(false);
+const getFileNameWithoutExt = (fileName: string) => {
+  const lastDotIndex = fileName.lastIndexOf(".");
+  return lastDotIndex === -1 ? fileName : fileName.substring(0, lastDotIndex);
+};
+
+const isMobile = useState("isMobile");
+const showSubModal = ref(false);
+const showPro = () => {
+  if (isMobile.value) {
+    handleRemoveAll();
+    router.push(localePath("/getPro"));
+    return;
+  }
+  showSubModal.value = true;
+};
+
 const handleTranscribe = async () => {
   transcribing.value = true;
   try {
@@ -87,10 +120,8 @@ const handleTranscribe = async () => {
         {
           bucketId: file.file.key,
           fileExtName: fileExtName,
-          parentId: route?.path?.includes("folder")
-            ? selectedFolder.value?.id || 0
-            : 0,
-          fileName: file.file.name,
+          parentId: props.parentId || 0,
+          fileName: getFileNameWithoutExt(file.file.name),
           fileSize: file.file.size
         }
       ])
@@ -100,7 +131,8 @@ const handleTranscribe = async () => {
     await transcribeFile({
       language: lang.value.transCode,
       langName: lang.value.lang,
-      fileIds
+      fileIds,
+      diarizeEnabled: diarizeEnabled.value
     });
     if (isFreeUser.value) {
       await fetchSubscript();
@@ -108,12 +140,21 @@ const handleTranscribe = async () => {
     visible.value = false;
     endRecord();
     updateNewFileList(fileIds);
+  } catch (e) {
+    if (e?.code === 15010) {
+      showPro();
+    }
   } finally {
     transcribing.value = false;
   }
 };
+
+const handleClose = () => {
+  diarizeEnabled.value = false;
+};
 </script>
 
 <style scoped>
+@import "~/layouts/homeMixin.css";
 @import "../../upload/dialog/common.css";
 </style>

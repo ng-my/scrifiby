@@ -15,7 +15,7 @@
     </div>
 
     <!-- Folders 标签 -->
-    <layout-folder />
+    <layout-folder @rowClick="emit('rowClick')" />
   </div>
 </template>
 
@@ -27,6 +27,8 @@ const localePath = useLocalePath();
 const handleJump = () => {
   router.push(localePath("/home"));
 };
+
+const emit = defineEmits(["rowClick"]);
 </script>
 
 <style scoped>

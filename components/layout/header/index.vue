@@ -2,7 +2,7 @@
 <template>
   <div
     :class="[!showHomeIcon ? '!border-0' : '']"
-    class="box-border flex h-11 w-full items-center justify-between border-b border-b-borderColor bg-white px-4 py-2.5 sm:h-[3.75rem] sm:px-5 sm:py-3"
+    class="language-switcher-box box-border flex h-11 w-full items-center justify-between border-b border-b-borderColor bg-white px-4 py-2.5 sm:h-[3.75rem] sm:px-5 sm:py-3"
   >
     <!-- 左侧图标按钮 -->
     <div
@@ -13,6 +13,7 @@
       <el-image
         src="/assets/logo2.svg"
         class="me-2 h-6 w-auto sm:h-[1.875rem]"
+        fit="contain"
         alt=""
       ></el-image>
     </div>
@@ -54,7 +55,7 @@ const props = defineProps({
 const { t } = useI18n();
 const localePath = useLocalePath();
 const router = useRouter();
-const isLogin = computed(() => !!userInfo.value);
+const isLogin = computed(() => !!(userInfo.value as any)?.userInfoVO?.userid);
 
 //登录
 const login = () => {
@@ -66,7 +67,7 @@ const login = () => {
 const goToHome = () => {
   (useNuxtApp().$gtagEvent as Function)("click", "LOGO_Btn", "Back to Home");
   router.push({
-    path: localePath("/home")
+    path: localePath("/")
   });
 };
 </script>

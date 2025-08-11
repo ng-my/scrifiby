@@ -1,6 +1,5 @@
 import request from "~/utils/request";
 import { type FileItem } from "./type/folder";
-import { ElMessage } from "element-plus";
 // 内容片段（content）
 export interface Content {
   cid: string; // 内容 ID
@@ -103,9 +102,9 @@ export const transcriptApi = {
       if (res.code === 0) {
         return res.data;
       }
-      return Promise.reject(res)
+      return Promise.reject(res);
     } catch (err) {
-      throw new Error(err as any);
+      return Promise.reject(err);
     }
   },
   // 获取转录内容(无token)
@@ -122,9 +121,9 @@ export const transcriptApi = {
       if (res.code === 0) {
         return res.data;
       }
-      throw new Error(res as any);
+      return Promise.reject(res);
     } catch (err) {
-      throw new Error(err as any);
+      return Promise.reject(err);
     }
   },
   // 编辑转录内容
@@ -137,9 +136,9 @@ export const transcriptApi = {
       if (res.code === 0) {
         return res.data;
       }
-      return Promise.reject(res)
+      return Promise.reject(res);
     } catch (err) {
-      return Promise.reject(err)
+      return Promise.reject(err);
     }
   },
   // 获取其他语言翻译内容
@@ -157,9 +156,9 @@ export const transcriptApi = {
       if (res.code === 0) {
         return res.data?.text || [];
       }
-      return Promise.reject(res)
+      return Promise.reject(res);
     } catch (err) {
-      return Promise.reject(err)
+      return Promise.reject(err);
     }
   },
   // 获取最近使用语言

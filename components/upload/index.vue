@@ -27,6 +27,10 @@ watchEffect(() => {
     showFileAndLinkDialog.value = false;
   }
 });
+
+onUnmounted(() => {
+  showResultDialog.value = false;
+});
 </script>
 
 <style scoped></style>

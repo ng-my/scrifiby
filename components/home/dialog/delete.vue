@@ -4,17 +4,21 @@
       v-model="visible"
       :title="t('FolderPage.dialog.delete.title')"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       width="30%"
     >
       <div>
         {{ t("FolderPage.dialog.delete.label") }}
       </div>
       <template #footer>
-        <el-button @click="visible = false">
+        <el-button class="home-btn" @click="visible = false">
           {{ t("FolderPage.dialog.move.cancel") }}
         </el-button>
-        <el-button :loading="loading" @click="handleConfirm" type="danger">
+        <el-button
+          class="home-btn"
+          :loading="loading"
+          @click="handleConfirm"
+          type="danger"
+        >
           {{ t("FolderPage.dialog.delete.confirm") }}
         </el-button>
       </template>

@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { Value } from "sass";
 import { ref } from "vue";
 
 export const useSubscriptionStore = defineStore(
@@ -7,12 +6,15 @@ export const useSubscriptionStore = defineStore(
   () => {
     const subscriptionDetail = ref<any>({});
     const userStore = useUserStore();
-    const userInfo =
-      typeof userStore.userInfo === "object" && userStore.userInfo !== null
+    const userInfo = computed(() => {
+      return typeof userStore.userInfo === "object" &&
+        userStore.userInfo !== null
         ? (userStore.userInfo as any).userInfoVO
         : {};
+    });
     const isFristSubscription = ref<boolean>(false); //true 第一次 false 非第一次
     const timer = ref<any>(null);
+    const timer2 = ref<any>(null);
     async function setSubscriptionDetail(subscription: any) {
       subscriptionDetail.value = subscription;
       if (isItDue.value) {
@@ -26,51 +28,59 @@ export const useSubscriptionStore = defineStore(
       isFristSubscription.value = val;
     }
 
-    function getStatusUserId() {
-      getStatusUserIdFetch();
-      if (timer.value) {
-        clearTimeout(timer.value);
-        timer.value = null;
+    async function getStatusUserIdFetch() {
+      if (!userInfo.value?.userid) {
         return;
       }
-      updateData();
-    }
-    async function getStatusUserIdFetch() {
       const { useSubscription } = await import("~/api/subscription");
-      const res = await useSubscription.statusUserId(userInfo.userid);
+      const res: any = await useSubscription.statusUserId(
+        userInfo.value.userid
+      );
+      if (res?.endTime) {
+        const diffTime = new Date(res?.endTime).getTime() - Date.now();
+        loopFn(diffTime, res.status);
+      }
       setSubscriptionDetail(res);
     }
-    const updateDataTime = computed(() => {
-      if (subscriptionDetail.value?.endTime) {
-        const targetTimestamp = new Date(
-          subscriptionDetail.value?.endTime
-        ).getTime();
-        const currentTimestamp = Date.now();
-        const diffInSeconds = (targetTimestamp - currentTimestamp) / 1000;
-        if (diffInSeconds > 0) {
-          return diffInSeconds;
-        } else {
-          return false;
-        }
-      }
-      return false;
-    });
-
-    const updateData = () => {
-      if (updateDataTime.value) {
-        timer.value = setTimeout(async () => {
+    function loopFn(diffTime: number, status: number) {
+      clearTimeout(timer.value);
+      timer.value = null;
+      clearTimeout(timer2.value);
+      timer2.value = null;
+      if (diffTime > 0 && status === 0) {
+        timer.value = setTimeout(() => {
+          // if (status === 1) {
+          //   timer2.value = setInterval(() => {
+          //     getStatusUserIdFetch();
+          //   }, 1000 * 10);
+          //   setTimeout(
+          //     () => {
+          //       clearTimeout(timer2.value);
+          //       timer2.value = null;
+          //     },
+          //     1000 * 60 * 5
+          //   );
+          // } else {
           getStatusUserIdFetch();
-        }, updateDataTime.value);
+          // }
+        }, diffTime);
       }
-    };
+    }
+
     // 免费用户
-    const subscriptionStatus = ref<-1 | 1>(-1);
+    const subscriptionStatus = ref<0 | 1 | 2 | 3 | -1 | null>(null);
     const isFreeUser = computed(() => {
       return isItDue.value;
     });
 
     //订阅计划是否到期
     const isItDue = computed(() => {
+      if (
+        subscriptionDetail.value?.status === 1 ||
+        subscriptionDetail.value?.status === 3
+      ) {
+        return false;
+      }
       if (subscriptionDetail.value?.endTime) {
         return formHasItExpired(subscriptionDetail.value.endTime);
       }
@@ -84,9 +94,9 @@ export const useSubscriptionStore = defineStore(
     const updateSubScriptCount = (obj: {
       todayCount: number;
       limitCount: number;
-      subscriptionStatus: -1 | 1;
+      subscriptionStatus: 0 | 1 | 2 | 3 | -1;
     }) => {
-      if (obj.subscriptionStatus === -1) {
+      if ([0, 2, -1].includes(obj.subscriptionStatus)) {
         todayCount.value = obj.todayCount;
         limitCount.value = obj.limitCount;
       }
@@ -110,8 +120,15 @@ export const useSubscriptionStore = defineStore(
         return false;
       }
     };
+
+    const clearSubscriptionDetail = () => {
+      subscriptionDetail.value = {};
+      // subscriptionStatus.value = null;
+    };
     return {
       subscriptionDetail,
+      subscriptionStatus,
+      clearSubscriptionDetail,
       setSubscriptionDetail,
       updateSubScriptCount,
       setPaymentGetUser,
@@ -120,7 +137,7 @@ export const useSubscriptionStore = defineStore(
       limitCount,
       isNoTimes,
       isItDue,
-      getStatusUserId,
+      getStatusUserIdFetch,
       isFristSubscription
     };
   },

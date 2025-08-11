@@ -3,7 +3,7 @@ let message = {
   HomePage: {
     home: "首页",
     version: "基础版本（免费）：",
-    times: "每天免费转录 {times} 次，您还有 {left} 次转录机会。",
+    times: "每天{times}次免费转录，今天剩余{left}次。",
     tips: "升级到专业版以获得无限转录。",
     update: "立即升级",
     folders: "文件夹",
@@ -15,6 +15,7 @@ let message = {
     confirm: "创建",
     dialogLabel: "文件夹名称",
     recently: "最近文件",
+    loading: "加载中",
     tour: {
       step0: {
         title: "欢迎使用 {name}",
@@ -64,7 +65,9 @@ let message = {
       edit: "编辑、完善并以适合您需求的格式导出转录文本。",
       collaborate: "通过与他人共享转录文本进行协作。",
       button: "开始使用",
-      tip: "准备好将音频转换为转录文本了吗？现在就开始探索！"
+      tip: "准备好将音频转换为转录文本了吗？现在就开始探索！",
+      tip2: "立即开始探索！",
+      tip1: "准备好将音频转换为转录文本吗？ "
     },
     subscriptionModal: {
       left: {
@@ -111,7 +114,8 @@ let message = {
       move: "移动",
       failed: "失败",
       selected: "已选择",
-      success: "成功"
+      success: "成功",
+      fileList: "文件列表"
     },
     dialog: {
       move: {
@@ -143,7 +147,7 @@ let message = {
       },
       export: {
         title: "导出",
-        select: "选择一个或多个格式",
+        select: "选择你需要的格式",
         settings: "设置",
         speaker: "包含说话人",
         timecodes: "包含时间码",
@@ -175,6 +179,7 @@ let message = {
       pause: "暂停",
       resume: "继续",
       stop: "停止",
+      endRecord: "结束录制",
       delete: "删除",
       transcribe: "转录",
       permissionDenied: "麦克风权限被拒绝或设备不存在",
@@ -198,7 +203,7 @@ let message = {
         title: "粘贴链接",
         label:
           "粘贴以下平台但不限于：YouTube、Facebook、X、Dropbox、Google Drive、Vimeo 的媒体链接",
-        confirm: "转录",
+        confirm: "添加",
         cancel: "取消",
         errorTitle: "您输入的链接地址不正确。请检查后重试。",
         linkName: "链接"
@@ -206,7 +211,8 @@ let message = {
       file: {
         orTitle: "转录在线媒体",
         dialogTitle: "转录文件",
-        tip: "点击上传或拖拽放置",
+        tip1: "点击上传",
+        tip2: "或拖拽文件",
         or: "或"
       },
       del: {
@@ -217,16 +223,18 @@ let message = {
       },
       files: "文件",
       resultDialogTitle: "转录文件",
+      resultDialogTitle2: "转录文件",
       cancel: "取消",
       confirm: "转录",
       return: "返回",
       addMore: "添加更多",
-      language: "音频语言",
+      language: "媒体语言",
       failed: "失败",
       tooLarge: "文件太大。",
+      linkUpload: "上传中...",
       fileFormat: "文件格式不被允许",
       localFiles: "本地文件",
-      pasteLink: "粘贴链接",
+      pasteLink: "在线链接",
       uploadErr: "上传错误",
       hashErr: "哈希错误",
       table: {
@@ -237,7 +245,7 @@ let message = {
       },
       maxFileNum: "文件数量不能超过 {num}。",
       speaker: "说话人识别",
-      speakerLabel: "标记转录文本中每个片段的说话人身份"
+      speakerLabel: "为转录的每个片段标记说话的人。"
     }
   },
   // 转录详情页
@@ -534,11 +542,20 @@ let message = {
     closeTrans: "取消翻译",
     upgradeBtn: "立即升级",
     upgradeTip30: "此文件超过30分钟时长。",
-    upgradeTipMore: "升级到Scribify 专业版可转录长达10小时的文件"
+    upgradeTipMore: "升级到Scribify 专业版可转录长达10小时的文件",
+    errorTips: "出了点问题。",
+    copiedLink: "已复制链接",
+    copyGotIt: "知道了"
   },
   // 登录、注册、修改密码
   IdentityInfoManage: {
     or: "或", // 或
+    LoginBtn: "使用邮箱登录",
+    LoginGoogle: "使用 Google 登录",
+    SignupBtn: "使用邮箱注册",
+    SignupGoogle: "使用 Google 注册",
+    SignupDes: "立即注册，免费体验神奇效果。",
+    SignupTitle: "高精度且无限量转录",
     signup: "注册", // 注册
     sign_up: "注册", // 注册
     loginByGoogle: "使用Google登录", // 使用Google登录
@@ -547,15 +564,13 @@ let message = {
     accountExists: "已经有账户了? ", // 已经有账户了？登录
     agreeTerm: {
       // // 我同意 XXX 服务条款和隐私政策
-      agree: "我同意{proName}{terms}和{policy}。",
-      terms: "服务条款",
+      agree: "继续操作，即表示您同意我们的{terms}和{policy}。",
+      terms: "条款",
       policy: "隐私政策"
     },
     setPassword: "设置密码", // 设置密码
     code: "验证码", // 验证码
     resend: "重新发送", // 重新发送
-    codeToEmail:
-      "我们刚刚向您的邮箱发送了验证码，请查看收件箱并将验证码粘贴到上方。", // 我们刚刚向您的邮箱发送了验证码，请查看收件箱并将验证码粘贴到上方。
     enterPassword: "请输入密码。", // 请输入密码
     passwordLeval: "密码强度", // 密码强度
     Weak: "弱", // 弱 中 强
@@ -579,7 +594,12 @@ let message = {
     resetPassword: "重置密码", // 重置密码
     resetYourPassword: "重置密码", // 重置你的密码
     newOldCantSame: "新密码与旧密码不能相同。", // 新密码与旧密码不能相同
-    passwordResetOk: "密码重置成功！" // 密码重置成功！
+    passwordResetOk: "密码重置成功！", // 密码重置成功！
+    signupToSaveProgress: "完成注册以保存您的进度。", // 完成注册以保存您的进度
+    tip: "提示",
+    tipContentEmail: "我们已将您的账户登录密码发送至您的邮箱。",
+    tipContentPassword: "请检查收件箱，使用邮箱和密码登录。",
+    codeToEmail: "我们已向您的邮箱发送了验证码。请查收邮件并在上方粘贴验证码。"
   },
   // 分享详情页
   Sharepage: {},
@@ -590,16 +610,12 @@ let message = {
     subscription: "订阅计划",
     freeversion: "免费版",
     transcribeTimesDay: "每日3次转录",
-    freeThreeTimesDay: "每天免费转录3个文件。",
     uploadMinutes: "30分钟上传",
-    oneFileUploaded: "每个文件最长30分钟，每次仅能上传一个文件",
     lowerPriority: "低优先级",
-    needsToWaitLonger: "每日3次转录。文件转录前需要等待更长时间。",
     currentPlan: "当前计划",
     professionalEdition: "专业版",
     unlimitedTranscription: "无限次转录",
-    unlimitedNumberOfTimes: "单人无限次转录服务。",
-    uploadWithinHours: "10小时以内上传",
+    unlimitedNumberOfTimes: "转录频率和时长无限制。",
     filesUploadedAtOnce: "单个文件最长10小时/5GB。可同时上传50个文件。",
     highestPriority: "最高优先级",
     weWillGiveTheHighest: "我们将始终以最高优先级尽快转录您的文件。",
@@ -624,7 +640,6 @@ let message = {
     daily: "已用{start}次，每日限额{end}次",
     upgradetoPro: "升级至专业版",
     accountSetting: "账户设置",
-    returnAccountSetting: "返回账户设置",
     logOut: "退出登录",
     account: "账户",
     email: "电子邮箱",
@@ -636,7 +651,6 @@ let message = {
     notFund: "未找到",
     couldntFind: "找不到您要的内容。",
     proAnnual: "专业年费版",
-    yourSubscription: "您的订阅将于以下日期取消",
     proMonthly: "专业月费版",
     perMonth: "每月",
     afterwards: "之后",
@@ -647,8 +661,17 @@ let message = {
     perYear: "每年",
     getProPlan: "获取专业版",
     changeToAnnual: "切换为年费",
-    automaticRenewalon: "自动续费日期"
-  },
+    automaticRenewalon: "自动续费日期",
+    eachMonth: "每月{time}日自动续订",
+    automaticRenewal: "自动续费失败，请检查支付方式。",
+    eachYear: "每年{time}自动续费",
+    returnAccountSetting: "返回",
+    needsToWaitLonger: "在文件转录完成前请稍作等待。",
+    freeThreeTimesDay: "每天免费转录3个文件。",
+    oneFileUploaded: "每个文件最长30分钟。每次上传1个文件。",
+    uploadWithinHours: "10小时上传",
+      yourSubscription: "您的订阅将于{time}取消"
+},
   // 语言对应关系
   LanguageMap: {
     sysLanguagesMap: {
@@ -1004,8 +1027,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

@@ -30,3 +30,13 @@
 :deep(.el-dialog__headerbtn) {
     @apply rtl:left-0 rtl:right-auto;
 }
+:deep(.is-disabled) {
+    @apply !border-transparent !bg-mainColor-900 !bg-opacity-70 hover:!border-transparent hover:!bg-mainColor-900 hover:!bg-opacity-70;
+}
+:deep(.is-checked .el-checkbox__inner) {
+    @apply border-mainColor-900 bg-mainColor-900;
+}
+
+:deep(.el-checkbox__label) {
+    color: unset !important;
+}

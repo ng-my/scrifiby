@@ -2,8 +2,9 @@
   <div>
     <div class="p-4 pb-0 md:hidden">
       <div @click="drawer = true" class="flex w-max max-w-full cursor-pointer items-center overflow-hidden">
-        <img class="relative top-[-1px] z-[1] me-2 h-5 w-5" src="/assets/images/home/menu.svg" alt="" />
         <client-only>
+          <img class="relative top-[-1px] z-[1] me-2 h-5 w-5" src="/assets/images/home/menu.svg" alt="" />
+
           <span class="iconfont text-sm" :class="name.icon"></span>
 
           <span class="relative top-[1px] z-[1] ms-1 line-clamp-1 text-ellipsis text-sm">{{ name.name }}
@@ -15,7 +16,7 @@
     <client-only>
       <el-drawer v-model="drawer" :direction="direction" @opened="handleOpened" @closed="handleClosed"
         :show-close="false">
-        <layout-menu-content />
+        <layout-menu-content @rowClick="drawer = false" />
       </el-drawer>
     </client-only>
 
@@ -34,7 +35,7 @@ const { selectedFolder } = storeToRefs(useFolderStore());
 
 const route = useRoute();
 const name = computed(() => {
-  if (route?.name?.includes("home")) {
+  if (route?.path?.includes("home")) {
     return {
       name: t("HomePage.home"),
       icon: "icon-home"

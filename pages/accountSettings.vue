@@ -2,32 +2,34 @@
   <TopLeftLayout>
     <div
       class="scrollbar-hide scrollbar-hide mb-[2rem] flex h-full flex-1 flex-col overflow-hidden overflow-y-scroll bg-white"
+      v-loading="loading"
     >
+      <div class="ps-[0rem] ps-[1.5rem] pt-6 text-[1.125rem] font-semibold">
+        {{ t("AccountSettingsPage.accountSetting") }}
+      </div>
       <!-- 顶部标题和Tabs -->
       <div class="tabs-col-media flex flex-row border-b ps-[1.5rem] pt-6">
-        <div
-          class="media-item-center mb-[1.5rem] items-center text-xl font-semibold md:mb-[1rem]"
-        >
-          {{ t("AccountSettingsPage.accountSetting") }}
-        </div>
-        <div class="flex w-full flex-1 justify-center">
+        <div class="flex w-full flex-1">
           <div
-            class="flex flex-1 font-medium"
-            :class="{ 'justify-end': item.id === 1 }"
+            class="flex font-medium"
             v-for="item in tabs"
             :key="item.id"
+            :class="{
+              'flexControl md:justify-start': item.id === 1,
+              'flex-1': item.id !== 1
+            }"
           >
             <div
               :class="{
-                'w-[11.25rem]': item.id === 1,
+                'me-[3.75rem]': item.id === 1,
                 flex: item.id === 1,
-                'text-blue-600': activeTab === item.id,
-                'text-gray-700': activeTab !== item.id,
-                'hover:text-blue-600': activeTab !== item.id
+                'text-mainColor-900': activeTab === item.id,
+                'text-black': activeTab !== item.id,
+                'hover:text-mainColor-990': activeTab !== item.id
               }"
             >
               <span
-                class="inline-block h-full cursor-pointer border-b-2 border-mainColor-900 pb-[1rem]"
+                class="inline-block h-full cursor-pointer border-b-2 border-mainColor-900 pb-[1rem] font-bold"
                 :class="{ 'border-white': activeTab !== item.id }"
                 @click="changeTable(item.id)"
               >
@@ -36,13 +38,13 @@
             </div>
           </div>
         </div>
-        <div
-          class="media-item-center meadia-hidden mb-[1.5rem] hidden items-center text-xl font-semibold opacity-0 md:mb-[1rem] md:inline-block"
+        <!-- <div
+          class="media-item-center meadia-hidden mb-[1.5rem] hidden items-center text-[0.875rem] font-semibold opacity-0 md:mb-[1rem] md:inline-block"
         >
           {{ t("AccountSettingsPage.accountSetting") }}
-        </div>
+        </div> -->
       </div>
-      <div class="relative flex h-full flex-col" v-loading="loading">
+      <div class="relative flex h-full flex-col">
         <TransitionGroup name="fade" tag="div" class="flex h-full flex-col">
           <div
             v-if="activeTab === 1 && accountStatus === 1"
@@ -62,6 +64,7 @@
               @change="accountStatusChange(1)"
               pageSource="reset"
               :agreeTerm="false"
+              :path="route.fullPath"
             ></user-set-password>
           </div>
           <div
@@ -100,13 +103,13 @@ definePageMeta({
 const route = useRoute();
 const router = useRouter();
 const localePath = useLocalePath();
-const activeTab: Ref<number> = ref(1);
+const activeTab: Ref<number> = ref(0);
 const tabs: Ref<Tab[]> = ref([
   { id: 1, name: t("AccountSettingsPage.account") },
   { id: 2, name: t("AccountSettingsPage.subscription") }
 ]);
 const accountStatus: Ref<number> = ref(1);
-const loading = ref<boolean>(false);
+const loading = ref<boolean>(true);
 const changeTable = async (tab: number) => {
   activeTab.value = tab;
   await router.push({
@@ -148,6 +151,8 @@ watch(
 );
 
 onMounted(async () => {
+  const subscriptionStore = useSubscriptionStore();
+  await subscriptionStore.getStatusUserIdFetch();
   const type = route.query.type;
   if (typeof type === "string" && !isNaN(Number(type)) && type) {
     activeTab.value = Number(type);
@@ -160,6 +165,7 @@ onMounted(async () => {
   ) {
     accountStatus.value = Number(accountStatusVal);
   }
+  loading.value = false;
 });
 </script>
 <style scoped>
@@ -191,7 +197,6 @@ onMounted(async () => {
     display: none;
   }
 }
-
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -210,5 +215,12 @@ onMounted(async () => {
 .fade-enter-to,
 .fade-leave-from {
   opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .flexControl {
+    /* flex: 1; */
+    /* justify-content: center; */
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <footer class="mx-auto max-w-[80rem] bg-white">
+  <footer class="mx-auto max-w-[80rem] bg-black">
     <div
       class="mx-auto my-[1.125rem] flex max-w-[120rem] flex-col items-center justify-between px-[2.4rem] md:flex-row md:items-center md:justify-between"
     >
@@ -44,7 +44,7 @@
         >
           <el-image
             :src="`/assets/images/index/sociaIcon/${item.img}.png`"
-            class="h-[1.25rem] w-[1.25rem]"
+            class="h-[1.25rem] w-[1.25rem] rounded-md"
             fit="contain"
           ></el-image>
         </a>

@@ -42,8 +42,11 @@ export const useTool = () => {
       link.style.display = "none";
       link.href = url;
 
-      // 设置下载属性和文件名（如果提供）
-      link.setAttribute("download", fileName || ""); // 使浏览器使用原始文件名
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (!isIOS) {
+        // 设置下载属性和文件名（如果提供）
+        link.setAttribute("download", fileName || ""); // 使浏览器使用原始文件名
+      }
 
       // 添加到DOM，触发点击，然后移除
       document.body.appendChild(link);

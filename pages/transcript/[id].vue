@@ -13,15 +13,18 @@
       @saveConfig="handleBeforeUnload"
       @updateSpeakers="updateSpeakers"
     ></transcript-detail>
-    <div
-      v-if="isDel"
-      class="del-box flex h-screen w-full flex-col items-center justify-center"
-    >
-      <div class="title text-[1.25rem] font-medium leading-7 text-black">
-        {{ t("TranscriptionPage.notFund") }}
+    <div v-if="isDel" class="del-box flex h-screen w-full flex-col">
+      <div class="share-login">
+        <layout-upgrade v-if="!isShare && isFreeUser" ref="showSubRef" />
+        <layout-header v-if="isShare" />
       </div>
-      <div class="desc leading-5 text-black">
-        {{ t("TranscriptionPage.notFundDesc") }}
+      <div class="main flex flex-1 flex-col items-center justify-center">
+        <div class="title text-[1.25rem] font-medium leading-7 text-black">
+          {{ t("TranscriptionPage.notFund") }}
+        </div>
+        <div class="desc mt-[0.625rem] leading-5 text-black">
+          {{ t("TranscriptionPage.notFundDesc") }}
+        </div>
       </div>
     </div>
   </client-only>
@@ -32,10 +35,13 @@ defineOptions({
   name: "TranscriptIndex"
 });
 import { languageMap } from "~/components/langChoose/langFlag.js";
-import { ElMessage, ElLoading } from "element-plus";
+import { ElLoading } from "element-plus";
+import { Msg } from "~/utils/tools";
 import { onBeforeRouteLeave } from "vue-router";
+import { useErrorReporting } from "~/utils/fsReport";
+const { reportSystemError } = useErrorReporting();
 const localePath = useLocalePath();
-const defaultPath = localePath("/user/login");
+const defaultPath = localePath("/home");
 const { t } = useI18n();
 const route = useRoute();
 const userStore = useUserStore();
@@ -48,10 +54,26 @@ let loadingInstance = null;
 
 const isDel = ref(false);
 const speakers = ref([]);
-const fileBaseInfo = ref(null);
+const fileBaseInfo = ref({});
+const { isFreeUser } = storeToRefs(useSubscriptionStore());
+const defaultTranscriptInfo = {
+  fileMetaInfo: {
+    fileType: "mp3"
+  },
+  diarizeEnabled: false,
+  transcribeParagraphs: [],
+  language: "",
+  gmtCreateTime: "",
+  duration: 0,
+  isHalfHour: 1,
+  hasError: false
+};
 // 获取转录内容
 const getTranscriptInfo = async (fileId) => {
-  loadingInstance = ElLoading.service({ fullscreen: true });
+  loadingInstance = ElLoading.service({
+    fullscreen: true,
+    customClass: "cus-loading-lgCdiwM"
+  });
   try {
     const { transcriptApi } = await import("~/api/transcript");
     if (isShare) {
@@ -66,7 +88,14 @@ const getTranscriptInfo = async (fileId) => {
     console.error("获取转录内容失败", error);
     //
     if (error.code === 610006) {
+      loadingInstance.close();
       return navigateTo(defaultPath);
+    } else if (error.code === 401) {
+      return navigateTo(localePath("/user/login"));
+    } else {
+      defaultTranscriptInfo.hasError = true;
+      loadingInstance.close();
+      return defaultTranscriptInfo;
     }
   } finally {
     loadingInstance.close();
@@ -80,7 +109,10 @@ const getOtherLangOfTranscript = async (
   langName,
   originLang
 ) => {
-  loadingInstance = ElLoading.service({ fullscreen: true });
+  loadingInstance = ElLoading.service({
+    fullscreen: true,
+    customClass: "cus-loading-lgCdiwM"
+  });
   try {
     const { transcriptApi } = await import("~/api/transcript");
     return await transcriptApi.getOtherLangOfTranscript({
@@ -91,10 +123,9 @@ const getOtherLangOfTranscript = async (
       originLang
     });
   } catch (error) {
-    ElMessage({
+    Msg({
       message: error.message,
-      type: "warning",
-      plain: true
+      type: "warning"
     });
     console.error("获取其他语言翻译内容失败:", error);
   } finally {
@@ -116,8 +147,7 @@ const transcriptInfo = ref(null);
 const tsDRef = ref(null);
 
 const translate = async (data, init = false) => {
-  console.log("🚀 ~ file: [id].vue method: translate line: 110 🚀", data);
-  if (!data.langCode) return;
+  if (!data?.langCode) return;
   let res = await getOtherLangOfTranscript(
     fileId,
     taskId,
@@ -146,7 +176,7 @@ const saveFileBaseInfo = async (config) => {
   }
 };
 const handleBeforeUnload = () => {
-  if (!tsDRef.value || isShare) return;
+  if (!tsDRef.value || isShare || fileBaseInfo.hasError) return;
   const config = tsDRef.value.getFileConfig();
   saveFileBaseInfo(config);
 };
@@ -157,28 +187,41 @@ const needLogin = computed(() => {
 const updateSpeakers = (data) => {
   speakers.value = data;
 };
+const timeReport = {};
 onMounted(async () => {
   if (!fileId || !taskId) {
-    return ElMessage({
+    return Msg({
       message: "fail",
-      type: "warning",
-      plain: true
+      type: "warning"
     });
   }
   if (needLogin.value) {
     return navigateTo(defaultPath);
   }
+  console.time("转录详情接口时长");
+  timeReport["begin"] =
+    window?.sessionStorage.getItem("GoToTranscript") / 1 || Date.now();
+  window?.sessionStorage.removeItem("GoToTranscript");
+  const dataInfo = await getTranscriptInfo(fileId);
+  if (!dataInfo) return;
   let {
     fileMetaInfo,
+    diarizeEnabled,
     transcribeParagraphs,
     speaker,
     options,
     language,
     gmtCreateTime,
     duration,
+    hasError,
     isHalfHour // isHalfHour = 1  半小时 isHalfHour = 0  所有的
-  } = await getTranscriptInfo(fileId);
-  isDel.value = fileMetaInfo.deleted !== 0;
+  } = dataInfo;
+  transcribeParagraphs ??= [];
+  duration = Math.ceil(duration);
+  console.timeEnd("转录详情接口时长");
+  console.time("转录详情数据处理");
+  timeReport["getTranscriptInfoOver"] = Date.now();
+  isDel.value = fileMetaInfo.deleted > 0;
   originLang.value = language;
   speaker ??= [];
   options ??= settingDefault;
@@ -210,7 +253,10 @@ onMounted(async () => {
     taskId,
     fileId,
     duration,
-    isHalfHour
+    isHalfHour,
+    hasError,
+    language,
+    diarizeEnabled //是否标识说话人
   };
   paragraphIdMap.value = transcribeParagraphs.reduce(
     (acc, cur, currentIndex) => {
@@ -225,10 +271,49 @@ onMounted(async () => {
   transcriptInfo.value = {
     paragraphs: transcribeParagraphs
   };
+  console.timeEnd("转录详情数据处理");
+  console.time("转录详情数据渲染");
+  timeReport["renderBegin"] = Date.now();
   if (options.translateLang) {
     const lang = languageMap[options.translateLang];
     if (lang) translate(lang, true);
   }
+  const reportToFs = () => {
+    timeReport["转录详情接口时长"] =
+      timeReport["getTranscriptInfoOver"] - timeReport["begin"];
+    timeReport["转录详情数据处理"] =
+      timeReport["renderBegin"] - timeReport["getTranscriptInfoOver"];
+    timeReport["转录详情数据渲染第一个"] =
+      timeReport["renderFirstOver"] - timeReport["renderBegin"];
+    timeReport["转录详情数据页面总耗时"] =
+      timeReport["renderFirstOver"] - timeReport["begin"];
+    timeReport["后端接口耗时占比"] =
+      (
+        (timeReport["转录详情接口时长"] /
+          timeReport["转录详情数据页面总耗时"]) *
+        100
+      ).toFixed(2) + "%";
+    console.log("🍎🍎 ~ [id].vue:309 ~ timeReport:", timeReport);
+    try {
+      reportSystemError(timeReport);
+    } catch (error) {
+      console.error("reportToFs reportSystemError:", error);
+    }
+  };
+  const renderOver = () => {
+    let doms = document.querySelectorAll(".whitespace-break-spaces");
+    if (doms?.length > 1) {
+      console.timeEnd("转录详情数据渲染");
+      timeReport["renderFirstOver"] = Date.now();
+
+      reportToFs();
+    } else {
+      setTimeout(() => {
+        renderOver();
+      }, 10);
+    }
+  };
+  renderOver();
   window.addEventListener("beforeunload", handleBeforeUnload);
 });
 
@@ -240,3 +325,8 @@ onBeforeRouteLeave((to, from, next) => {
   next();
 });
 </script>
+<style lang="scss">
+.cus-loading-lgCdiwM {
+  --el-color-primary: theme("colors.mainColor.900");
+}
+</style>

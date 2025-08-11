@@ -1,6 +1,6 @@
-import { ref, toRefs, computed, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useMediaQuery } from '@vueuse/core'
+import { ref, toRefs, computed, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useMediaQuery } from "@vueuse/core";
 
 export default function useLayout(props) {
   const container = ref(null);
@@ -16,20 +16,28 @@ export default function useLayout(props) {
   const dragEnabled = ref(false);
   const router = useRouter();
   const localePath = useLocalePath();
-  const { isShowVideo, translateLang: langId, fileType } = toRefs(props.fileBaseInfo)
-  isShowVideo.value ??= true
-  langId.value ??= ''
+  const {
+    isShowVideo,
+    translateLang: langId,
+    fileType
+  } = toRefs(props.fileBaseInfo);
+  isShowVideo.value ??= true;
+  langId.value ??= "";
   const { locale } = useI18n();
   const activeLanguage = useState("locale", () => locale.value);
-  const isRtl = computed(() => ['he-IL', 'ar-SA'].includes(activeLanguage.value));
+  const isRtl = computed(() =>
+    ["he-IL", "ar-SA"].includes(activeLanguage.value)
+  );
   const lastFrameId = ref(null); // 用于rAF的引用
   const minPanelWidth = 450; // 最小面板宽度
   const throttleDelay = 10; // 节流延迟时间（毫秒）
   const lastThrottleTime = ref(0); // 上次执行的时间戳
 
   const isVideo = computed(() => {
-    const mp4Type = ['MP4','MOV','MPEG','WMV']
-    return !!mp4Type.find(item => item.toLowerCase() === fileType.value.toLowerCase())
+    const mp4Type = ["MP4", "MOV", "MPEG", "WMV"];
+    return !!mp4Type.find(
+      (item) => item.toLowerCase() === fileType.value.toLowerCase()
+    );
   });
 
   // 计算属性：当前布局样式
@@ -37,15 +45,15 @@ export default function useLayout(props) {
     if (displayVideo.value) {
       // 使用固定初始布局，后续用transform实现拖拽
       return {
-        'grid-template-columns': '1fr 1px 1fr',
-        'position': 'relative',
-        'direction': isRtl.value ? 'rtl' : 'ltr'
+        "grid-template-columns": "1fr 1px 1fr",
+        position: "relative",
+        direction: isRtl.value ? "rtl" : "ltr"
       };
     }
     return {
-      'grid-template-columns': '1fr',
-      'grid-template-rows': '1fr',
-      'direction': isRtl.value ? 'rtl' : 'ltr'
+      "grid-template-columns": "1fr",
+      "grid-template-rows": "1fr",
+      direction: isRtl.value ? "rtl" : "ltr"
     };
   });
 
@@ -53,9 +61,9 @@ export default function useLayout(props) {
   const resizerStyle = computed(() => {
     const currentOffset = isDragging.value ? offsetX.value : finalOffsetX.value;
     return {
-      'transform': `translateX(${isRtl.value ? -currentOffset : currentOffset}px)`,
-      'transition': isDragging.value ? 'none' : 'transform 0.15s',
-      'will-change': isDragging.value ? 'transform' : 'auto'
+      transform: `translateX(${isRtl.value ? -currentOffset : currentOffset}px)`,
+      transition: isDragging.value ? "none" : "transform 0.15s",
+      "will-change": isDragging.value ? "transform" : "auto"
     };
   });
 
@@ -65,16 +73,16 @@ export default function useLayout(props) {
     // 在RTL布局中，"左侧"面板视觉上在右侧，宽度需要根据拖拽减少或增加
     if (isRtl.value) {
       return {
-        'width': `calc(100% + ${currentOffset}px)`,
-        'transition': isDragging.value ? 'none' : 'width 0.15s',
-        'will-change': isDragging.value ? 'width' : 'auto'
+        width: `calc(100% + ${currentOffset}px)`,
+        transition: isDragging.value ? "none" : "width 0.15s",
+        "will-change": isDragging.value ? "width" : "auto"
       };
     } else {
       // LTR布局，左侧面板宽度随拖拽增加
       return {
-        'width': `calc(100% + ${currentOffset}px)`,
-        'transition': isDragging.value ? 'none' : 'width 0.15s',
-        'will-change': isDragging.value ? 'width' : 'auto'
+        width: `calc(100% + ${currentOffset}px)`,
+        transition: isDragging.value ? "none" : "width 0.15s",
+        "will-change": isDragging.value ? "width" : "auto"
       };
     }
   });
@@ -85,25 +93,27 @@ export default function useLayout(props) {
     if (isRtl.value) {
       // RTL布局，"右侧"面板视觉上在左侧，需要向左移动并增加宽度
       return {
-        'transform': `translateX(${-currentOffset}px)`,
-        'transition': isDragging.value ? 'none' : 'transform 0.15s',
-        'width': `calc(100% - ${currentOffset}px)`,
-        'will-change': isDragging.value ? 'transform, width' : 'auto'
+        transform: `translateX(${-currentOffset}px)`,
+        transition: isDragging.value ? "none" : "transform 0.15s",
+        width: `calc(100% - ${currentOffset}px)`,
+        "will-change": isDragging.value ? "transform, width" : "auto"
       };
     } else {
       // LTR布局，右侧面板向右移动且宽度减少
       return {
-        'transform': `translateX(${currentOffset}px)`,
-        'transition': isDragging.value ? 'none' : 'transform 0.15s',
-        'width': `calc(100% - ${currentOffset}px)`,
-        'will-change': isDragging.value ? 'transform, width' : 'auto'
+        transform: `translateX(${currentOffset}px)`,
+        transition: isDragging.value ? "none" : "transform 0.15s",
+        width: `calc(100% - ${currentOffset}px)`,
+        "will-change": isDragging.value ? "transform, width" : "auto"
       };
     }
   });
 
   // 计算属性：是否显示视频
   const displayVideo = computed(() => {
-    return isVideo.value && isDesktop.value && isShowVideo.value && !langId.value;
+    return (
+      isVideo.value && isDesktop.value && isShowVideo.value && !langId.value
+    );
   });
 
   // 重置布局
@@ -113,11 +123,14 @@ export default function useLayout(props) {
   };
 
   // 监听显示视频状态变化，重置布局
-  watch(() => displayVideo.value, (newVal) => {
-    if (newVal === false) {
-      resetLayout();
+  watch(
+    () => displayVideo.value,
+    (newVal) => {
+      if (newVal === false) {
+        resetLayout();
+      }
     }
-  });
+  );
 
   // 监听RTL状态变化，重置布局
   watch(isRtl, () => {
@@ -152,10 +165,10 @@ export default function useLayout(props) {
 
     // 防止文本选择
     document.body.classList.add("no-select");
-    
+
     // 添加硬件加速类
     if (container.value) {
-      container.value.classList.add('hardware-accelerated');
+      container.value.classList.add("hardware-accelerated");
     }
   };
 
@@ -180,7 +193,7 @@ export default function useLayout(props) {
 
       // 在RTL模式下反转方向，使其与视觉方向一致
       const effectiveDelta = isRtl.value ? -deltaX : deltaX;
-       
+
       // 应用偏移量变化，使用整数值避免小数导致的额外渲染计算
       const newOffset = offsetX.value + effectiveDelta;
       offsetX.value = Math.round(newOffset);
@@ -217,10 +230,10 @@ export default function useLayout(props) {
 
     // 移除防文本选择样式
     document.body.classList.remove("no-select");
-    
+
     // 移除硬件加速类
     if (container.value) {
-      container.value.classList.remove('hardware-accelerated');
+      container.value.classList.remove("hardware-accelerated");
     }
   };
 
@@ -230,9 +243,11 @@ export default function useLayout(props) {
   };
 
   const handleBack = () => {
-    const jumpTranscriptOrigin = window.sessionStorage.getItem('jumpTranscriptOrigin')
-    if(jumpTranscriptOrigin && jumpTranscriptOrigin.startsWith('/')){
-      window.sessionStorage.removeItem('jumpTranscriptOrigin')
+    const jumpTranscriptOrigin = window.sessionStorage.getItem(
+      "jumpTranscriptOrigin"
+    );
+    if (jumpTranscriptOrigin && jumpTranscriptOrigin.startsWith("/")) {
+      window.sessionStorage.removeItem("jumpTranscriptOrigin");
       return router.push({
         path: jumpTranscriptOrigin
       });
@@ -240,14 +255,20 @@ export default function useLayout(props) {
     router.push({
       path: localePath("/home")
     });
-  }
-  const handleJumpUpgrade = () => {
-    router.push(localePath("/accountSettings?type=2"));
   };
+  const devicePixelRatioDiff = ref(1);
   // 初始化组件时设置样式
   onMounted(() => {
+    devicePixelRatioDiff.value = window.devicePixelRatio;
+    if (
+      props.fileBaseInfo.finalOffsetX &&
+      props.fileBaseInfo.devicePixelRatioDiff === devicePixelRatioDiff.value
+    ) {
+      offsetX.value = props.fileBaseInfo.finalOffsetX;
+      finalOffsetX.value = offsetX.value;
+    }
     // 添加支持硬件加速的全局样式
-    const styleEl = document.createElement('style');
+    const styleEl = document.createElement("style");
     styleEl.innerHTML = `
       .hardware-accelerated * {
         transform: translateZ(0);
@@ -277,6 +298,7 @@ export default function useLayout(props) {
     handleDragStart,
     handelToggleVideo,
     handleBack,
-    handleJumpUpgrade
+    devicePixelRatioDiff,
+    finalOffsetX
   };
-} 
+}

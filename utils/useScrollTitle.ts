@@ -11,13 +11,13 @@ export function useScrollTitle(ngTitle?: string) {
   let titleTimer: any = null
 
   onMounted(() => {
-    titleTimer = setInterval(() => {
-      scrollTitle = scrollTitle.substring(1) + scrollTitle[0]
-      document.title = scrollTitle
-    }, 300)
+    // titleTimer = setInterval(() => {
+    //   scrollTitle = scrollTitle.substring(1) + scrollTitle[0]
+    //   document.title = scrollTitle
+    // }, 300)
   })
 
   onUnmounted(() => {
-    clearInterval(titleTimer)
+    // clearInterval(titleTimer)
   })
 } 

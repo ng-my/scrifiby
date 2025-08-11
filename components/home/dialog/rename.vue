@@ -5,18 +5,18 @@
       :title="t('FolderPage.dialog.rename.title')"
       width="30%"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       @open="handleOpen"
       @closed="handleClosed"
     >
-      <el-input v-model="value" />
+      <el-input v-model="value" @input="handleInput" />
       <template #footer>
-        <el-button @click="visible = false">
+        <el-button class="home-btn" @click="visible = false">
           {{ t("FolderPage.dialog.rename.cancel") }}
         </el-button>
         <el-button
+          class="home-btn"
           :loading="loading"
-          :disabled="!value"
+          :disabled="!value.trim()"
           type="primary"
           @click="handleConfirm"
         >
@@ -47,9 +47,11 @@ const visible = computed({
 const value = ref("");
 const handleOpen = () => {
   value.value = props.row?.fileName || "";
+  window.addEventListener("keydown", handleKeyPress);
 };
 const handleClosed = () => {
   value.value = "";
+  window.removeEventListener("keydown", handleKeyPress);
 };
 
 const loading = ref(false);
@@ -70,6 +72,18 @@ const handleConfirm = async () => {
     loading.value = false;
   }
 };
+
+const handleInput = (val: string) => {
+  // 过滤掉所有的 / 字符
+  value.value = val.replace(/\//g, "").trim();
+};
+
+// 处理 Enter 按键
+function handleKeyPress(e: any) {
+  if (e.key === "Enter" && !loading.value && value.value) {
+    handleConfirm();
+  }
+}
 </script>
 
 <style scoped>

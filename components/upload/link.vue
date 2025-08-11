@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col justify-center">
     <slot></slot>
-    <div class="mb-2.5 text-sm">
+    <div class="link-label mb-2.5 text-sm">
       {{ t("FileUploadAndRecording.upload.link.label") }}
     </div>
     <el-input
@@ -9,6 +9,7 @@
       type="textarea"
       :rows="4"
       placeholder="https://www.youtube.com/watch?v=..."
+      @keydown.enter.prevent
     ></el-input>
   </div>
 </template>
@@ -40,5 +41,8 @@ const value = computed({
   width: 0;
   height: 0;
   background-color: transparent;
+}
+:deep(.el-textarea__inner:focus) {
+  box-shadow: 0 0 0 1px #6f4cf0 inset;
 }
 </style>

@@ -42,6 +42,8 @@ export const useUserStore = defineStore(
 
     async function setUserInfo(user: any) {
       userInfo.value = user;
+      const subscriptionStore = useSubscriptionStore();
+      const { subscriptionStatus } = storeToRefs(useSubscriptionStore());
       if (user?.token) {
         localStorage.setItem("token", user.token);
         const token = useCookie("token", {
@@ -52,8 +54,8 @@ export const useUserStore = defineStore(
           sameSite: "lax" // ❗ 关键：从 'strict' 改为 'lax'
         });
         token.value = user.token; // 设置值
-        const subscriptionStore = useSubscriptionStore();
-        subscriptionStore.getStatusUserId();
+        subscriptionStore.getStatusUserIdFetch();
+        subscriptionStatus.value = user.userInfoVO.subscriptionStatus ?? null;
         // 这里调用 setEmail 方法
         emailStore.setEmail(user.userInfoVO?.email || "");
       } else {
@@ -61,6 +63,8 @@ export const useUserStore = defineStore(
         const token = useCookie("token");
         token.value = "";
         emailStore.setEmail("");
+        // 订阅信息
+        subscriptionStore.clearSubscriptionDetail();
       }
     }
 
@@ -70,3 +74,11 @@ export const useUserStore = defineStore(
     persist: true
   }
 );
+
+export const useGuestUserStore = defineStore("guestUser", () => {
+  const tmpUserInfo = ref("");
+  async function setTmpUserInfo(user: any) {
+    tmpUserInfo.value = user;
+  }
+  return { tmpUserInfo, setTmpUserInfo };
+});

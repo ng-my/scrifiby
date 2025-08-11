@@ -3,7 +3,7 @@
     <!-- 顶部操作栏 -->
     <div
       ref="folderBar"
-      class="flex h-8 w-full items-center justify-between rounded-3xl px-3 py-2.5 pe-0.5 transition-all duration-300"
+      class="flex h-8 w-full items-center justify-between rounded-lg px-3 py-2.5 pe-0.5 transition-all duration-300 hover:bg-boxBgColor"
     >
       <div
         @click.stop="toggleExpanded"
@@ -51,6 +51,7 @@
     <!-- 操作弹窗 (复用同一个组件) -->
     <layout-folder-action-dialog
       v-model="dialogVisible"
+      ref="actionDialog"
       :type="dialogType"
       :loading="loading"
       :folder="currentFolder"
@@ -62,6 +63,7 @@
 <script setup lang="ts">
 import { ArrowUp, ArrowDown } from "@element-plus/icons-vue";
 import { ref } from "vue";
+import { Msg } from "~/utils/tools";
 import { type Folder } from "~/api/type/folder";
 import { useFolderListStore, useFolderStore } from "~/stores/useFolderStore";
 import { useAnimation } from "~/components/layout/folder/useAnimation";
@@ -69,6 +71,8 @@ import { useAnimation } from "~/components/layout/folder/useAnimation";
 const { t } = useI18n();
 // 状态管理
 const folders = ref<Folder[]>([]);
+
+const emit = defineEmits(["rowClick"]);
 
 const route = useRoute();
 const router = useRouter();
@@ -130,7 +134,10 @@ const handleDeleteFolder = async () => {
     const { useFolderApi } = await import("~/api/folder");
     await useFolderApi.deleteFolder({ folderId: currentFolder.value!.id });
     await fetchList(true);
-    ElMessage.success(t("FolderPage.delSuccess"));
+    Msg({
+      message: t("FolderPage.delSuccess"),
+      type: "success"
+    });
     if (selectedFolder.value.id === currentFolder.value!.id) {
       router.push(localePath("/home"));
       updateFolder({});
@@ -142,13 +149,18 @@ const handleDeleteFolder = async () => {
   }
 };
 
+const actionDialog = useTemplateRef("actionDialog");
 const handelCreateFolder = async (name: string) => {
   try {
     loading.value = true;
     const { useFolderApi } = await import("~/api/folder");
     await useFolderApi.createFolder({ folderName: name });
+    if (actionDialog.value) {
+      actionDialog.value.isOver = true;
+    }
     await fetchList(true);
     dialogVisible.value = false;
+    isExpanded.value = true;
   } catch (err) {
   } finally {
     loading.value = false;
@@ -163,6 +175,9 @@ const handleEditFolder = async (newName: string) => {
       folderId: currentFolder.value!.id,
       folderName: newName
     });
+    if (actionDialog.value) {
+      actionDialog.value.isOver = true;
+    }
     selectedFolder.value = {
       ...currentFolder.value,
       folderName: newName
@@ -191,6 +206,7 @@ const handleRowClick = (row: Folder) => {
   router.push(localePath("/folder"));
   updateFolder(row);
   isJumpFromHome.value = true;
+  emit("rowClick");
 };
 
 const folderBarRef = useTemplateRef("folderBar");
@@ -206,7 +222,7 @@ onMounted(() => {
 const { isExpanded, toggleExpanded } = useAnimation();
 
 const { step } = storeToRefs(useTourStore());
-const isMobile = inject<Ref<boolean>>("isMobile");
+const isMobile = useState("isMobile");
 </script>
 
 <style scoped>

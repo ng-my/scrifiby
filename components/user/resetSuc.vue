@@ -2,6 +2,7 @@
   <div class="customer-dialog">
     <el-dialog
       :before-close="handleClose"
+      @open="handleOpen"
       v-model="visible"
       :title="t('IdentityInfoManage.resetPassword')"
     >
@@ -33,11 +34,22 @@ const visible = computed({
   set: (value) => emit("update:modelValue", value)
 });
 
+function handleKeyPress(e: any) {
+  if (e.key === "Enter") {
+    handleConfirm()
+  }
+}
+
 const handleConfirm = async () => {
   emit("confirm");
 };
+
+const handleOpen = async () => {
+  window.addEventListener("keypress", handleKeyPress);
+};
 const handleClose = (done: () => void) => {
   done();
+  window.removeEventListener("keypress", handleKeyPress);
   setTimeout(() => {
     handleConfirm();
   }, 300);

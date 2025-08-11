@@ -1,26 +1,44 @@
 // plugins/gtag.js
 export default defineNuxtPlugin((nuxtApp) => {
-// export default ({ app }) => {
+  // export default ({ app }) => {
   if (process.client) {
     // 插入 gtag 脚本
-    (function() {
-      const script = document.createElement('script');
+    (function () {
+      const script = document.createElement("script");
       script.async = true;
-      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-Z1V73NNS35';
+      const config = useRuntimeConfig();
+      let gtagId  = config.public.gtagId;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag() {
+        dataLayer.push(arguments);
+      }
       window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', 'G-Z1V73NNS35');
+      gtag("js", new Date());
+      gtag("config", gtagId);
     })();
 
     // 封装全局事件上报方法
-    const trackEvent = (action, category, label, value = null, customParams = {}) => {
-      console.log(location.href, "《---trackEvent===》", action, category, label, value = null, customParams = {});
+    const trackEvent = (
+      action,
+      category,
+      label,
+      value = null,
+      customParams = {}
+    ) => {
+      console.log(
+        location.href,
+        "《---trackEvent===》",
+        action,
+        category,
+        label,
+        (value = null),
+        (customParams = {})
+      );
       if (window.gtag) {
-        window.gtag('event', action, {
+        window.gtag("event", action, {
           location: location.href,
           event_category: category,
           event_label: label,
@@ -30,7 +48,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     };
     // 注入到全局
-    nuxtApp.provide('gtagEvent', trackEvent);
+    nuxtApp.provide("gtagEvent", trackEvent);
 
     // 组件中使用       事件类型  事件分类 事件标签
     // (useNuxtApp().$gtagEvent as Function)('click', 'LOGO_Btn', 'Back to Home');

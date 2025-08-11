@@ -1,47 +1,114 @@
 <template>
   <nav
-    class="fixed left-0 top-0 z-[999] flex w-full justify-center bg-white px-[1rem]"
+    class="sticky left-0 top-0 z-[999] flex w-full justify-center bg-black px-[1rem]"
   >
     <div
-      class="flex h-[4.375rem] w-full max-w-[75rem] items-center justify-between bg-white"
+      class="flex h-[4.375rem] w-full max-w-[75rem] items-center justify-between bg-black"
     >
       <!-- Logo -->
       <div
         @click="goToHome()"
-        class="flex cursor-pointer items-center space-x-2"
+        class="flex items-center space-x-2"
+        :class="{
+          'cursor-pointer': isShowIconPointer
+        }"
       >
         <el-image
-          src="/assets/logo2.svg"
+          src="/assets/images/index_black/logo.svg"
           alt="Scribify Logo"
           class="h-6 w-auto sm:h-[1.875rem]"
-          fit="cover"
+          fit="contain"
         ></el-image>
       </div>
-      <!-- Menu -->
+      <template v-if="isLargeScreen">
+        <!-- Menu -->
+        <ul
+          v-if="props.showMenu"
+          class="flex space-x-[4.25rem] text-[1rem] font-normal text-white"
+        >
+          <li
+            @click="scrollIntoView(item.name)"
+            v-for="item in menuList"
+            :key="item.id"
+            class="cursor-pointer transition hover:text-mainColor-900"
+          >
+            {{ item.name }}
+          </li>
+        </ul>
+        <!-- Right Icon -->
+        <div class="index-right-wrap">
+          <layout-header :show-home-icon="false" />
+        </div>
+      </template>
+      <template v-else>
+        <div class="index-right-wrap flex items-center">
+          <layout-header :show-home-icon="false" />
+          <div class="flex h-[1.5rem] w-[1.5rem] items-center justify-center">
+            <img
+              v-if="!showPopup"
+              @click="showPopup = !showPopup"
+              class="h-full w-[1.5rem]"
+              src="/assets/images/index/more.svg"
+              alt=""
+            />
+            <span
+              v-else
+              @click="showPopup = !showPopup"
+              class="iconfont icon-shanchu text-[1.25rem] text-white"
+            ></span>
+          </div>
+        </div>
+      </template>
+    </div>
+    <el-drawer
+      v-model="showPopup"
+      :lock-scroll="false"
+      size="auto"
+      direction="ttb"
+      :with-header="false"
+      :show-close="false"
+      class="rounded-[1.125rem] rounded-t-[0] !bg-[#1B0B30] !p-0"
+      body-class="bg-[#1B0B30] rounded-[1.125rem] text-white !px-8 !pt-[0.875rem] !pb-[1.125rem]"
+      modal-class="modal-class !top-[4.375rem]"
+    >
       <ul
         v-if="props.showMenu"
-        class="flex space-x-[4.25rem] text-[1rem] font-normal text-black"
+        class="flex flex-col items-center text-sm font-normal text-white"
       >
         <li
           @click="scrollIntoView(item.name)"
           v-for="item in menuList"
           :key="item.id"
-          class="cursor-pointer transition hover:text-mainColor-900"
+          class="flex h-[2.75rem] w-[7rem] cursor-pointer items-center justify-center text-sm transition hover:text-mainColor-900"
         >
           {{ item.name }}
         </li>
       </ul>
-      <!-- Right Icon -->
-      <div>
-        <layout-header :show-home-icon="false" :show-i18n="false" />
+      <div
+        v-if="!isLogin"
+        class="mx-auto flex w-full items-center justify-center pt-[1.375rem]"
+      >
+        <div
+          @click="login"
+          class="login-btn flex h-[2.25rem] w-full flex-shrink-0 cursor-pointer items-center justify-center rounded-[1.125rem] bg-[#9334EB] text-sm font-normal"
+        >
+          <span>{{ t("AccountSettingsPage.logIn") }}</span>
+        </div>
       </div>
-    </div>
+    </el-drawer>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps } from "vue";
+import { ref, defineProps, computed } from "vue";
 import { useIntervalFn } from "@vueuse/core";
+import { useMediaQuery } from "@vueuse/core";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "#vue-router";
+import { useUserStore } from "~/stores/useUserStore";
+import { storeToRefs } from "pinia";
+const userStore = useUserStore();
+const { userInfo } = storeToRefs(userStore);
 const props = defineProps({
   showMenu: {
     type: Boolean,
@@ -50,6 +117,14 @@ const props = defineProps({
 });
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
+const localePath = useLocalePath();
+const showPopup = ref(false);
+const isLargeScreen = useMediaQuery("(min-width: 768px)", { ssrWidth: 1280 });
+const isLogin = computed(() => !!(userInfo.value as any)?.userInfoVO?.userid);
+provide("showLoginBtn", isLargeScreen);
+provide("isIndexPage", true);
+
 const menuList = ref([
   { id: 1, name: "Product" },
   { id: 2, name: "Pricing" },
@@ -57,6 +132,7 @@ const menuList = ref([
 ]);
 const emit = defineEmits(["scrollIntoView"]);
 const scrollIntoView = (id: string) => {
+  showPopup.value = false;
   const path = route.path;
   if (path.includes("user/aboutUs")) {
     if (process.client) {
@@ -69,12 +145,20 @@ const scrollIntoView = (id: string) => {
   emit("scrollIntoView", `ID_${id}`);
 };
 
-const localePath = useLocalePath();
 const goToHome = () => {
   router.push({
     path: localePath("/")
   });
 };
+//登录
+const login = () => {
+  router.push({
+    path: localePath("/user/login")
+  });
+};
+const isShowIconPointer = computed(() => {
+  return route.name && !route.name?.startsWith("index");
+});
 onMounted(() => {
   const anchorId = window.sessionStorage.getItem("anchorId");
   if (anchorId) {
@@ -91,4 +175,28 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.index-right-wrap {
+  background-color: #000;
+  :deep(.language-switcher-box) {
+    @apply bg-black;
+    .not-login-box {
+      .login-btn {
+        @apply bg-black text-white;
+      }
+      .signup-btn {
+        background: linear-gradient(90deg, #3470ff 0%, #9534e6 100%);
+        // prettier-ignore
+        @apply text-white !rounded-[1.375rem] !px-6;
+        @media (max-width: 768px) {
+          width: 7.875rem !important;
+        }
+      }
+    }
+    .i18n-btn {
+      color: #fff !important;
+      background-color: #000;
+    }
+  }
+}
+</style>

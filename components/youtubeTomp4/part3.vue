@@ -1,7 +1,7 @@
 <template>
   <!--3、 介绍说明 -->
   <section
-    class="flex flex-col items-center justify-center gap-8 px-4 md:flex-row md:gap-16"
+    class="mx-4 flex flex-col items-center justify-center gap-8 rounded-lg border border-[#512680] bg-[#1B0B30] p-[2rem] md:flex-row md:gap-16 md:p-[3.5rem]"
   >
     <!-- 左侧文字 -->
     <div
@@ -24,7 +24,7 @@
       class="flex flex-shrink-0 justify-center md:flex-[0_0_38%] md:basis-[38%]"
     >
       <el-image
-        :src="`/assets/images/downloadMp4/Youtube.png`"
+        :src="`/assets/images/downloadMp4/black_Youtube.png`"
         class="h-[6rem] w-[12rem] object-contain md:h-[8rem] md:w-[16rem]"
         fit="contain"
       ></el-image>

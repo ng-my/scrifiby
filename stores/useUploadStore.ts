@@ -1,16 +1,17 @@
 export const useUploadStore = defineStore("upload", () => {
   const fileTypes = ref([
-    "MP3",
-    "MP4",
-    "M4A",
-    "MOV",
-    "AAC",
-    "WAV",
-    "OGG",
-    "OPUS",
-    "MPEG",
-    "WMA",
-    "WMV"
+    "mp3",
+    "mp4",
+    "m4a",
+    "mov",
+    "aac",
+    "wav",
+    "ogg",
+    "opus",
+    "mpeg",
+    "wma",
+    "wmv",
+    "flac"
   ]);
   const selectRawFiles = ref<File[]>([]);
 

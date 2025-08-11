@@ -1,10 +1,10 @@
+// 西班牙语
 let message = {
   // 首页
   HomePage: {
     home: "Inicio",
     version: "Versión básica（Gratis）:",
-    times:
-      "Transcripción gratuita {times} veces al día, te quedan {left} transcripciones.",
+    times: "{times} transcripciones gratuitas por día, {left} restantes hoy. ",
     tips: "Actualiza a Pro para transcripciones ilimitadas.",
     update: "Actualizar ahora",
     folders: "Carpetas",
@@ -16,6 +16,7 @@ let message = {
     confirm: "Crear",
     dialogLabel: "Nombre de la carpeta",
     recently: "Archivos recientes",
+    loading: "Cargando",
     tour: {
       step0: {
         title: "Bienvenido a {name}",
@@ -71,7 +72,9 @@ let message = {
       edit: "Edita, refina y exporta tus transcripciones en formatos que se adapten a tus necesidades.",
       collaborate: "Colabora compartiendo tu texto transcrito con otros.",
       button: "Comenzar",
-      tip: "¿Listo para convertir audio en texto transcrito? ¡Comienza a explorar ahora!"
+      tip: "¿Listo para convertir audio en texto transcrito? ¡Comienza a explorar ahora!",
+      tip2: "¡Comienza a explorar ahora!",
+      tip1: "¿Listo para convertir audio en texto transcrito? "
     },
     subscriptionModal: {
       left: {
@@ -118,7 +121,8 @@ let message = {
       move: "Mover",
       failed: "Fallido",
       selected: "Seleccionado",
-      success: "Éxito"
+      success: "Éxito",
+      fileList: "Lista de Archivos"
     },
     dialog: {
       move: {
@@ -151,7 +155,7 @@ let message = {
       },
       export: {
         title: "Exportar",
-        select: "Selecciona uno o más formatos",
+        select: "Selecciona el formato que necesitas",
         settings: "Configuraciones",
         speaker: "Incluir hablante",
         timecodes: "Incluir códigos de tiempo",
@@ -183,6 +187,7 @@ let message = {
       pause: "Pausar",
       resume: "Reanudar",
       stop: "Detener",
+      endRecord: "Finalizar grabación",
       delete: "Eliminar",
       transcribe: "Transcribir",
       permissionDenied:
@@ -208,7 +213,7 @@ let message = {
         title: "Pegar enlaces",
         label:
           "Pega el enlace del medio de las siguientes plataformas, pero no limitado a: YouTube, Facebook, X, Dropbox, Google Drive, Vimeo",
-        confirm: "Transcribir",
+        confirm: "Añadir",
         cancel: "Cancelar",
         // 请输入正确的链接
         errorTitle:
@@ -218,7 +223,8 @@ let message = {
       file: {
         orTitle: "Transcribir un medio en línea",
         dialogTitle: "Transcribir archivos",
-        tip: "Haz clic para subir o arrastra y suelta",
+        tip1: "Haz clic para subir",
+        tip2: "o arrastra y suelta",
         or: "o"
       },
       del: {
@@ -230,16 +236,18 @@ let message = {
       },
       files: "Archivos",
       resultDialogTitle: "Transcribir archivos",
+      resultDialogTitle2: "Transcribir archivo",
       cancel: "Cancelar",
       confirm: "Transcribir",
       return: "Volver",
       addMore: "Agregar más",
-      language: "Idioma del audio",
+      language: "Idioma del medio",
       failed: "Fallido",
       tooLarge: "El archivo es demasiado grande.",
+      linkUpload: "Subiendo...",
       fileFormat: "El formato de archivo no está permitido",
       localFiles: "Archivos locales",
-      pasteLink: "Pegar enlaces",
+      pasteLink: "Enlace en línea",
       uploadErr: "Error de carga",
       hashErr: "Error de hash",
       table: {
@@ -251,7 +259,7 @@ let message = {
       maxFileNum: "El número de archivos no puede exceder de {num}.",
       speaker: "Identificación del hablante",
       speakerLabel:
-        "Etiqueta cada sección de la transcripción indicando quién habla."
+        "Label each segment of the transcript with the person speaking."
     }
   },
   // 转录详情页
@@ -550,11 +558,20 @@ let message = {
     upgradeBtn: "Actualizar ahora",
     upgradeTip30: "Este archivo supera los 30 minutos.",
     upgradeTipMore:
-      "Actualiza a Scribify Pro para transcribir archivos de hasta 10 horas"
+      "Actualiza a Scribify Pro para transcribir archivos de hasta 10 horas",
+    errorTips: "Algo salió mal.",
+    copiedLink: "Enlace copiado",
+    copyGotIt: "sabía"
   },
   // 登录、注册、修改密码
   IdentityInfoManage: {
     or: "o", // 或
+    LoginBtn: "Inicia sesión con correo electrónico",
+    LoginGoogle: "Inicia sesión con Google",
+    SignupBtn: "Regístrate con correo electrónico",
+    SignupGoogle: "Regístrate con Google",
+    SignupDes: "Regístrate hoy para presenciar su magia — gratis.",
+    SignupTitle: "Transcripción precisa e ilimitada",
     signup: "Registrarse", // 注册
     sign_up: "Registrarse", // 注册
     loginByGoogle: "Continuar con Google", // 使用Google登录
@@ -563,15 +580,13 @@ let message = {
     accountExists: "¿Ya tienes una cuenta? ", // 已经有账户了？登录
     agreeTerm: {
       // // 我同意 XXX 服务条款和隐私政策
-      agree: "Al usar {proName}, aceptas los {terms} y la {policy}.",
-      terms: "Términos de servicio",
+      agree: "Al continuar, aceptas nuestros {terms} y {policy}.",
+      terms: "Términos",
       policy: "Política de privacidad"
     },
     setPassword: "Establecer una contraseña", // 设置密码
     code: "Código de verificación", // 验证码
     resend: "Reenviar", // 重新发送
-    codeToEmail:
-      "Acabamos de enviar un código de registro temporal a tu correo electrónico. Por favor, revisa tu bandeja de entrada y pega el código de registro arriba.", // 我们刚刚向您的邮箱发送了验证码，请查看收件箱并将验证码粘贴到上方。
     enterPassword: "Por favor, introduce tu contraseña.", // 请输入密码
     passwordLeval: "Nivel de contraseña", // 密码强度
     Weak: "Débil", // 弱 中 强
@@ -596,7 +611,15 @@ let message = {
     resetPassword: "Restablecer contraseña", // 重置密码
     resetYourPassword: "Restablece tu contraseña", // 重置你的密码
     newOldCantSame: "La nueva contraseña debe ser diferente de la anterior.", // 新密码与旧密码不能相同
-    passwordResetOk: "¡Contraseña restablecida con éxito!" // 密码重置成功！
+    passwordResetOk: "¡Contraseña restablecida con éxito!", // 密码重置成功！
+    signupToSaveProgress: "Completa el registro para guardar tu progreso.",
+    tip: "Consejo",
+    tipContentEmail:
+      "Acabamos de enviar la contraseña de acceso de su cuenta a su correo electrónico.",
+    tipContentPassword:
+      "Por favor revise su bandeja de entrada e inicie sesión con su correo electrónico y contraseña.",
+    codeToEmail:
+      "Acabamos de enviar un código de verificación a su correo electrónico. Por favor revise su bandeja de entrada y pegue el código de verificación arriba."
   },
   // 分享详情页
   Sharepage: {},
@@ -607,18 +630,13 @@ let message = {
     subscription: "Plan de suscripción",
     freeversion: "Gratis",
     transcribeTimesDay: "3 transcripciones diarias",
-    freeThreeTimesDay: "Transcribe 3 archivos gratis cada día.",
     uploadMinutes: "Subidas de 30 minutos",
-    oneFileUploaded:
-      "Cada archivo puede durar hasta 30 minutos, subiendo un archivo a la vez",
     lowerPriority: "Prioridad más baja",
-    needsToWaitLonger:
-      "3 transcripciones diarias Espera más tiempo para que tus archivos sean transcritos.",
     currentPlan: "Plan actual",
     professionalEdition: "edición profesional",
     unlimitedTranscription: "Transcripción ilimitada",
-    unlimitedNumberOfTimes: "Transcripciones ilimitadas para una persona.",
-    uploadWithinHours: "Subida hasta 10 horas",
+    unlimitedNumberOfTimes:
+      "Frecuencia y duración de transcripción ilimitadas.",
     filesUploadedAtOnce:
       "Cada archivo puede durar hasta 10 horas/5 GB. Sube 50 archivos a la vez.",
     highestPriority: "máxima prioridad",
@@ -645,7 +663,6 @@ let message = {
     daily: "{start} de {end} transcripciones diarias usadas",
     upgradetoPro: "Actualizar a Pro",
     accountSetting: "Configuración de cuenta",
-    returnAccountSetting: "Volver a configuración de cuenta",
     logOut: "Cerrar sesión",
     account: "Cuenta",
     email: "Correo electrónico",
@@ -657,7 +674,6 @@ let message = {
     notFund: "No encontrado",
     couldntFind: "No pudimos encontrar lo que buscabas.",
     proAnnual: "Pro Anual",
-    yourSubscription: "Tu suscripción será cancelada el",
     proMonthly: "Pro Mensual",
     perMonth: "por mes",
     afterwards: "después",
@@ -668,8 +684,20 @@ let message = {
     perYear: "por año",
     getProPlan: "Obtener plan Pro",
     changeToAnnual: "Cambiar a anual",
-    automaticRenewalon: "Renovación automática el"
-  },
+    automaticRenewalon: "Renovación automática el",
+    eachMonth: "Renovación automática el día {time} de cada mes.",
+    automaticRenewal:
+      "Renovación automática fallida, por favor verifique el método de pago.",
+    eachYear: "Renovación automática el {time} cada año.",
+    returnAccountSetting: "Volver",
+    needsToWaitLonger:
+      "Espere un poco más antes de que sus archivos sean transcritos.",
+    freeThreeTimesDay: "Transcribe 3 archivos gratis cada día.",
+    oneFileUploaded:
+      "Cada archivo puede tener una duración de hasta 30 minutos. Sube 1 archivo a la vez.",
+    uploadWithinHours: "Subidas de 10 horas",
+      yourSubscription: "Tu suscripción será cancelada el {time}."
+},
   // 语言对应关系
   LanguageMap: {
     sysLanguagesMap: {
@@ -1050,8 +1078,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

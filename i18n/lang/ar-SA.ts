@@ -1,9 +1,10 @@
+// 阿拉伯语
 let message = {
   // الصفحة الرئيسية
   HomePage: {
     home: "الصفحة الرئيسية",
     version: "النسخة الأساسية (مجانية):",
-    times: "نسخ مجاني {times} مرة يوميًا، لديك {left} مرات متبقية للنسخ.",
+    times: "{left} متبقية اليوم، {times} نسخ مجانية يوميًا.",
     tips: "قم بالترقية إلى Pro للحصول على نسخ غير محدودة.",
     update: "الترقية الآن",
     folders: "المجلدات",
@@ -16,6 +17,7 @@ let message = {
     confirm: "إنشاء",
     dialogLabel: "اسم المجلد",
     recently: "الملفات الأخيرة",
+    loading: "جاري التحميل",
     tour: {
       step0: {
         title: "مرحبًا بك في {name}",
@@ -67,7 +69,9 @@ let message = {
       edit: "حرر، نقح، وصدّر نصوصك بتنسيقات تناسب احتياجاتك.",
       collaborate: "تعاون من خلال مشاركة النصوص المنسوخة مع الآخرين.",
       button: "ابدأ الآن",
-      tip: "هل أنت مستعد لتحويل الصوت إلى نص منسوخ؟ ابدأ الاستكشاف الآن!"
+      tip: "هل أنت مستعد لتحويل الصوت إلى نص منسوخ؟ ابدأ الاستكشاف الآن!",
+      tip2: "ابدأ الاستكشاف الآن!",
+      tip1: "مستعد لتحويل الصوت إلى نص مكتوب؟ "
     },
     subscriptionModal: {
       left: {
@@ -114,7 +118,8 @@ let message = {
       move: "نقل",
       failed: "فشل",
       selected: "محدد",
-      success: "نجاح"
+      success: "نجاح",
+      fileList: "قائمة الملفات"
     },
     dialog: {
       move: {
@@ -147,7 +152,7 @@ let message = {
       },
       export: {
         title: "تصدير",
-        select: "حدد تنسيقًا واحدًا أو أكثر",
+        select: "اختر التنسيق الذي تحتاجه",
         settings: "الإعدادات",
         speaker: "تضمين المتحدث",
         timecodes: "تضمين رموز الوقت",
@@ -179,6 +184,7 @@ let message = {
       pause: "إيقاف مؤقت",
       resume: "استئناف",
       stop: "إيقاف",
+      endRecord: "إنهاء التسجيل",
       delete: "حذف",
       transcribe: "نسخ",
       permissionDenied: "تم رفض إذن الميكروفون أو الجهاز غير موجود",
@@ -203,7 +209,7 @@ let message = {
         title: "لصق رابط",
         label:
           "الصق روابط الوسائط من المنصات التالية وليس حصرًا عليها: يوتيوب، فيسبوك، X، دروبوكس، جوجل درايف، فيميو",
-        confirm: "نسخ",
+        confirm: "إضافة",
         cancel: "إلغاء",
         errorTitle:
           "عنوان الرابط الذي أدخلته غير صحيح. يرجى التحقق والمحاولة مرة أخرى.",
@@ -212,7 +218,8 @@ let message = {
       file: {
         orTitle: "نسخ وسائط عبر الإنترنت",
         dialogTitle: "نسخ ملف",
-        tip: "انقر للتحميل أو اسحب وأفلت",
+        tip1: "انقر للتحميل",
+        tip2: "أو اسحب وأفلت",
         or: "أو"
       },
       del: {
@@ -223,16 +230,18 @@ let message = {
       },
       files: "ملفات",
       resultDialogTitle: "نسخ الملفات",
+      resultDialogTitle2: "نسخ الملف",
       cancel: "إلغاء",
       confirm: "نسخ",
       return: "رجوع",
       addMore: "إضافة المزيد",
-      language: "لغة الصوت",
+      language: "لغة الوسائط",
       failed: "فشل",
       tooLarge: "الملف كبير جدًا.",
+      linkUpload: "جاري الرفع...",
       fileFormat: "تنسيق الملف غير مسموح به",
       localFiles: "ملفات محلية",
-      pasteLink: "لصق رابط",
+      pasteLink: "رابط عبر الإنترنت",
       uploadErr: "خطأ في التحميل",
       hashErr: "خطأ في التجزئة",
       table: {
@@ -243,7 +252,7 @@ let message = {
       },
       maxFileNum: "لا يمكن أن يتجاوز عدد الملفات {num}.",
       speaker: "تحديد المتحدث",
-      speakerLabel: "يوسم كل قسم من النص المسموع باسم المتحدث."
+      speakerLabel: "قم بتسمية كل جزء من النص المكتوب بالشخص الذي يتحدث."
     }
   },
   // صفحة تفاصيل النسخ
@@ -542,11 +551,20 @@ let message = {
     upgradeBtn: "ترقية الآن",
     upgradeTip30: "هذا الملف يتجاوز 30 دقيقة",
     upgradeTipMore:
-      "قم بالترقية إلى Scribify Pro لنسخ الملفات لمدة تصل إلى 10 ساعات"
+      "قم بالترقية إلى Scribify Pro لنسخ الملفات لمدة تصل إلى 10 ساعات",
+    errorTips: "لقد حدث خطأ ما.",
+    copiedLink: "تم نسخ الرابط",
+    copyGotIt: "فهمتها"
   },
   // تسجيل الدخول، التسجيل، تغيير كلمة المرور
   IdentityInfoManage: {
     or: "أو",
+    LoginBtn: "تسجيل الدخول بواسطة البريد الإلكتروني",
+    LoginGoogle: "تسجيل الدخول بواسطة Google",
+    SignupBtn: "سجل بواسطة البريد الإلكتروني",
+    SignupGoogle: "سجل بواسطة Google",
+    SignupDes: "سجل اليوم لتشهد السحر — مجانًا.",
+    SignupTitle: "نسخ دقيق وغير محدود",
     signup: "التسجيل",
     sign_up: "التسجيل",
     loginByGoogle: "تسجيل الدخول بواسطة جوجل",
@@ -554,15 +572,13 @@ let message = {
     createAccount: "إنشاء حساب",
     accountExists: "لديك حساب بالفعل؟ ",
     agreeTerm: {
-      agree: "أوافق على {proName}{terms} و{policy}.",
-      terms: "شروط الخدمة",
+      agree: "بتابعك للتنفيذ، فإنك توافق على {terms} و{policy} لدينا.",
+      terms: "شروط",
       policy: "سياسة الخصوصية"
     },
     setPassword: "تعيين كلمة المرور",
     code: "رمز التحقق",
     resend: "إعادة إرسال",
-    codeToEmail:
-      "لقد أرسلنا للتو رمز التحقق إلى بريدك الإلكتروني، يرجى التحقق من صندوق الوارد ولصق الرمز أعلاه.",
     enterPassword: "الرجاء إدخال كلمة المرور.",
     passwordLeval: "قوة كلمة المرور",
     Weak: "ضعيفة",
@@ -586,7 +602,15 @@ let message = {
     resetPassword: "إعادة تعيين كلمة المرور",
     resetYourPassword: "إعادة تعيين كلمة المرور",
     newOldCantSame: "لا يمكن أن تكون كلمة المرور الجديدة مطابقة للقديمة.",
-    passwordResetOk: "تمت إعادة تعيين كلمة المرور بنجاح!"
+    passwordResetOk: "تمت إعادة تعيين كلمة المرور بنجاح!",
+    signupToSaveProgress: "قم بإكمال التسجيل لحفظ تقدمك.", // 完成注册以保存您的进度
+    tip: "نصيحة",
+    tipContentEmail:
+      "لقد أرسلنا للتو كلمة مرور تسجيل الدخول لحسابك إلى بريدك الإلكتروني.",
+    tipContentPassword:
+      "يرجى التحقق من صندوق الوارد الخاص بك وتسجيل الدخول باستخدام بريدك الإلكتروني وكلمة المرور.",
+    codeToEmail:
+      "لقد أرسلنا للتو رمز التحقق إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد ولصق رمز التحقق أعلاه."
   },
   // صفحة المشاركة
   Sharepage: {},
@@ -597,18 +621,12 @@ let message = {
     subscription: "خطة الاشتراك",
     freeversion: "مجاني",
     transcribeTimesDay: "3 نصوص يومياً",
-    freeThreeTimesDay: "قم بتحويل 3 ملفات إلى نصوص مجاناً كل يوم.",
     uploadMinutes: "رفع لمدة 30 دقيقة",
-    oneFileUploaded:
-      "يمكن أن يصل حجم كل ملف إلى 30 دقيقة، مع رفع ملف واحد في كل مرة",
     lowerPriority: "أولوية أقل",
-    needsToWaitLonger:
-      "3 نصوص يومياً انتظر وقتاً أطول قبل تحويل ملفاتك إلى نصوص.",
     currentPlan: "الخطة الحالية",
     professionalEdition: "الإصدار الاحترافي",
     unlimitedTranscription: "تحويل غير محدود إلى نصوص",
-    unlimitedNumberOfTimes: "تحويل غير محدود إلى نصوص لشخص واحد.",
-    uploadWithinHours: "رفع لمدة 10 ساعات",
+    unlimitedNumberOfTimes: "تردد ودوام غير محدود للنسخ.",
     filesUploadedAtOnce:
       "يمكن أن يصل حجم كل ملف إلى 10 ساعات / 5 جيجابايت. قم برفع 50 ملفاً في المرة الواحدة.",
     highestPriority: "أعلى أولوية",
@@ -635,7 +653,6 @@ let message = {
     daily: "{start} من {end} تحويلات يومية مستخدمة",
     upgradetoPro: "الترقية إلى الإصدار الاحترافي",
     accountSetting: "إعدادات الحساب",
-    returnAccountSetting: "العودة إلى إعدادات الحساب",
     logOut: "تسجيل الخروج",
     account: "الحساب",
     email: "البريد الإلكتروني",
@@ -647,7 +664,6 @@ let message = {
     notFund: "غير موجود",
     couldntFind: "لم نتمكن من العثور على ما كنت تبحث عنه.",
     proAnnual: "الاحترافي السنوي",
-    yourSubscription: "سيتم إلغاء اشتراكك في",
     proMonthly: "الاحترافي الشهري",
     perMonth: "كل شهر",
     afterwards: "بعد ذلك",
@@ -658,8 +674,18 @@ let message = {
     perYear: "سنوياً",
     getProPlan: "احصل على الخطة الاحترافية",
     changeToAnnual: "التغيير إلى سنوي",
-    automaticRenewalon: "التجديد التلقائي في"
-  },
+    automaticRenewalon: "التجديد التلقائي في",
+    eachMonth: "التجديد التلقائي يوم {time} من كل شهر.",
+    automaticRenewal: "فشل التجديد التلقائي، يرجى التحقق من طريقة الدفع.",
+    eachYear: "تجديد تلقائي في {time} من كل عام.",
+    returnAccountSetting: "عودة",
+    needsToWaitLonger: "انتظر لفترة أطول قبل أن يتم نسخ ملفاتك.",
+    freeThreeTimesDay: "انسخ 3 ملفات مجانًا كل يوم.",
+    oneFileUploaded:
+      "يمكن أن يصل طول كل ملف إلى 30 دقيقة. قم بتحميل ملف واحد في كل مرة.",
+    uploadWithinHours: "تحميلات لمدة 10 ساعات",
+      yourSubscription: "سيتم إلغاء اشتراكك في {time}."
+},
   // علاقات اللغة
   LanguageMap: {
     sysLanguagesMap: {
@@ -1032,8 +1058,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

@@ -1,19 +1,32 @@
 <template>
-  <div v-if="isShow">
+  <div>
     <div
+      v-show="!hideRecord"
       ref="element"
       :style="style"
-      class="fixed z-50 touch-none select-none rounded-[0.625rem] bg-black text-white"
+      class="record fixed z-[9999] touch-none select-none rounded-[0.625rem] bg-black text-white"
     >
-      <div v-if="!isStopped" class="px-5 py-5 sm:px-10 md:px-14">
-        <div class="flex flex-col items-center">
-          <div class="text-sm">{{ formattedTime }}</div>
+      <div
+        v-if="!isStopped"
+        class="md:px-13 record-content flex w-[36.875rem] justify-center px-4 py-4 sm:px-10"
+      >
+        <div class="flex w-full flex-col items-center">
+          <div class="recording flex items-center">
+            <img
+              class="me-2.5"
+              src="/assets/images/home/recording.svg"
+              alt=""
+            />
+            {{ t("FolderPage.buttons.recording") }}
+          </div>
+          <div class="mb-4 text-sm">{{ formattedTime }}</div>
 
-          <div class="flex w-full items-center">
+          <div class="mb-6 h-5 w-full overflow-hidden" ref="container"></div>
+
+          <div class="flex w-full items-center justify-center">
             <button
               @click.stop.prevent="toggleRecording"
-              class="me-3.5 flex h-7 w-7 items-center justify-center rounded-full bg-mainColor-900"
-              :class="{ pulse: isRecording }"
+              class="me-8 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2"
               :title="
                 isRecording
                   ? t('FileUploadAndRecording.record.pause')
@@ -21,45 +34,31 @@
               "
             >
               <span
-                class="iconfont icon-bofang text-xs"
+                class="iconfont icon-bofang ml-0.5 text-xs"
                 v-if="!isRecording"
               ></span>
               <span class="iconfont icon-zanting text-xs" v-else></span>
             </button>
 
-            <div
-              class="relative me-2.5 h-2 w-44 rounded bg-white sm:w-72 md:w-[21.375rem]"
-            >
-              <div
-                class="transition-width absolute left-0 top-0 h-2 w-0 rounded bg-mainColor-900"
-                :style="{ width: progressPercentage + '%' }"
-              >
-                <div
-                  class="absolute right-0 top-1/2 h-[1.125rem] w-[1.125rem] -translate-y-1/2 translate-x-2/3 rounded-full bg-mainColor-900"
-                >
-                  <div
-                    class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
-                  ></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="me-3.5 text-sm">10:00:00</div>
-
             <button
               @click.stop.prevent="stopRecording"
-              class="h-[1.125rem] w-[1.125rem] rounded-[0.3125rem] bg-white"
-              :title="t('FileUploadAndRecording.record.stop')"
-            ></button>
+              class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2"
+              :title="t('FileUploadAndRecording.record.endRecord')"
+            >
+              <div class="h-3 w-3 rounded-sm bg-subColor-normal"></div>
+            </button>
           </div>
         </div>
       </div>
-      <div v-if="isStopped" class="w-[22.25rem] px-2.5 py-5 sm:w-auto sm:px-8">
+      <div
+        v-if="isStopped"
+        class="result-content w-[36.875rem] px-4 py-4 sm:px-8"
+      >
         <div
-          class="flex flex-wrap items-center justify-between text-sm sm:flex-nowrap sm:justify-normal"
+          class="flex w-full flex-wrap items-center justify-between text-sm sm:flex-nowrap"
         >
-          <span class="sm:me-10 sm:whitespace-nowrap">{{ recordTitle }}</span>
-          <span class="sm:me-10 sm:whitespace-nowrap">{{ formattedTime }}</span>
+          <span class="sm:whitespace-nowrap">{{ recordTitle }}</span>
+          <span class="sm:whitespace-nowrap">{{ formattedTime }}</span>
           <div
             class="mt-2 flex w-full items-center justify-end sm:mt-0 sm:w-auto sm:flex-row sm:flex-nowrap sm:justify-normal"
           >
@@ -84,13 +83,18 @@
       v-model="delDialogVisible"
       @confirm="handleDelDialogConfirm"
     />
-    <record-dialog-complete v-model="completeDialogVisible" />
+    <record-dialog-complete
+      @confirm="handleCompleteConfirm"
+      v-model="completeDialogVisible"
+    />
     <record-dialog-result
       v-model="resultDialogVisible"
       :audioBlob="audioBlob"
       :recordTitle="recordTitle"
+      :parentId="parentId"
+      @close="hideRecord = false"
     />
-    <subscription-modal v-if="isFreeUser" v-model="showSubModal" />
+    <subscription-modal v-model="showSubModal" />
   </div>
 </template>
 
@@ -98,158 +102,133 @@
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { useDraggable } from "@vueuse/core";
-import Utils from "~/utils/tools";
+import Utils, { Msg } from "~/utils/tools";
+import { useRecorderCore } from "~/components/record/useRecorder";
 
+const props = defineProps<{
+  justRecord?: boolean;
+  parentId?: string | number;
+}>();
+const emit = defineEmits<{
+  (e: "record", blob: Blob): void;
+}>();
+
+const isStopped = ref(false);
 const { t } = useI18n();
 const dayjs = useDayjs();
-const { isFreeUser, isNoTimes } = storeToRefs(useSubscriptionStore());
+const { isNoTimes } = storeToRefs(useSubscriptionStore());
 dayjs.extend(timezone);
 dayjs.extend(utc);
 dayjs.tz.guess();
 // 最大录音时间（10小时）
 // todo 要改
 const MAX_RECORDING_TIME = 1 * 60 * 60; // 10小时，单位秒 * 60 * 60
-const elapsedTime = ref(0); // 已录制时间（秒）
-const isRecording = ref(false);
-const maxReached = ref(false);
-const isStopped = ref(false); // 停止录制
 
-// 添加流引用
-const audioStream = ref<MediaStream | null>(null);
-const mediaRecorder = ref<MediaRecorder | null>(null);
-const audioChunks = ref<Blob[]>([]);
+const options = computed(() => ({
+  height: 20,
+  waveColor: "#E979FA",
+  progressColor: "#E979FA",
+  barGap: 4,
+  barHeight: 4,
+  barWidth: 4,
+  barRadius: 2,
+  cursorWidth: 0,
+  normalize: false,
+  interact: false // 禁用交互
+}));
 
-// 格式化时间为 HH_mm_ss
-const formattedTime = computed(() => {
-  const hours = Math.floor(elapsedTime.value / 3600);
-  const minutes = Math.floor((elapsedTime.value % 3600) / 60);
-  const seconds = elapsedTime.value % 60;
-
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+const containerRef = useTemplateRef("container");
+const {
+  pauseRecording: waveSurferPauseRecording,
+  startRecording: waveSurferStartRecording,
+  stopRecording: waveSurferStopRecording,
+  currentTime,
+  isPauseResume,
+  isRecording,
+  isPaused
+} = useRecorderCore({
+  containerRef,
+  maxTime: MAX_RECORDING_TIME,
+  onTimeOut: (blob: any) => {
+    if (blob) {
+      audioBlob.value = blob;
+      if (props.justRecord) {
+        hideRecord.value = true;
+      } else {
+        isStopped.value = true;
+      }
+      completeDialogVisible.value = true;
+    }
+  }
 });
 
-// 计算进度百分比
-const progressPercentage = computed(() => {
-  return Math.min((elapsedTime.value / MAX_RECORDING_TIME) * 100, 97);
-});
-
-const timer = ref<any>(null);
-
-// 开始录音
 const audioBlob = ref<Blob | null>(null);
+
 const recordTitle = ref(
   `${t("FileUploadAndRecording.record.record")} ${dayjs().format("YYYY-MM-DD HH_mm_ss")}.webm`
 );
+
+// 格式化时间为 HH_mm_ss
+const formattedTime = computed(() => {
+  return currentTime.value;
+});
+
+// 开始录音
 const { endRecord } = useRecordStore();
-const isShow = ref(false);
 const startRecording = async () => {
   try {
-    // 仅在第一次或流被关闭时请求新流
-    if (
-      !audioStream.value ||
-      audioStream.value
-        .getTracks()
-        .every((track) => track.readyState === "ended")
-    ) {
-      audioStream.value = await navigator.mediaDevices.getUserMedia({
-        audio: true
-      });
-    }
-
-    isShow.value = true;
-
-    // 创建媒体录制器
-    mediaRecorder.value = new MediaRecorder(audioStream.value);
-
-    mediaRecorder.value.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        audioChunks.value.push(event.data);
-      }
-    };
-
-    mediaRecorder.value.onstop = () => {
-      audioBlob.value = new Blob(audioChunks.value, { type: "audio/webm" });
-      // 重置音频片段
-      if (isStopped.value) {
-        audioChunks.value = [];
-        recordTitle.value = `${t("FileUploadAndRecording.record.record")}${dayjs().format("YYYY-MM-DD HH_mm_ss")}.webm`;
-      }
-      // url.value = URL.createObjectURL(audioBlob.value);
-    };
-
-    // 开始录制
-    mediaRecorder.value.start();
-    isRecording.value = true;
-    startTimer();
+    waveSurferStartRecording();
   } catch (error) {
-    ElMessage.error(t("FileUploadAndRecording.record.permissionDenied"));
+    Msg({
+      message: t("FileUploadAndRecording.record.permissionDenied"),
+      type: "error"
+    });
     isRecording.value = false;
     endRecord();
   }
 };
 
+onMounted(() => {
+  startRecording();
+});
+
 // 停止录音并释放资源
-const stopRecording = () => {
-  // 停止媒体录制器
-  if (mediaRecorder.value && mediaRecorder.value.state !== "inactive") {
-    mediaRecorder.value.stop();
-  }
+const stopRecording = async () => {
+  const { blob } = await waveSurferStopRecording();
 
-  // 释放麦克风资源
-  if (audioStream.value) {
-    audioStream.value.getTracks().forEach((track) => track.stop());
-    audioStream.value = null;
-  }
+  audioBlob.value = blob;
 
-  // 重置状态
-  isRecording.value = false;
-  maxReached.value = false;
-  clearInterval(timer.value);
-
-  if (elapsedTime.value <= 0) {
-    endRecord();
-    isStopped.value = true;
+  if (props.justRecord) {
+    emit("record", {
+      audioBlob: audioBlob.value,
+      recordTitle: recordTitle.value
+    });
     return;
   }
+
   isStopped.value = true;
 };
 
 // 暂停/继续录音
 const toggleRecording = async () => {
-  if (maxReached.value) return;
-
-  if (!isRecording.value) {
-    await startRecording();
-  } else {
-    // 暂停录制
-    if (mediaRecorder.value && mediaRecorder.value.state === "recording") {
-      mediaRecorder.value.stop();
-    }
-    isRecording.value = false;
-    clearInterval(timer.value);
-  }
+  waveSurferPauseRecording();
 };
 
 const completeDialogVisible = ref(false);
-// 开始计时器
-const startTimer = () => {
-  clearInterval(timer.value);
-  timer.value = setInterval(() => {
-    elapsedTime.value += 1;
-
-    // 检查是否达到最大时间
-    if (elapsedTime.value >= MAX_RECORDING_TIME) {
-      maxReached.value = true;
-      completeDialogVisible.value = true;
-      stopRecording(); // 达到最大时间后自动停止
-    }
-  }, 1000);
+const handleCompleteConfirm = () => {
+  if (props.justRecord) {
+    emit("record", {
+      audioBlob: audioBlob.value,
+      recordTitle: recordTitle.value
+    });
+  }
 };
 
 // 组件卸载时清除所有资源
 onUnmounted(() => {
-  stopRecording();
-  clearInterval(timer.value);
+  if (isRecording.value) {
+    stopRecording();
+  }
 });
 
 const delDialogVisible = ref(false);
@@ -258,14 +237,13 @@ function handleDelDialogConfirm() {
   endRecord();
 }
 
-startRecording();
-
 // 转录录音
 const resultDialogVisible = ref(false);
 const showSubModal = ref(false);
 const router = useRouter();
 const localePath = useLocalePath();
 const isMobile = Utils.isMobile();
+const hideRecord = ref(false);
 const transcribeRecord = () => {
   if (isNoTimes.value) {
     if (isMobile) {
@@ -277,7 +255,11 @@ const transcribeRecord = () => {
     return;
   }
   resultDialogVisible.value = true;
+  hideRecord.value = true;
 };
+watchEffect(() => {
+  hideRecord.value = !!showSubModal.value;
+})
 
 const el = useTemplateRef<HTMLElement>("element");
 const elWidth = ref(0);
@@ -367,11 +349,37 @@ const { x, y, style } = useDraggable(el, {
     }
   }
 });
+
+const route = useRoute();
+watchEffect(async () => {
+  if (props.justRecord) return;
+  if (route?.path?.includes("/user") || route?.name?.includes("index")) {
+    hideRecord.value = true;
+    if (isRecording.value) {
+      await waveSurferStopRecording();
+    }
+    endRecord();
+  }
+});
 </script>
 
 <style scoped>
 .transition-width {
   transition: width 0.3s ease;
+}
+
+.record-content {
+  max-width: calc(100vw - 20px);
+}
+
+.result-content {
+  max-width: calc(100vw - 20px);
+}
+
+.recording {
+  font-size: 1.375rem;
+  line-height: 1.875rem;
+  @apply mb-1;
 }
 
 :deep(.customer-button) {

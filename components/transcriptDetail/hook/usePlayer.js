@@ -18,6 +18,10 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
   const isRtl = computed(() =>
     ["he-IL", "ar-SA"].includes(activeLanguage.value)
   );
+  // 区分双击还是单击
+  let clickTimer = null;
+  let isScrolling = false;
+  let isMouseDown = false;
   // 所有分段
   const allSegments = ref([]);
   const { fileType } = toRefs(props.fileBaseInfo);
@@ -52,13 +56,36 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
       );
     };
   };
-
+  const keyboard = {
+    keyCodeMap: {
+      space: {
+        action: "customPlayPause", //
+        disable: false
+      },
+      up: {
+        disable: true
+      },
+      down: {
+        disable: true
+      },
+      left: {
+        disable: true
+      },
+      right: {
+        disable: true
+      },
+      esc: {
+        action: "exitFullscreen",
+        disable: false
+      }
+    }
+  };
   // 播放器配置
   const commonConfig = {
     width: "100%",
     height: "100%",
     miniprogress: true,
-    keyShortcut: false,
+    keyboard,
     seekedStatus: "auto",
     customDuration: props.fileBaseInfo.duration,
     volume: {
@@ -66,18 +93,11 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
       showValueLabel: true,
       index: 1000
     },
-    commonStyle: {
-      progressColor: "#E8E8F1",
-      playedColor: "#3470FF",
-      cachedColor: "",
-      sliderBtnStyle: {
-        background: "#3470FF",
-        boxShadow: "none"
-      },
-      volumeColor: "#3470FF"
-    },
     videoConfig: {
       crossOrigin: "anonymous"
+    },
+    videoAttributes: {
+      preload: "auto"
     }
   };
   // 生成播放速率列表
@@ -90,7 +110,7 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
     });
   };
   // 初始化播放器
-  const initPlayers = (fileBaseInfo, locale, allSegments) => {
+  const initPlayers = (fileBaseInfo, locale, allSegments, bindShortEvent) => {
     if (isVideo.value) {
       playerVideo.value = new Player({
         ...commonConfig,
@@ -203,6 +223,7 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
           )
         }
       });
+      bindShortEvent(playerVideo);
     } else {
       playerAudio.value = new Player({
         ...commonConfig,
@@ -244,32 +265,33 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
         },
         icons: {
           play: createCustomIcon(
-            "icon-bofang",
+            "icon-bofang audio-id",
             "text-black",
             "font-size: 1.375rem"
           ),
           pause: createCustomIcon(
-            "icon-zanting",
+            "icon-zanting audio-id",
             "text-black",
             "font-size: 1.375rem"
           ),
           volumeSmall: createCustomIcon(
-            "icon-yinliang",
+            "icon-yinliang audio-id",
             "text-black",
             "font-size: 1.2rem; margin-inline-start: 0.375rem"
           ),
           volumeLarge: createCustomIcon(
-            "icon-shipinyinliangda",
+            "icon-shipinyinliangda audio-id",
             "text-black",
             "font-size: 1.05rem;margin-inline-start: 0.375rem"
           ),
           volumeMuted: createCustomIcon(
-            "icon-shipinjingyin",
+            "icon-shipinjingyin audio-id",
             "text-black",
             "font-size: 1.2rem; margin-inline-start: 0.375rem"
           )
         }
       });
+      bindShortEvent(playerAudio);
     }
     initSetting();
     setupEventListeners();
@@ -515,24 +537,39 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
     if (!transcriptData.value || !isVideo.value) return;
     allSegments.value = processOverlappingSegments();
   };
+  function isChildInParentViewport(parent, child, partiallyVisible = true) {
+    const parentRect = parent.getBoundingClientRect();
+    const childRect = child.getBoundingClientRect();
 
+    // 计算父元素内容区域
+    const parentContentArea = {
+      top: parentRect.top + parent.clientTop,
+      left: parentRect.left + parent.clientLeft,
+      right: parentRect.left + parent.clientLeft + parent.clientWidth,
+      bottom: parentRect.top + parent.clientTop + parent.clientHeight
+    };
+
+    // 检查子元素是否在父元素内容区内
+    const isInsideVertically = partiallyVisible
+      ? childRect.top < parentContentArea.bottom &&
+        childRect.bottom > parentContentArea.top
+      : childRect.top >= parentContentArea.top &&
+        childRect.bottom <= parentContentArea.bottom;
+
+    const isInsideHorizontally = partiallyVisible
+      ? childRect.left < parentContentArea.right &&
+        childRect.right > parentContentArea.left
+      : childRect.left >= parentContentArea.left &&
+        childRect.right <= parentContentArea.right;
+
+    return isInsideVertically && isInsideHorizontally;
+  }
+  //
   // 滚动到当前播放的单词位置（内部实现）
   const _scrollToActiveWord = () => {
     try {
       // 早期返回条件检查
-      if (
-        !transcriptData.value?.paragraphs?.length ||
-        transcriptData.isEdit?.value
-      ) {
-        return;
-      }
-
-      // 检查播放状态
-      const isPlaying = isVideo.value
-        ? !playerVideo.value?.paused
-        : !playerAudio.value?.paused;
-
-      if (isPlaying) {
+      if (!transcriptData.value?.paragraphs?.length || isScrolling) {
         return;
       }
 
@@ -545,11 +582,25 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
 
       // 查找活跃单词的结果
       const result = findActiveWord(paragraphs, currentTimeValue);
+      // 判断当前段落的句子是否在视图内，如果在，则直接返回
       console.log("🚀 ~ 活跃单词的结果  🚀", result);
+      const { paraIndex, sentIndex } = result;
       if (!result) {
         return;
       }
-
+      const targetSentenceEl =
+        transcriptData.value?.paragraphs?.[paraIndex]?.sentences?.[sentIndex];
+      const targetParent = document.querySelector(".transcript-container");
+      const targetChild = document.querySelector(
+        `.transcript-container .sentence-wrapper[data-sid="${targetSentenceEl.sid}"]`
+      );
+      // 如果当前句子是在dom的视图内，则返回
+      if (
+        targetChild &&
+        isChildInParentViewport(targetParent, targetChild, false)
+      ) {
+        return;
+      }
       // 滚动到目标位置
       scrollToTargetWord(result);
     } catch (error) {
@@ -775,11 +826,9 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
     }
   };
 
-  // 处理单词点击
-  const handleWordClick = (paraIndex, sentIndex, contentIndex, content) => {
+  const setAc = (paraIndex, sentIndex, contentIndex, content) => {
     // 设置当前活动单词
     activeWord.value = { paraIndex, sentIndex, contentIndex };
-
     // 跳转到音频对应时间点，并保持原来的播放状态
     if (content.start_time !== undefined) {
       //
@@ -790,6 +839,29 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
         playerAudio.value.currentTime = startTime;
       }
     }
+  };
+  // 处理单词点击
+  const handleWordClick = async (
+    paraIndex,
+    sentIndex,
+    contentIndex,
+    content
+  ) => {
+    if (clickTimer) clearTimeout(clickTimer);
+    clickTimer = setTimeout(() => {
+      setAc(paraIndex, sentIndex, contentIndex, content);
+    }, 250);
+  };
+  // 双击单词
+  const handleWordDblClick = (paraIndex, sentIndex, contentIndex, content) => {
+    clearTimeout(clickTimer);
+    clickTimer = null;
+    setAc(paraIndex, sentIndex, contentIndex, content);
+
+    const player = isVideo.value ? playerVideo.value : playerAudio.value;
+    setTimeout(() => {
+      player.seek(+content.start_time, "play");
+    }, 100);
   };
 
   // 根据段落id,滚动到指定段落
@@ -823,18 +895,21 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
 
   // 判断单词是否应该高亮
   const isWordActive = (content, paraIndex, sentIndex, contentIndex) => {
-    // 当前播放时间的高亮 (将毫秒转换为秒进行比较)
-    const isTimeActive =
-      content.start_time !== undefined &&
-      content.stop_time !== undefined &&
-      currentTime.value >= +content.start_time &&
-      currentTime.value < +content.stop_time;
     // 用户点击的高亮
     const isClickedActive =
       activeWord.value.paraIndex === paraIndex &&
       activeWord.value.sentIndex === sentIndex &&
       activeWord.value.contentIndex === contentIndex;
-    return isClickedActive || isTimeActive;
+    if (isClickedActive) {
+      return true;
+    }
+    // 当前播放时间的高亮
+    const isTimeActive =
+      content.start_time !== undefined &&
+      content.stop_time !== undefined &&
+      currentTime.value >= +content.start_time &&
+      currentTime.value < +content.stop_time;
+    return isTimeActive && activeWord.value.paraIndex === -1;
   };
 
   // 监听i18n变化
@@ -858,7 +933,23 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
       { immediate: true }
     );
   };
-
+  const scrollHandle = () => {
+    // 设置当前为滚动状态
+    isScrolling = true;
+    // 清除之前的定时器
+    clearTimeout(window.scrollTimer);
+    window.scrollTimer = setTimeout(() => {
+      isScrolling = false;
+    }, 5000);
+  };
+  onMounted(() => {
+    const scrollParent = document.querySelector(".transcript-container");
+    scrollParent.addEventListener("scroll", scrollHandle);
+  });
+  onBeforeUnmount(() => {
+    const scrollParent = document.querySelector(".transcript-container");
+    scrollParent?.removeEventListener("scroll", scrollHandle);
+  });
   return {
     playerAudio,
     playerVideo,
@@ -873,6 +964,8 @@ export default function usePlayer(transcriptData, isShowVideo, props) {
     setupI18nWatch,
     isVideo,
     updateSubtitle,
-    isRtl
+    isRtl,
+    handleWordDblClick,
+    activeWord
   };
 }

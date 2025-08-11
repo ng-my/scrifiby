@@ -1,14 +1,14 @@
 <template>
   <!--3、 介绍说明 -->
   <section
-    class="mx-auto flex max-w-[80rem] flex-col items-center justify-between px-[2.5rem] py-[4.75rem] md:flex-row"
+    class="language-wrap mx-auto flex max-w-[80rem] flex-col items-center justify-between px-[2.5rem] py-[4.75rem] md:flex-row"
   >
     <!-- 右侧图片 -->
     <div
       class="flex flex-shrink-0 justify-start md:flex-[0_0_38%] md:basis-[38%]"
     >
       <el-image
-        :src="`/assets/images/index/${data.img}.png`"
+        :src="`/assets/images/index_black/${data.img}.png`"
         class="relative left-[2rem] max-w-full object-contain xl:w-[80%]"
         fit="contain"
       ></el-image>
@@ -26,12 +26,12 @@
         >
           <span class="mt-[-0.25rem] text-[1.6rem]">
             <el-image
-              :src="`/assets/images/index/to-right.svg`"
+              :src="`/assets/images/index_black/to-right.svg`"
               class="h-[0.75rem] w-[0.875rem] object-contain"
               fit="contain"
             ></el-image>
           </span>
-          <span>
+          <span class="text-[rgba(255,255,255,0.7)]">
             {{ item.content }}
           </span>
         </li>
@@ -62,4 +62,22 @@ const data = ref({
 });
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.language-wrap {
+  position: relative;
+  &::after {
+    position: absolute;
+    bottom: 3.5rem;
+    left: 0;
+    content: " ";
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      315deg,
+      rgba(0, 0, 0, 1),
+      rgba(105, 32, 122, 1),
+      rgba(0, 0, 0, 1)
+    );
+  }
+}
+</style>

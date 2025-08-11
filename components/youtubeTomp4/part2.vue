@@ -17,7 +17,7 @@
         class="flex flex-col items-center rounded-xl transition"
       >
         <el-image
-          :src="`/assets/images/downloadMp4/step_${item.img}.png`"
+          :src="`/assets/images/downloadMp4/black_step_${item.img}.png`"
           class="mb-[1.875rem] w-full rounded-[1rem]"
           style="aspect-ratio: 100/57.4"
           fit="cover"
@@ -25,11 +25,7 @@
         <div
           class="mb-[0.625rem] flex items-center self-start text-[1.375rem] font-semibold leading-[1.875rem]"
         >
-          <el-image
-            :src="`/assets/images/downloadMp4/index_${item.icon}.png`"
-            class="me-3 h-[1.625rem] w-[1.625rem]"
-            fit="cover"
-          ></el-image>
+          <div class="index-circle">{{ item.icon }}</div>
           {{ item.title }}
         </div>
         <div class="text-start text-lg leading-[1.75rem]">
@@ -66,4 +62,12 @@ const list = [
 ];
 </script>
 
-<style scoped></style>
+<style scoped>
+.index-circle {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: linear-gradient(90deg, #9332ea 0%, #be26d4 100%);
+  box-shadow: 0 2px 20px 0 rgba(52, 112, 255, 0.16);
+  @apply me-3 flex items-center justify-center rounded-full text-[1.125rem] font-medium leading-6;
+}
+</style>

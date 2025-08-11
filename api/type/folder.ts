@@ -27,6 +27,9 @@ export interface FileItem {
   duration: number;
   fileId: string;
   folderId: string;
+  diarizeEnabled: boolean;
+  language: string;
+  isDefaultFile?: boolean;
 }
 
 export interface FolderCreateParams {

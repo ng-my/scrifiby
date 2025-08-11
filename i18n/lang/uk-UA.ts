@@ -1,9 +1,10 @@
+// 乌克兰语
 let message = {
   HomePage: {
     home: "Головна",
     version: "Базова версія (безкоштовно):",
     times:
-      "Щодня безкоштовно {times} транскрипцій, у вас залишилось {left} спроб.",
+      "{times} безкоштовних транскрипцій на день, {left} залишилося сьогодні. ",
     tips: "Оновіться до Pro для необмежених транскрипцій.",
     update: "Оновити зараз",
     folders: "Папки",
@@ -16,6 +17,7 @@ let message = {
     confirm: "Створити",
     dialogLabel: "Назва папки",
     recently: "Нещодавні файли",
+    loading: "Завантаження",
     tour: {
       step0: {
         title: "Ласкаво просимо до {name}",
@@ -69,7 +71,9 @@ let message = {
       edit: "Редагувати, вдосконалювати та експортувати свої транскрипції у форматах, що відповідають вашим потребам.",
       collaborate: "Співпрацювати, ділячись транскрибованим текстом з іншими.",
       button: "Почати",
-      tip: "Готові перетворити аудіо в транскрибований текст? Почніть досліджувати зараз!"
+      tip: "Готові перетворити аудіо в транскрибований текст? Почніть досліджувати зараз!",
+      tip2: "Почніть досліджувати зараз!",
+      tip1: "Готові перетворити аудіо на транскрибований текст? "
     },
     subscriptionModal: {
       left: {
@@ -115,7 +119,8 @@ let message = {
       move: "Перемістити",
       failed: "Невдача",
       selected: "Вибрано",
-      success: "Успішно"
+      success: "Успішно",
+      fileList: "Список файлів"
     },
     dialog: {
       move: {
@@ -148,7 +153,7 @@ let message = {
       },
       export: {
         title: "Експортувати",
-        select: "Виберіть один або кілька форматів",
+        select: "Виберіть потрібний формат",
         settings: "Налаштування",
         speaker: "Включити спікера",
         timecodes: "Включити часові коди",
@@ -179,6 +184,7 @@ let message = {
       pause: "Пауза",
       resume: "Продовжити",
       stop: "Зупинити",
+      endRecord: "Завершити запис",
       delete: "Видалити",
       transcribe: "Транскрибувати",
       permissionDenied: "Доступ до мікрофону заборонено або пристрій не існує",
@@ -203,7 +209,7 @@ let message = {
         title: "Вставити посилання",
         label:
           "Вставте посилання на медіа з YouTube, Facebook, X, Dropbox, Google Drive, Vimeo та інших платформ",
-        confirm: "Транскрибувати",
+        confirm: "Додати",
         cancel: "Скасувати",
         errorTitle:
           "Введене посилання некоректне. Будь ласка, перевірте та спробуйте знову.",
@@ -212,7 +218,8 @@ let message = {
       file: {
         orTitle: "Транскрибувати онлайн-медіа",
         dialogTitle: "Транскрибувати файл",
-        tip: "Натисніть для завантаження або перетягніть файл",
+        tip1: "Натисніть, щоб завантажити",
+        tip2: "або перетягніть",
         or: "або"
       },
       del: {
@@ -224,16 +231,18 @@ let message = {
       },
       files: "Файли",
       resultDialogTitle: "Транскрибувати файл",
+      resultDialogTitle2: "Транскрибувати файл",
       cancel: "Скасувати",
       confirm: "Транскрибувати",
       return: "Повернутися",
       addMore: "Додати ще",
-      language: "Мова аудіо",
+      language: "Мова медіа",
       failed: "Невдача",
       tooLarge: "Файл занадто великий.",
+      linkUpload: "Завантаження...",
       fileFormat: "Формат файлу не підтримується",
       localFiles: "Локальні файли",
-      pasteLink: "Вставити посилання",
+      pasteLink: "Онлайн-посилання",
       uploadErr: "Помилка завантаження",
       hashErr: "Помилка хешування",
       table: {
@@ -244,7 +253,7 @@ let message = {
       },
       maxFileNum: "Кількість файлів не може перевищувати {num}.",
       speaker: "Ідентифікація мовця",
-      speakerLabel: "Позначає кожен розділ транскрипції мовцем."
+      speakerLabel: "Позначте кожен сегмент транскрипту людиною, яка говорить."
     }
   },
   TranscriptionPage: {
@@ -542,10 +551,19 @@ let message = {
     upgradeBtn: "Оновити зараз",
     upgradeTip30: "Цей файл перевищує 30 хвилин.",
     upgradeTipMore:
-      "Оновіться до Scribify Pro, щоб транскрибувати файли довжиною до 10 годин"
+      "Оновіться до Scribify Pro, щоб транскрибувати файли довжиною до 10 годин",
+    errorTips: "Щось пішло не так.",
+    copiedLink: "Посилання скопійовано",
+    copyGotIt: "знав"
   },
   IdentityInfoManage: {
     or: "або",
+    LoginBtn: "Увійти через Email",
+    LoginGoogle: "Увійти через Google",
+    SignupBtn: "Зареєструватися через Email",
+    SignupGoogle: "Зареєструватися через Google",
+    SignupDes: "Зареєструйтеся сьогодні та побачте магію — безкоштовно.",
+    SignupTitle: "Точна та необмежена транскрипція",
     signup: "Зареєструватися",
     sign_up: "Зареєструватися",
     loginByGoogle: "Увійти через Google",
@@ -553,15 +571,13 @@ let message = {
     createAccount: "Створити обліковий запис",
     accountExists: "Вже маєте обліковий запис? ",
     agreeTerm: {
-      agree: "Я погоджуюсь з {proName}{terms} та {policy}.",
-      terms: "Умовами використання",
+      agree: "Продовжуючи, ви погоджуєтеся з нашими {terms} та {policy}.",
+      terms: "Умови",
       policy: "Політикою конфіденційності"
     },
     setPassword: "Встановити пароль",
     code: "Код підтвердження",
     resend: "Відправити повторно",
-    codeToEmail:
-      "Ми надіслали код підтвердження на вашу електронну пошту. Перевірте вхідні повідомлення та вставте код вище.",
     enterPassword: "Введіть пароль.",
     passwordLeval: "Надійність пароля",
     Weak: "Слабкий",
@@ -585,7 +601,15 @@ let message = {
     resetPassword: "Скинути пароль",
     resetYourPassword: "Скинути пароль",
     newOldCantSame: "Новий пароль не може співпадати зі старим.",
-    passwordResetOk: "Пароль успішно скинуто!"
+    passwordResetOk: "Пароль успішно скинуто!",
+    signupToSaveProgress: "Завершіть реєстрацію, щоб зберегти ваш прогрес.",
+    tip: "Підказка",
+    tipContentEmail:
+      "Ми щойно надіслали пароль для входу у ваш обліковий запис на вашу електронну пошту.",
+    tipContentPassword:
+      "Будь ласка, перевірте вашу поштову скриньку та увійдіть, використовуючи електронну адресу та пароль.",
+    codeToEmail:
+      "Ми щойно надіслали код підтвердження на вашу електронну пошту. Будь ласка, перевірте свою поштову скриньку та вставте код підтвердження вище."
   },
   Sharepage: {},
   InitPage: {},
@@ -593,19 +617,12 @@ let message = {
     subscription: "План підписки",
     freeversion: "Безкоштовно",
     transcribeTimesDay: "3 транскрипції на день",
-    freeThreeTimesDay: "Транскрибуйте 3 файли безкоштовно щодня.",
     uploadMinutes: "Завантаження до 30 хвилин",
-    oneFileUploaded:
-      "Кожен файл може бути до 30 хвилин, одночасно завантажується один файл",
     lowerPriority: "Нижчий пріоритет",
-    needsToWaitLonger:
-      "3 транскрипції на день. Чекайте довше на обробку ваших файлів.",
     currentPlan: "Поточний план",
     professionalEdition: "професійна версія",
     unlimitedTranscription: "Необмежена транскрипція",
-    unlimitedNumberOfTimes:
-      "Необмежена кількість транскрипцій для однієї особи.",
-    uploadWithinHours: "Завантаження до 10 годин",
+    unlimitedNumberOfTimes: "Необмежена частота та тривалість транскрибування.",
     filesUploadedAtOnce:
       "Кожен файл може бути до 10 годин/5 ГБ. Одночасно можна завантажити 50 файлів.",
     highestPriority: "найвищий пріоритет",
@@ -632,7 +649,6 @@ let message = {
     daily: "{start} з {end} щоденних транскрипцій використано",
     upgradetoPro: "Оновити до Pro",
     accountSetting: "Налаштування акаунта",
-    returnAccountSetting: "Повернутися до налаштувань акаунта",
     logOut: "Вийти",
     account: "Акаунт",
     email: "Електронна пошта",
@@ -644,7 +660,6 @@ let message = {
     notFund: "Не знайдено",
     couldntFind: "Ми не змогли знайти те, що ви шукали.",
     proAnnual: "Pro Річна",
-    yourSubscription: "Ваша підписка буде скасована",
     proMonthly: "Pro Щомісячна",
     perMonth: "на місяць",
     afterwards: "після цього",
@@ -655,8 +670,20 @@ let message = {
     perYear: "на рік",
     getProPlan: "Отримати Pro план",
     changeToAnnual: "Змінити на річну",
-    automaticRenewalon: "Автоматичне продовження"
-  },
+    automaticRenewalon: "Автоматичне продовження",
+    eachMonth: "Автоматичне поновлення {time}-го числа кожного місяця.",
+    automaticRenewal:
+      "Автоматичне поновлення не вдалося, перевірте спосіб оплати.",
+    eachYear: "Автоматичне поновлення {time} кожного року.",
+    returnAccountSetting: "Назад",
+    needsToWaitLonger:
+      "Зачекайте довше, перш ніж ваші файли будуть транскрибовані.",
+    freeThreeTimesDay: "Транскрибуйте 3 файли безкоштовно щодня.",
+    oneFileUploaded:
+      "Кожен файл може тривати до 30 хвилин. Завантажуйте по 1 файлу за раз.",
+    uploadWithinHours: "10-годинне завантаження",
+      yourSubscription: "Ваша підписка буде скасована {time}."
+},
   LanguageMap: {
     sysLanguagesMap: {
       "Chinese(Simplified)": "Китайська (спрощена)",
@@ -1035,8 +1062,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

@@ -10,6 +10,7 @@
 const { setLocale } = useI18n();
 const router = useRouter();
 const localePath = useLocalePath();
+const route = useRoute();
 const routeLocale =
   window?.localStorage?.getItem("i18n_localLanguage") || "en-US";
 definePageMeta({
@@ -17,6 +18,13 @@ definePageMeta({
 });
 setLocale(routeLocale);
 setTimeout(() => {
+  if (route.query.isVisitor) {
+    router.push({
+      path: localePath("/user/login", routeLocale),
+      query: { type: "success" }
+    });
+    return;
+  }
   router.push({
     path: localePath("/home", routeLocale),
     query: { type: "success" }

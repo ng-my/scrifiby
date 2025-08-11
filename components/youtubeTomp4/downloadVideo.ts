@@ -1,29 +1,34 @@
+import { Msg } from "~/utils/tools";
 export const downloadVideo = (emit: any) => {
   const loading = ref(false);
   const link = ref("");
-  if (process.env.NODE_ENV === 'development') {
-    link.value = 'https://www.youtube.com/watch?v=-KclsWH8a0I'
+  if (process.env.NODE_ENV === "development") {
+    link.value = "https://www.youtube.com/watch?v=-KclsWH8a0I";
   }
   const urlRegex =
     /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
-  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+  const youtubeRegex =
+    /^(https?:\/\/)?([a-z0-9-]+\.)?(youtube\.com|youtu\.be)\/.+/i;
   const handleDownload = async () => {
-    emit('download-click-pre')
+    emit("download-click-pre");
     try {
       if (!link.value) {
         return;
       }
       if (!urlRegex.test(link.value)) {
-        ElMessage.error({
-          message: 'YouTube link format error.',
-          customClass: "!z-[9999]"
+        Msg({
+          message: "YouTube link format error.",
+          customClass: "!z-[9999]",
+          type: "error"
         });
         return;
       }
       if (!youtubeRegex.test(link.value)) {
-        ElMessage.error({
-          message: "Sorry! We currently only work with YouTube links. If you need support for other sites, we'll keep you updated when we add it in the future.",
-          customClass: "!z-[9999]"
+        Msg({
+          message:
+            "Sorry! We currently only work with YouTube links. If you need support for other sites, we'll keep you updated when we add it in the future.",
+          customClass: "!z-[9999]",
+          type: "error"
         });
         return;
       }
@@ -36,7 +41,7 @@ export const downloadVideo = (emit: any) => {
       });
       const res = (await fetchFileUploadStatus(idObj.id)) as any;
 
-      emit('download-click', res)
+      emit("download-click", res);
     } finally {
       loading.value = false;
     }
@@ -51,7 +56,10 @@ export const downloadVideo = (emit: any) => {
 
       if (res?.fileMetaInfo?.deleted !== 0) {
         reject(res.fileMetaInfo);
-        ElMessage.error(res?.fileMetaInfo?.errorTxt || "Download Error.");
+        Msg({
+          message: res?.fileMetaInfo?.errorTxt || "Download Error.",
+          type: "error"
+        });
         return;
       }
 

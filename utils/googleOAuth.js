@@ -1,5 +1,3 @@
-export const clientId =
-  "872836101862-ib5d3rffoeso3tm9h5evqrq4kodvqa1e.apps.googleusercontent.com"; // api密钥 AIzaSyBbFZOy2J1oziD1StiacnZb96vAz_IXzDA
 export function injectGoogleScript(useHead) {
   useHead({
     script: [
@@ -57,9 +55,13 @@ export function oauthSignUp() {
   form.setAttribute("action", origin);
   // form.setAttribute('target', '_blank');
 
+  const config = useRuntimeConfig();
+  let clientId = config.public.googleClientId;
   // Parameters to pass to OAuth 2.0 endpoint.
   var params = {
     client_id: clientId,
+    // client_id:
+    //   "872836101862-ib5d3rffoeso3tm9h5evqrq4kodvqa1e.apps.googleusercontent.com",
     redirect_uri: `${window.location.origin}/googleAuthCallback`,
     response_type: "token",
     scope: "email profile",

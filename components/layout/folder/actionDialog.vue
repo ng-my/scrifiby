@@ -5,8 +5,8 @@
       :title="dialogTitle"
       :append-to-body="false"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       @closed="handleClosed"
+      @open="handleOpen"
     >
       <template v-if="type === 'delete'">
         <p>{{ t("HomePage.deleteConfirm") }}</p>
@@ -19,10 +19,11 @@
       </template>
 
       <template #footer>
-        <el-button @click="visible = false">
+        <el-button class="home-btn" @click="visible = false">
           {{ t("HomePage.cancel") }}
         </el-button>
         <el-button
+          class="home-btn"
           v-if="type === 'delete'"
           type="danger"
           :loading="loading"
@@ -31,6 +32,7 @@
           {{ t("HomePage.delete") }}
         </el-button>
         <el-button
+          class="home-btn"
           v-else-if="type === 'rename'"
           :loading="loading"
           :disabled="!inputValue"
@@ -41,6 +43,7 @@
         </el-button>
         <el-button
           v-else
+          class="home-btn"
           :loading="loading"
           :disabled="!inputValue"
           type="primary"
@@ -73,9 +76,6 @@ const visible = computed({
 });
 
 const inputValue = ref<string>("");
-watchEffect(() => {
-  inputValue.value = props.folder?.folderName || "";
-});
 
 const dialogTitle = computed(() => {
   const titles = {
@@ -87,15 +87,39 @@ const dialogTitle = computed(() => {
 });
 
 const handleClosed = () => {
+  isOver.value = false;
   inputValue.value = "";
+  window.removeEventListener("keydown", handleKeyPress);
 };
 
+const isOver = ref(false);
 const handleConfirm = () => {
+  if (isOver.value) {
+    return;
+  }
   emit("confirm", inputValue.value);
 };
+
+function handleKeyPress(e: any) {
+  if (e.key === "Enter" && !props.loading && inputValue.value) {
+    handleConfirm();
+  }
+}
+
+const handleOpen = () => {
+  inputValue.value = props.folder?.folderName || "";
+  if (props.type !== "delete") {
+    window.addEventListener("keydown", handleKeyPress);
+  }
+};
+
+defineExpose({
+  isOver
+});
 </script>
 
 <style scoped>
+@import "~/layouts/homeMixin.css";
 :deep(.customer-dialog) {
 }
 :deep(.el-dialog) {

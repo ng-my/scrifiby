@@ -3,7 +3,6 @@ import { cloneDeep } from "lodash-es";
 
 export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
   // 说话人弹窗相关状态
-  const speakerDialogVisible = ref(false);
   const editSpeakerDialogVisible = ref(false);
   const originSelectedSpeakerId = ref("");
   const selectedSpeakerId = ref("");
@@ -14,34 +13,43 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
   const speakerPopoverVisible = ref(false);
   const selectedPid = ref(""); // 选中的段落id
   const speakerBtnRef = ref(null);
-  const scrollbarRef = ref(null)
-  const { isShowSpeaker } = toRefs(props.fileBaseInfo)
-  isShowSpeaker.value ??= true
-  const speakers = ref(cloneDeep(initSpeakers.value))
-  watch(initSpeakers, (newVal) => {
-    speakers.value = cloneDeep(newVal)
-  }, {
-    deep: true
-  })
-  watch(speakerPopoverVisible, (newVal) => {
-    if(newVal){
-      setTimeout(() => {
-        const wrapRef = scrollbarRef.value?.wrapRef
-        if(wrapRef){
-          const activeEl = wrapRef.querySelector('.is-active')
-          activeEl && activeEl.scrollIntoView({
-            block: 'center',
-          })
-        }
-      },10)
+  const scrollbarRef = ref(null);
+  const speakerSaveLoading = ref(false);
+  const { isShowSpeaker } = toRefs(props.fileBaseInfo);
+  isShowSpeaker.value ??= true;
+  if (!props.fileBaseInfo.diarizeEnabled) {
+    isShowSpeaker.value = false;
+  }
+  const speakers = ref(cloneDeep(initSpeakers.value));
+  watch(
+    initSpeakers,
+    (newVal) => {
+      speakers.value = cloneDeep(newVal);
+    },
+    {
+      deep: true
     }
-  })
-  let maxSpeakerId = Math.max(...speakers.value.map(item => item.id))
+  );
+  watch(speakerPopoverVisible, (newVal) => {
+    if (newVal) {
+      setTimeout(() => {
+        const wrapRef = scrollbarRef.value?.wrapRef;
+        if (wrapRef) {
+          const activeEl = wrapRef.querySelector(".is-active");
+          activeEl &&
+            activeEl.scrollIntoView({
+              block: "center"
+            });
+        }
+      }, 10);
+    }
+  });
+  let maxSpeakerId = Math.max(...speakers.value.map((item) => item.id));
   // 获取所有唯一的说话人
   const uniqueSpeakers = computed(() => {
     return speakers.value;
   });
-  const editAddSpeakersMap = ref({})
+  const editAddSpeakersMap = ref({});
   // 说话人映射表
   const uniqueSpeakersMap = computed(() => {
     return speakers.value.reduce((acc, cur) => {
@@ -56,9 +64,9 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
       taskId: props.fileBaseInfo.taskId,
       pid: selectedPid.value,
       applyAll: applyToAllMatching.value,
-      ...data,
+      ...data
     });
-  }
+  };
   // 是否有重复的说话人
   const hasDuplicateSpeakers = computed(() => {
     if (!speakers.value.length) return false;
@@ -72,40 +80,37 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
 
   // 处理说话人popover显示
   const handleSpeakerPopoverShow = (speakerId, pid, isShare) => {
-    if(isShare) return
+    if (isShare) return;
     speakerPopoverVisible.value = true;
     selectedPid.value = pid;
-    originSelectedSpeakerId.value = speakerId
+    originSelectedSpeakerId.value = speakerId;
 
     // 检查当前speakerId是否在speakers中存在，如果存在则勾选
-    const existingSpeaker = speakers.value.find(
-      (s) => s.id === speakerId
-    );
+    const existingSpeaker = speakers.value.find((s) => s.id === speakerId);
     if (existingSpeaker) {
       selectedSpeakerId.value = existingSpeaker.id;
     } else {
-      selectedSpeakerId.value = -1
+      selectedSpeakerId.value = -1;
     }
   };
 
   // 处理说话人popover隐藏
-  const handleSpeakerPopoverHide = (outside= false) => {
+  const handleSpeakerPopoverHide = (outside = false) => {
     // 重置状态
     selectedSpeakerId.value = "";
-    originSelectedSpeakerId.value = ''
+    originSelectedSpeakerId.value = "";
     applyToAllMatching.value = 0;
     speakerPopoverVisible.value = false;
     selectedPid.value = "";
-    if(outside) {
-      speakers.value = cloneDeep(initSpeakers.value)
-      editAddSpeakersMap.value = {}
+    if (outside) {
+      speakers.value = cloneDeep(initSpeakers.value);
+      editAddSpeakersMap.value = {};
     }
   };
 
   // 确认说话人选择
   const confirmSpeakerSelection = async () => {
-
-    if (selectedSpeakerId.value === '') {
+    if (selectedSpeakerId.value === "") {
       return handleSpeakerPopoverHide();
     }
     // 获取选中的说话人信息
@@ -116,34 +121,56 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
     if (!selectedSpeaker) {
       return handleSpeakerPopoverHide();
     }
+
     // 原说话人
-    const originSpeaker = speakers.value.find(item => item.id === originSelectedSpeakerId.value)
-    const targetSpeaker = speakers.value.find(item => item.id === selectedSpeakerId.value)
+    const originSpeaker = speakers.value.find(
+      (item) => item.id === originSelectedSpeakerId.value
+    );
+    const targetSpeaker = speakers.value.find(
+      (item) => item.id === selectedSpeakerId.value
+    );
     if (!applyToAllMatching.value) {
-      const obj = editAddSpeakersMap.value[targetSpeaker.id]
-      if(obj){
-        const tmp = { ...obj }
-        tmp.count = 1
-        speakers.value.push(tmp)
-        selectedSpeakerId.value = tmp.id
-        selectedSpeaker = tmp
-        originSpeaker.name = tmp.originName
+      const obj = editAddSpeakersMap.value[targetSpeaker.id];
+      if (obj) {
+        const tmp = { ...obj };
+        tmp.count = 1;
+        speakers.value.push(tmp);
+        selectedSpeakerId.value = tmp.id;
+        selectedSpeaker = tmp;
+        originSpeaker.name = tmp.originName;
       } else {
-        targetSpeaker.count++
+        targetSpeaker.count++;
       }
-      originSpeaker.count--
+      originSpeaker.count--;
     } else {
-      targetSpeaker.count = targetSpeaker.count + originSpeaker.count
-      originSpeaker.count = 0
+      // 两个说话人名称相同时
+      if (targetSpeaker.id === originSpeaker.id) {
+        console.log("🚀 ~ file: 两个说话人名称相同🚀");
+      } else {
+        targetSpeaker.count = targetSpeaker.count + originSpeaker.count;
+        originSpeaker.count = 0;
+      }
     }
     const params = {
       sourceSpeakerId: originSelectedSpeakerId.value,
       targetSpeakerId: selectedSpeakerId.value,
       targetSpeaker: selectedSpeaker.name,
-      originSpeakers: speakers.value.map(({id,name}) => ({speakerId:id,speaker:name}))
+      originSpeakers: speakers.value.map(({ id, name }) => ({
+        speakerId: id,
+        speaker: name
+      }))
+    };
+    speakerSaveLoading.value = true;
+    try {
+      await editSpeakerCore(params);
+    } catch (e) {
+    } finally {
+      speakerSaveLoading.value = false;
     }
-    await editSpeakerCore(params)
-    emit('updateSpeakers', speakers.value.map(({ id, name,count }) => ({ id, name,count})))
+    emit(
+      "updateSpeakers",
+      speakers.value.map(({ id, name, count }) => ({ id, name, count }))
+    );
     // 如果选择了应用到所有匹配的说话人
     if (applyToAllMatching.value) {
       // 更新所有匹配的说话人
@@ -192,7 +219,6 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
   const confirmEditSpeaker = () => {
     const trimmedName = editingSpeakerName.value.trim();
 
-
     // 如果没有输入名称且不是未分配状态，则取消编辑
     if (!trimmedName) {
       editSpeakerDialogVisible.value = false;
@@ -204,12 +230,14 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
     let newSpeakerName = trimmedName;
 
     // 如果是新增说话人，生成新的ID并添加到speakers数组
-    if (editingSpeakerId.value === '') {
+    if (editingSpeakerId.value === "") {
       newSpeakerId = ++maxSpeakerId;
       // 如果已有说话人
-      const target = speakers.value.find(speaker => speaker.name === newSpeakerName);
-      if(target){
-        newSpeakerId = target.id
+      const target = speakers.value.find(
+        (speaker) => speaker.name === newSpeakerName
+      );
+      if (target) {
+        newSpeakerId = target.id;
       } else {
         // 添加到speakers数组
         speakers.value.push({
@@ -221,11 +249,13 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
     } else {
       // 如果是编辑现有说话人
       // 如果编辑的名字在speakers中已存在，则使用已有的id
-      const target = speakers.value.find(speaker => speaker.name === newSpeakerName);
-      if(target){
-        newSpeakerId = target.id
+      const target = speakers.value.find(
+        (speaker) => speaker.name === newSpeakerName
+      );
+      if (target) {
+        newSpeakerId = target.id;
       } else {
-        const cur = speakers.value.find(s => s.id === editingSpeakerId.value);
+        const cur = speakers.value.find((s) => s.id === editingSpeakerId.value);
         // 如果当前的说话人大于1
         if (cur.count > 1) {
           editAddSpeakersMap.value[cur.id] = {
@@ -234,18 +264,25 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
             originId: cur.id,
             originName: cur.name,
             count: 0
-          }
+          };
         }
-        cur.name = newSpeakerName
+        cur.name = newSpeakerName;
       }
     }
     selectedSpeakerId.value = newSpeakerId;
 
     // 关闭编辑弹窗
     editSpeakerDialogVisible.value = false;
-
-    // 更新弹窗状态
-    speakerDialogVisible.value = true;
+    setTimeout(() => {
+      const wrapRef = scrollbarRef.value?.wrapRef;
+      if (wrapRef) {
+        const activeEl = wrapRef.querySelector(".is-active");
+        activeEl &&
+          activeEl.scrollIntoView({
+            block: "center"
+          });
+      }
+    }, 10);
   };
 
   // 处理显示/隐藏说话人
@@ -262,9 +299,23 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
       handleSpeakerPopoverHide(true);
     }
   };
+  const dialogOpen = (dialogClass, handle) => {
+    const el = document.querySelector(dialogClass);
+    el._enterCloseHandler = (e) => {
+      if (e.keyCode !== 13) return;
+      setTimeout(() => {
+        handle();
+      }, 10);
+    };
+    document.addEventListener("keydown", el._enterCloseHandler);
+  };
+  const dialogClose = (dialogClass) => {
+    const el = document.querySelector(dialogClass);
+    document.removeEventListener("keydown", el._enterCloseHandler);
+    delete el._enterCloseHandler;
+  };
 
   return {
-    speakerDialogVisible,
     editSpeakerDialogVisible,
     selectedSpeakerId,
     originSelectedSpeakerId,
@@ -289,6 +340,9 @@ export default function useSpeaker(transcriptData, initSpeakers, emit, props) {
     handleShowSpeaker,
     handleOutsideClick,
     editAddSpeakersMap,
-    scrollbarRef
+    scrollbarRef,
+    speakerSaveLoading,
+    dialogOpen,
+    dialogClose
   };
 }

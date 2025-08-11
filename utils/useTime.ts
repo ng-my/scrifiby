@@ -57,7 +57,12 @@ export const useTime = () => {
   dayjs.extend(localizedFormat);
   dayjs.extend(timezone);
 
-  const getTime = (utcTime: string) => {
+  const getTime = (
+    utcTime: string,
+    day?: any,
+    monthAndDay?: any,
+    yearMonthDay?: any
+  ) => {
     const i18n = useI18n();
     const local = i18n.locale.value;
     // 1. 解析为 dayjs 对象（此时是 UTC 时间对象）
@@ -65,6 +70,34 @@ export const useTime = () => {
     const utcObj = dayjs.utc(utcTime).tz(userTimeZone);
     // 2. 转成本地时间对象
     const localObj = utcObj.locale(specialMappings?.[local] || "en");
+    if (day) {
+      const daySuffixes = Array.from({ length: 32 }, (_, day) => {
+        if (day >= 11 && day <= 13) return "th";
+        switch (day % 10) {
+          case 1:
+            return "st";
+          case 2:
+            return "nd";
+          case 3:
+            return "rd";
+          default:
+            return "th";
+        }
+      });
+      if (local === "en-US") {
+        return (
+          dayjs(localObj).format("D") +
+          daySuffixes[Number(dayjs(localObj).format("D"))]
+        );
+      }
+      return dayjs(localObj).format("D");
+    }
+    if (monthAndDay) {
+      return formatMonthDay(localObj, local);
+    }
+    if (yearMonthDay) {
+      return dayjs(localObj).format("ll");
+    }
 
     if (local === "he-IL") {
       return dayjs(localObj).format("D MMMM YYYY, HH:mm");
@@ -91,6 +124,39 @@ export const useTime = () => {
     const amPm = hour < 12 ? "π.μ." : "μ.μ.";
 
     return `${formattedDate} ${amPm}`;
+  }
+  function formatMonthDay(date: any, browserLocale = "en-US") {
+    type LocaleCode = keyof typeof specialMappings;
+    // 获取对应的dayjs语言环境
+    const dayjsLocale = specialMappings[browserLocale as LocaleCode];
+    // 创建dayjs实例并设置语言环境
+    const d = dayjs(date);
+    // 根据语言环境选择格式
+    switch (dayjsLocale) {
+      case "zh-cn":
+      case "zh-tw":
+        return d.format("M月D"); // 中文格式: 7月28日
+
+      case "ja":
+        return d.format("M月D"); // 日语格式: 7月28日
+
+      case "ko":
+        return d.format("M월 D일"); // 韩语格式: 7월 28일
+
+      case "ar":
+        return d.format("D MMMM"); // 阿拉伯语: 28 يوليو
+
+      case "he":
+        return d.format("D בMMMM"); // 希伯来语: 28 ביולי
+
+      case "uk":
+      case "ru":
+        return d.format("D MMM"); // 乌克兰语/俄语: 28 июл.
+
+      default:
+        // 大部分西方语言使用月+日格式
+        return d.format("MMM D"); // 英语等: Jul 28
+    }
   }
 
   return {

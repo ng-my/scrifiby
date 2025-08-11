@@ -9,6 +9,14 @@ export const useTableColumnResizer = (
 ) => {
   const maxWidth = computed(() => {
     return columns.value.reduce((sum, column) => {
+      const width = column.maxWidth || 0;
+      sum += width;
+      return sum;
+    }, 0);
+  });
+
+  const maxMinWidth = computed(() => {
+    return columns.value.reduce((sum, column) => {
       const width = column.minWidth || 0;
       sum += width;
       return sum;
@@ -16,31 +24,31 @@ export const useTableColumnResizer = (
   });
 
   const isOverflow = computed(() => {
-    return size.value.width < maxWidth.value!;
+    return size.value.width < maxMinWidth.value!;
   });
 
   // 计算列宽度
   const calcColumnWidth = (column: Column) => {
     if (isOverflow.value) {
-      column.width = column.minWidth!;
+      // column.width = column.width!;
     } else {
       column.width =
-        (column.minWidth || 0) * (size.value.width / maxWidth.value!);
+        (column.maxWidth || 0) * (size.value.width / maxWidth.value!);
     }
   };
 
   const length = computed(() => columns.value.length);
 
-  watchEffect(() => {
-    if (isOverflow.value) {
-      const column = columns.value.find((e) => e.key === "operations") || {};
-      (column as any).fixed = !isRtl.value
-        ? TableV2FixedDir.RIGHT
-        : TableV2FixedDir.LEFT;
-    } else {
-      delete columns.value[length.value - 1].fixed;
-    }
-  });
+  // watchEffect(() => {
+  //   const column = columns.value.find((e) => e.key === "operations") || {};
+  //   if (isOverflow.value) {
+  //     (column as any).fixed = !isRtl.value
+  //       ? TableV2FixedDir.RIGHT
+  //       : TableV2FixedDir.LEFT;
+  //   } else {
+  //     delete (column as any).fixed;
+  //   }
+  // });
 
   watchEffect(() => {
     columns.value.forEach((column) => {

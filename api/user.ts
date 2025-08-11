@@ -1,5 +1,5 @@
 import request from "~/utils/request";
-import Utils from "~/utils/tools";
+import { timeUTCToLocal, getAuthorization, EncryptRSA } from "~/utils/tools";
 
 // 用户相关接口
 export const userApi = {
@@ -12,7 +12,7 @@ export const userApi = {
       })
         .then((res) => {
           if (res.code === 0) {
-            res.data.userInfoVO.expirationTimeFormat = Utils.timeUTCToLocal(
+            res.data.userInfoVO.expirationTimeFormat = timeUTCToLocal(
               res.data.userInfoVO.expirationTime
             );
             resolve(res.data);
@@ -31,17 +31,17 @@ export const userApi = {
     return new Promise((resolve, reject) => {
       console.log(
         "sysLoginUser-Authorization",
-        Utils.getAuthorization(body.email, body.password)
+        getAuthorization(body.email, body.password)
       );
       return request("/wapi/userServer/login/user", {
         method: "POST",
         headers: {
-          Authorization: Utils.getAuthorization(body.email, body.password)
+          Authorization: getAuthorization(body.email, body.password)
         }
       })
         .then((res) => {
           if (res.code === 0) {
-            res.data.userInfoVO.expirationTimeFormat = Utils.timeUTCToLocal(
+            res.data.userInfoVO.expirationTimeFormat = timeUTCToLocal(
               res.data.userInfoVO.expirationTime
             );
             resolve(res.data);
@@ -56,18 +56,23 @@ export const userApi = {
   },
 
   // 系统注册
-  sysSignupUser(body: { email: string; password: string; captcha: string }) {
+  sysSignupUser(body: {
+    email: string;
+    password: string;
+    captcha: string;
+    visitorClientId: string;
+  }) {
     return new Promise((resolve, reject) => {
       return request("/wapi/userServer/enroll", {
         method: "POST",
         headers: {
-          Authorization: Utils.getAuthorization(body.email, body.password)
+          Authorization: getAuthorization(body.email, body.password)
         },
-        body: { captcha: body.captcha }
+        body: { captcha: body.captcha, visitorClientId: body.visitorClientId }
       })
         .then((res) => {
           if (res.code === 0) {
-            res.data.userInfoVO.expirationTimeFormat = Utils.timeUTCToLocal(
+            res.data.userInfoVO.expirationTimeFormat = timeUTCToLocal(
               res.data.userInfoVO.expirationTime
             );
             resolve(res.data);
@@ -83,7 +88,7 @@ export const userApi = {
 
   // 重置密码
   resetPassword(body: { email: string; password: string; captcha: string }) {
-    body.password = Utils.EncryptRSA(body.password) as string;
+    body.password = EncryptRSA(body.password) as string;
     return new Promise((resolve, reject) => {
       return request("/wapi/userServer/reset/password", {
         method: "POST",
@@ -91,7 +96,7 @@ export const userApi = {
       })
         .then((res) => {
           if (res.code === 0) {
-            res.data.userInfoVO.expirationTimeFormat = Utils.timeUTCToLocal(
+            res.data.userInfoVO.expirationTimeFormat = timeUTCToLocal(
               res.data.userInfoVO.expirationTime
             );
             resolve(res.data);
@@ -107,7 +112,7 @@ export const userApi = {
 
   // 忘记密码
   forgetPassword(body: { email: string; password: string; captcha: string }) {
-    body.password = Utils.EncryptRSA(body.password) as string;
+    body.password = EncryptRSA(body.password) as string;
     return new Promise((resolve, reject) => {
       return request("/wapi/userServer/forget/password", {
         method: "POST",
@@ -115,7 +120,7 @@ export const userApi = {
       })
         .then((res) => {
           if (res.code === 0) {
-            res.data.userInfoVO.expirationTimeFormat = Utils.timeUTCToLocal(
+            res.data.userInfoVO.expirationTimeFormat = timeUTCToLocal(
               res.data.userInfoVO.expirationTime
             );
             resolve(res.data);
@@ -218,6 +223,21 @@ export const userApi = {
         return true;
       }
       throw new Error(res as any);
+    } catch (e) {
+      throw new Error(e as any);
+    }
+  },
+
+  // 游客登录
+  async guestLogin(data: any) {
+    try {
+      const res = await request<any>("/wapi/userServer/visitor", {
+        method: "POST",
+        body: data
+      });
+      if (res.code === 0) {
+        return res.data;
+      }
     } catch (e) {
       throw new Error(e as any);
     }

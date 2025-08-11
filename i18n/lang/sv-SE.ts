@@ -1,9 +1,10 @@
+// 瑞典语
 let message = {
   // Startsida
   HomePage: {
     home: "Hem",
     version: "Basversion (Gratis):",
-    times: "Du har {times} gratis transkriptioner per dag, {left} återstår.",
+    times: "{times} gratis transkriptioner per dag, {left} kvar idag. ",
     tips: "Uppgradera till Pro för obegränsade transkriptioner.",
     update: "Uppgradera nu",
     folders: "Mappar",
@@ -16,6 +17,7 @@ let message = {
     confirm: "Skapa",
     dialogLabel: "Mappnamn",
     recently: "Senaste filer",
+    loading: "Laddar",
     tour: {
       step0: {
         title: "Välkommen till {name}",
@@ -70,7 +72,9 @@ let message = {
       collaborate:
         "Samarbeta genom att dela din transkriberade text med andra.",
       button: "Kom igång",
-      tip: "Redo att förvandla ljud till transkriberad text? Börja utforska nu!"
+      tip: "Redo att förvandla ljud till transkriberad text? Börja utforska nu!",
+      tip2: "Börja utforska nu!",
+      tip1: "Redo att förvandla ljud till transkriberad text? "
     },
     subscriptionModal: {
       left: {
@@ -117,7 +121,8 @@ let message = {
       move: "Flytta",
       failed: "Misslyckades",
       selected: "Markerad",
-      success: "Lyckades"
+      success: "Lyckades",
+      fileList: "Fillista"
     },
     dialog: {
       move: {
@@ -150,7 +155,7 @@ let message = {
       },
       export: {
         title: "Exportera",
-        select: "Välj ett eller flera format",
+        select: "Välj det format du behöver",
         settings: "Inställningar",
         speaker: "Inkludera talare",
         timecodes: "Inkludera tidskoder",
@@ -182,6 +187,7 @@ let message = {
       pause: "Pausa",
       resume: "Fortsätt",
       stop: "Stoppa",
+      endRecord: "Avsluta inspelning",
       delete: "Radera",
       transcribe: "Transkribera",
       permissionDenied: "Mikrofontillstånd nekades eller enhet ej tillgänglig",
@@ -206,7 +212,7 @@ let message = {
         title: "Klistra in länk",
         label:
           "Klistra in medialänkar från plattformar som YouTube, Facebook, X, Dropbox, Google Drive, Vimeo och andra",
-        confirm: "Transkribera",
+        confirm: "Lägg till",
         cancel: "Avbryt",
         errorTitle:
           "URL-adressen du angett är inte korrekt. Kontrollera och försök igen.",
@@ -215,7 +221,8 @@ let message = {
       file: {
         orTitle: "Transkribera online-medier",
         dialogTitle: "Transkribera fil",
-        tip: "Klicka för att ladda upp eller dra och släpp",
+        tip1: "Klicka för att ladda upp",
+        tip2: "eller dra och släpp",
         or: "eller"
       },
       del: {
@@ -227,16 +234,18 @@ let message = {
       },
       files: "Filer",
       resultDialogTitle: "Transkribera filer",
+      resultDialogTitle2: "Transkribera fil",
       cancel: "Avbryt",
       confirm: "Transkribera",
       return: "Återgå",
       addMore: "Lägg till fler",
-      language: "Ljudspråk",
+      language: "Mediaspråk",
       failed: "Misslyckades",
       tooLarge: "Filen är för stor.",
+      linkUpload: "Laddar upp...",
       fileFormat: "Filformatet tillåts inte",
       localFiles: "Lokala filer",
-      pasteLink: "Klistra in länk",
+      pasteLink: "Online-länk",
       uploadErr: "Uppladdningsfel",
       hashErr: "Hash-fel",
       table: {
@@ -247,7 +256,7 @@ let message = {
       },
       maxFileNum: "Antalet filer kan inte överstiga {num}.",
       speaker: "Talareidentifiering",
-      speakerLabel: "Märker varje avsnitt i transkriptionen med talaren."
+      speakerLabel: "Märk varje segment av transkriptet med personen som talar."
     }
   },
   // Transkriptionsdetaljsida
@@ -546,11 +555,20 @@ let message = {
     upgradeBtn: "Uppgradera nu",
     upgradeTip30: "Den här filen överstiger 30 minuter.",
     upgradeTipMore:
-      "Uppgradera till Scribify Pro för att transkribera filer upp till 10 timmar"
+      "Uppgradera till Scribify Pro för att transkribera filer upp till 10 timmar",
+    errorTips: "Något gick fel.",
+    copiedLink: "Länk kopierad",
+    copyGotIt: "visste"
   },
   // Inloggning, registrering, lösenordsåterställning
   IdentityInfoManage: {
     or: "eller",
+    LoginBtn: "Logga in med e-post",
+    LoginGoogle: "Logga in med Google",
+    SignupBtn: "Registrera med e-post",
+    SignupGoogle: "Registrera med Google",
+    SignupDes: "Registrera dig idag och upplev magin — gratis.",
+    SignupTitle: "Noggrann & obegränsad transkribering",
     signup: "Registrera",
     sign_up: "Registrera",
     loginByGoogle: "Logga in med Google",
@@ -558,15 +576,13 @@ let message = {
     createAccount: "Skapa konto",
     accountExists: "Har du redan ett konto? ",
     agreeTerm: {
-      agree: "Jag godkänner {proName}{terms} och {policy}.",
-      terms: "Användarvillkor",
+      agree: "Genom att fortsätta godkänner du våra {terms} och {policy}.",
+      terms: "Villkor",
       policy: "Integritetspolicy"
     },
     setPassword: "Ange lösenord",
     code: "Verifieringskod",
     resend: "Skicka igen",
-    codeToEmail:
-      "Vi har skickat en verifieringskod till din e-post, vänligen kontrollera din inkorg och klistra in koden ovan.",
     enterPassword: "Vänligen ange ett lösenord.",
     passwordLeval: "Lösenordsstyrka",
     Weak: "Svagt",
@@ -590,7 +606,15 @@ let message = {
     resetPassword: "Återställ lösenord",
     resetYourPassword: "Återställ ditt lösenord",
     newOldCantSame: "Nytt lösenord kan inte vara samma som det gamla.",
-    passwordResetOk: "Lösenordet har återställts!"
+    passwordResetOk: "Lösenordet har återställts!",
+    signupToSaveProgress: "Slutför registreringen för att spara din framsteg.",
+    tip: "Tips",
+    tipContentEmail:
+      "Vi har precis skickat ditt kontos inloggningslösenord till din e-postadress.",
+    tipContentPassword:
+      "Var god kontrollera din inkorg och logga in med din e-postadress och lösenord.",
+    codeToEmail:
+      "Vi har precis skickat en verifieringskod till din e-post. Kontrollera din inkorg och klistra in verifieringskoden ovan."
   },
   // Delningssida
   Sharepage: {},
@@ -601,18 +625,13 @@ let message = {
     subscription: "Prenumerationsplan",
     freeversion: "Gratis",
     transcribeTimesDay: "3 avskrifter per dag",
-    freeThreeTimesDay: "Avskriv 3 filer gratis varje dag.",
     uploadMinutes: "30 minuters uppladdning",
-    oneFileUploaded:
-      "Varje fil kan vara upp till 30 minuter lång, med en fil som laddas upp åt gången",
     lowerPriority: "Lägre prioritet",
-    needsToWaitLonger:
-      "3 avskrifter per dag. Vänta längre innan dina filer transkriberas.",
     currentPlan: "Nuvarande plan",
     professionalEdition: "professionell version",
     unlimitedTranscription: "Obegränsad avskrift",
-    unlimitedNumberOfTimes: "Obegränsade avskrifter för en person.",
-    uploadWithinHours: "Ladda upp inom 10 timmar",
+    unlimitedNumberOfTimes:
+      "Obegränsad transkriptionsfrekvens och varaktighet.",
     filesUploadedAtOnce:
       "Varje fil kan vara upp till 10 timmar lång / 5 GB. Ladda upp 50 filer samtidigt.",
     highestPriority: "högsta prioritet",
@@ -639,7 +658,6 @@ let message = {
     daily: "{start} av {end} dagliga avskrifter använda",
     upgradetoPro: "Uppgradera till Pro",
     accountSetting: "Kontoinställningar",
-    returnAccountSetting: "Återgå till kontoinställningar",
     logOut: "Logga ut",
     account: "Konto",
     email: "E-post",
@@ -651,7 +669,6 @@ let message = {
     notFund: "Hittades inte",
     couldntFind: "Vi kunde inte hitta det du letade efter.",
     proAnnual: "Pro Årlig",
-    yourSubscription: "Din prenumeration kommer att avbrytas den",
     proMonthly: "Pro Månadsvis",
     perMonth: "per månad",
     afterwards: "därefter",
@@ -662,8 +679,19 @@ let message = {
     perYear: "per år",
     getProPlan: "Skaffa Pro-planen",
     changeToAnnual: "Byt till årlig",
-    automaticRenewalon: "Automatisk förnyelse den"
-  },
+    automaticRenewalon: "Automatisk förnyelse den",
+    eachMonth: "Automatisk förnyelse den {time}. varje månad.",
+    automaticRenewal:
+      "Automatisk förnyelse misslyckades, kontrollera betalningsmetoden.",
+    eachYear: "Automatisk förnyelse den {time} varje år.",
+    returnAccountSetting: "Tillbaka",
+    needsToWaitLonger: "Vänta längre innan dina filer transkriberas.",
+    freeThreeTimesDay: "Transkribera 3 filer gratis varje dag.",
+    oneFileUploaded:
+      "Varje fil kan vara upp till 30 minuter lång. Ladda upp 1 fil i taget.",
+    uploadWithinHours: "10 timmars uppladdningar",
+      yourSubscription: "Ditt abonnemang kommer att avslutas {time}."
+},
   // Språkmappning
   LanguageMap: {
     sysLanguagesMap: {
@@ -1041,8 +1069,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

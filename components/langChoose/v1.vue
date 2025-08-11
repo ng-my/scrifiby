@@ -185,6 +185,10 @@ const props = defineProps({
   cancel: {
     type: Boolean,
     default: true
+  },
+  isScroll: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -263,7 +267,9 @@ watch(
     if (newVal) {
       selectedLanguageIds.value = new Set([newVal]);
       // 当选中的语言变化时，滚动到该语言
-      scrollToSelectedLanguage();
+      if (props.isScroll) {
+        scrollToSelectedLanguage();
+      }
     } else {
       selectedLanguageIds.value = new Set();
     }
@@ -276,8 +282,8 @@ const langMap = new Map(); // 用于去重
 languageData.forEach((item) => {
   if (props.onlyTransCode && !item.transCode) {
     return;
-  } else if(!props.onlyTransCode && !item.langCode){
-    return
+  } else if (!props.onlyTransCode && !item.langCode) {
+    return;
   }
   if (!langMap.has(item.lang)) {
     allLanguages.value.push({

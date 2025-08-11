@@ -1,10 +1,10 @@
+// 芬兰语
 let message = {
   // Etusivu
   HomePage: {
     home: "Koti",
     version: "Perusversio (ilmainen):",
-    times:
-      "Ilmainen tekstitys {times} kertaa päivässä. Sinulla on jäljellä {left} tekstityskerrosta.",
+    times: "{times} ilmaista litterointia päivässä, {left} jäljellä tänään. ",
     tips: "Päivitä Pro-versioon saadaksesi rajattomasti litterointeja.",
     update: "Päivitä nyt",
     folders: "Kansiot",
@@ -16,6 +16,7 @@ let message = {
     confirm: "Luo",
     dialogLabel: "Kansion nimi",
     recently: "Viimeaikaiset tiedostot",
+    loading: "Lataa",
     tour: {
       step0: {
         title: "Tervetuloa {name}",
@@ -72,7 +73,9 @@ let message = {
       collaborate:
         "Tee yhteistyötä jakamalla litteroitu tekstisi muiden kanssa.",
       button: "Aloita",
-      tip: "Valmis muuntamaan ääntä litteroiduksi tekstiksi? Aloita tutkiminen nyt!"
+      tip: "Valmis muuntamaan ääntä litteroiduksi tekstiksi? Aloita tutkiminen nyt!",
+      tip2: "Aloita tutkiminen nyt!",
+      tip1: "Valmis muuttamaan äänen litteroiduksi tekstiksi? "
     },
     subscriptionModal: {
       left: {
@@ -119,7 +122,8 @@ let message = {
       move: "Siirrä",
       failed: "Epäonnistui",
       selected: "Valittu",
-      success: "Onnistui"
+      success: "Onnistui",
+      fileList: "Tiedostoluettelo"
     },
     dialog: {
       move: {
@@ -152,7 +156,7 @@ let message = {
       },
       export: {
         title: "Vie",
-        select: "Valitse yksi tai useampi muoto",
+        select: "Valitse tarvitsemasi muoto",
         settings: "Asetukset",
         speaker: "Sisällytä puhuja",
         timecodes: "Sisällytä aikakoodit",
@@ -184,6 +188,7 @@ let message = {
       pause: "Keskeytä",
       resume: "Jatka",
       stop: "Lopeta",
+      endRecord: "Lopeta tallennus",
       delete: "Poista",
       transcribe: "Tekstitä",
       permissionDenied: "Mikrofonilupa evätty tai laitetta ei ole olemassa",
@@ -208,7 +213,7 @@ let message = {
         title: "Liitä linkit",
         label:
           "Liitä mediat seuraavilta alustoilta mm.: YouTube, Facebook, X, Dropbox, Google Drive, Vimeo",
-        confirm: "Tekstitä",
+        confirm: "Lisää",
         cancel: "Peruuta",
         errorTitle:
           "Antamasi linkkiosoite on virheellinen. Tarkista ja yritä uudelleen.",
@@ -217,7 +222,8 @@ let message = {
       file: {
         orTitle: "Tekstitä verkkomedia",
         dialogTitle: "Tekstitä tiedostoja",
-        tip: "Napsauta ladataksesi tai raahaa ja pudota",
+        tip1: "Napsauta ladataksesi",
+        tip2: "tai vedä ja pudota",
         or: "tai"
       },
       del: {
@@ -229,16 +235,18 @@ let message = {
       },
       files: "Tiedostot",
       resultDialogTitle: "Tekstitä tiedostoja",
+      resultDialogTitle2: "Litteroi tiedosto",
       cancel: "Peruuta",
       confirm: "Tekstitä",
       return: "Palaa",
       addMore: "Lisää lisää",
-      language: "Äänen kieli",
+      language: "Median kieli",
       failed: "Epäonnistui",
       tooLarge: "Tiedosto on liian suuri.",
+      linkUpload: "Lähetetään...",
       fileFormat: "Tiedostomuoto ei ole sallittu",
       localFiles: "Paikalliset tiedostot",
-      pasteLink: "Liitä linkit",
+      pasteLink: "Online-linkki",
       uploadErr: "Latausvirhe",
       hashErr: "Tarkistusvirhe",
       table: {
@@ -249,7 +257,7 @@ let message = {
       },
       maxFileNum: "Tiedostojen määrä ei voi ylittää {num}.",
       speaker: "Puhujan tunnistus",
-      speakerLabel: "Merkitse puheen osat puhujan mukaan."
+      speakerLabel: "Merkitse jokainen litteroinnin osa puhuvalla henkilöllä."
     }
   },
   // Tekstitystiedot sivu
@@ -548,11 +556,20 @@ let message = {
     upgradeBtn: "Päivitä nyt",
     upgradeTip30: "Tämä tiedosto ylittää 30 minuuttia.",
     upgradeTipMore:
-      "Päivitä Scribify Pro:ksi saadaksesi puhtaaksi kirjoitetuiksi jopa 10 tunnin pituiset tiedostot"
+      "Päivitä Scribify Pro:ksi saadaksesi puhtaaksi kirjoitetuiksi jopa 10 tunnin pituiset tiedostot",
+    errorTips: "Jokin meni pieleen.",
+    copiedLink: "Linkki kopioitu",
+    copyGotIt: "sain sen"
   },
   // Kirjautuminen, rekisteröityminen, salasanan vaihto
   IdentityInfoManage: {
     or: "tai",
+    LoginBtn: "Kirjaudu sisään sähköpostilla",
+    LoginGoogle: "Kirjaudu sisään Googlella",
+    SignupBtn: "Rekisteröidy sähköpostilla",
+    SignupGoogle: "Rekisteröidy Googlella",
+    SignupDes: "Rekisteröidy tänään ja koe taika — ilmaiseksi.",
+    SignupTitle: "Tarkka ja rajaton transkriptio",
     signup: "Rekisteröidy",
     sign_up: "Rekisteröidy",
     loginByGoogle: "Jatka Googlella",
@@ -560,15 +577,13 @@ let message = {
     createAccount: "Luo uusi tili",
     accountExists: "Onko sinulla jo tili? ",
     agreeTerm: {
-      agree: "Käyttämällä {proName} hyväksyt {terms} ja {policy}.",
-      terms: "Käyttöehdot",
+      agree: "Jatkamalla hyväksyt meidän {terms} ja {policy}.",
+      terms: "Ehdot",
       policy: "Tietosuojakäytäntö"
     },
     setPassword: "Aseta salasana",
     code: "Vahvistuskoodi",
     resend: "Lähetä uudelleen",
-    codeToEmail:
-      "Olemme juuri lähettäneet tilapäisen rekisteröintikoodin sähköpostiisi. Tarkista saapuneet viestit ja liitä rekisteröintikoodi yllä.",
     enterPassword: "Anna salasanasi.",
     passwordLeval: "Salasanan vahvuus",
     Weak: "Heikko",
@@ -592,7 +607,16 @@ let message = {
     resetPassword: "Nollaa salasana",
     resetYourPassword: "Nollaa salasanasi",
     newOldCantSame: "Uusi salasana ei voi olla sama kuin vanha salasana.",
-    passwordResetOk: "Salasanan nollaus onnistui！"
+    passwordResetOk: "Salasanan nollaus onnistui！",
+    signupToSaveProgress:
+      "Viimeistele rekisteröityminen tallentaaksesi edistymisesi.",
+    tip: "Vihje",
+    tipContentEmail:
+      "Olemme juuri lähettäneet tilisi kirjautumissalasanan sähköpostiisi.",
+    tipContentPassword:
+      "Tarkista saapuneet-kansiostasi ja kirjaudu sisään sähköpostiosoitteellasi ja salasanallasi.",
+    codeToEmail:
+      "Lähetimme juuri vahvistuskoodin sähköpostiisi. Tarkista saapuneet viestit ja liitä vahvistuskoodi yllä olevaan kenttään."
   },
   // Jaa sivu
   Sharepage: {},
@@ -603,19 +627,12 @@ let message = {
     subscription: "Tilaussuunnitelma",
     freeversion: "Ilmainen",
     transcribeTimesDay: "3 transkriptiota päivässä",
-    freeThreeTimesDay: "Transkriboi 3 tiedostoa ilmaiseksi joka päivä.",
     uploadMinutes: "30 minuutin lataukset",
-    oneFileUploaded:
-      "Jokainen tiedosto voi olla enintään 30 minuuttia pitkä, ja kerrallaan voi ladata yhden tiedoston",
     lowerPriority: "Alempi prioriteetti",
-    needsToWaitLonger:
-      "3 transkriptiota päivässä Odota kauemmin tiedostojesi transkriptiota.",
     currentPlan: "Nykyinen suunnitelma",
     professionalEdition: "ammattimainen versio",
     unlimitedTranscription: "Rajoittamaton transkriptio",
-    unlimitedNumberOfTimes:
-      "Rajoittamattomat transkriptiot yhdelle henkilölle.",
-    uploadWithinHours: "Lataus 10 tunnin sisällä",
+    unlimitedNumberOfTimes: "Rajoittamaton transkriptioitiöisyys ja kesto.",
     filesUploadedAtOnce:
       "Jokainen tiedosto voi olla enintään 10 tuntia pitkä / 5 GB. Lataa 50 tiedostoa kerralla.",
     highestPriority: "korkein prioriteetti",
@@ -642,7 +659,6 @@ let message = {
     daily: "{start} / {end} päivittäisestä transkriptiosta käytetty",
     upgradetoPro: "Päivitä Pro-versioon",
     accountSetting: "Tilin asetukset",
-    returnAccountSetting: "Palaa tilin asetuksiin",
     logOut: "Kirjaudu ulos",
     account: "Tili",
     email: "Sähköposti",
@@ -654,7 +670,6 @@ let message = {
     notFund: "Ei löytynyt",
     couldntFind: "Emme löytäneet etsimääsi.",
     proAnnual: "Pro Vuosittain",
-    yourSubscription: "Tilauksesi peruutetaan",
     proMonthly: "Pro Kuukausittain",
     perMonth: "kuukaudessa",
     afterwards: "sen jälkeen",
@@ -665,8 +680,19 @@ let message = {
     perYear: "vuodessa",
     getProPlan: "Hanki Pro-suunnitelma",
     changeToAnnual: "Vaihda vuosittaiseen",
-    automaticRenewalon: "Automaattinen uusinta"
-  },
+    automaticRenewalon: "Automaattinen uusinta",
+    eachMonth: "Automaattinen uusinta kuukauden {time}. päivänä.",
+    automaticRenewal:
+      "Automaattinen uusiminen epäonnistui, tarkista maksutapa.",
+    eachYear: "Automaattinen uusiminen {time} joka vuosi.",
+    returnAccountSetting: "Takaisin",
+    needsToWaitLonger: "Odota kauemmin ennen kuin tiedostosi litteroidaan.",
+    freeThreeTimesDay: "Litteroi 3 tiedostoa ilmaiseksi joka päivä.",
+    oneFileUploaded:
+      "Jokainen tiedosto voi olla enintään 30 minuuttia pitkä. Lataa 1 tiedosto kerrallaan.",
+    uploadWithinHours: "10 tunnin lataukset",
+      yourSubscription: "Tilauksesi peruutetaan {time}."
+},
   // Kielen vastaavuussuhteet
   LanguageMap: {
     sysLanguagesMap: {
@@ -1042,8 +1068,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

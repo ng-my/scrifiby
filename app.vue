@@ -4,14 +4,12 @@
     :dir="isRtl ? 'rtl' : 'ltr'"
     :rtl="isRtl"
   >
-    <HeadNavbar v-if="headerShow"></HeadNavbar>
+    <!--    <HeadNavbar v-if="headerShow"></HeadNavbar>-->
     <NuxtPage />
 
     <client-only>
       <!--  录音  -->
       <record-wrap />
-      <!--  文件上传  -->
-      <upload />
       <!--  转录异步导出  -->
       <export />
     </client-only>
@@ -52,7 +50,7 @@ try {
       }
     })
   );
-  runI18nCheck(en_US, localeLangs);
+  // runI18nCheck(en_US, localeLangs);
 } catch (error) {
   console.error("Error loading locale messages:", error);
 }
@@ -106,8 +104,11 @@ if (process.client) {
     window.localStorage.getItem("zzTest")
   );
   const config = useRuntimeConfig();
-  console.log("config.public", config.public);
-  console.log("process.env", process.env);
+  console.log(
+    process.env,
+    ":process.env--app.vue--config.public:",
+    config.public
+  );
   if (window.localStorage.getItem("notShowHead")) {
     headerShow.value = false;
   }
@@ -115,7 +116,18 @@ if (process.client) {
 onMounted(async () => {
   if (route.meta.requireAuth) {
     const subscriptionStore = useSubscriptionStore();
-    await subscriptionStore.getStatusUserId();
+    await subscriptionStore.getStatusUserIdFetch();
+  }
+  try {
+    const response = await fetch("/packageVersion.json");
+    const buildInfo = await response.json();
+    buildInfo.buildTimeFormat = new Date(buildInfo.buildTime).toLocaleString();
+    buildInfo.gitCommitDateFormat = new Date(
+      buildInfo.gitCommitDate
+    ).toLocaleString();
+    window.localStorage.setItem("buildInfo", JSON.stringify(buildInfo));
+  } catch (error) {
+    console.error("获取构建信息失败:", error);
   }
 });
 </script>

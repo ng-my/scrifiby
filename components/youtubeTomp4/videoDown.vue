@@ -1,15 +1,15 @@
 <template>
   <div class="video-down-container mx-[1rem]">
     <div
-      class="mx-auto mb-[3.5rem] flex max-w-[62.125rem] flex-col rounded-[1rem] bg-white p-[2rem] shadow-md"
+      class="mx-auto mb-[3.5rem] mt-[2.5rem] flex max-w-[62.125rem] flex-col rounded-[1rem] border border-[#512680] bg-[#1B0B30] p-[2rem] text-white shadow-md"
     >
       <!-- 顶部文案说明 -->
       <div class="mb-[1.25rem]">
-        <div class="text-[1rem] font-medium text-black">
+        <div class="text-[1rem] font-medium text-white">
           Download YouTube videos as MP4.Free,fast,and no ads.
         </div>
-        <div class="my-[0.875rem] w-[8.625rem] border-t border-[#EBEBEB]"></div>
-        <div class="text-[1rem] leading-snug text-[#9E9E9E]">
+        <div class="download-line h-1 w-[6.5rem] rounded"></div>
+        <div class="text-[1rem] leading-snug text-white">
           Thanks for choosing our service! We truly appreciate your trust and
           hope it enhanced your experience. If you could share our website with
           your friends, that would be a huge help.
@@ -24,7 +24,7 @@
             poster="/assets/images/downloadMp4/poster.png"
             controls
             preload="metadata"
-            class="aspect-video w-full rounded-[1rem] border border-[#EBEBEB]"
+            class="aspect-video w-full rounded-[1rem]"
           ></video>
           <!--autoplay -->
         </div>
@@ -34,7 +34,7 @@
           class="flex flex-col justify-between py-[2rem] text-start text-[1.375rem] leading-[1.875rem] md:flex-[0_0_53%] md:basis-[53%]"
         >
           <div
-            class="mb-[1rem] text-[1.375rem] font-bold leading-tight text-black"
+            class="mb-[1rem] text-[1.375rem] font-bold leading-tight text-white"
           >
             {{ file.fileName }}
           </div>
@@ -42,7 +42,7 @@
             @click="throttledDownload"
             :loading="loading"
             type="primary"
-            class="!h-[2.75rem] !w-[13.5rem] !rounded-[10rem] !text-[1rem] font-bold"
+            class="!h-[2.75rem] !w-[13.5rem] !rounded-[1.375rem] !border-0 !bg-[#9334EB] !text-[1rem] font-bold"
             color="#3470FF"
           >
             Download
@@ -56,6 +56,7 @@
 <script setup lang="ts">
 /* videoDown 组件 */
 import { ref } from "vue";
+import { Msg } from "~/utils/tools";
 
 // 节流函数
 const throttle = (func: Function, delay: number) => {
@@ -99,8 +100,9 @@ const downloadVideo = async () => {
     loading.value = false;
   } catch (e) {
     loading.value = false;
-    ElMessage.error({
-      message: "Download Error."
+    Msg({
+      message: "Download Error.",
+      type: "error"
     });
   }
 };
@@ -124,5 +126,9 @@ const throttledDownload = throttle(downloadVideo, 1500);
     opacity: 1;
     transform: translateY(0);
   }
+}
+.download-line {
+  background: linear-gradient(90deg, #7e3bee 0%, #d847f0 100%);
+  @apply my-3;
 }
 </style>

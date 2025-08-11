@@ -26,6 +26,9 @@ const emit = defineEmits(["update:modelValue"]);
 
 // Create a local ref for immediate updates
 const debouncedValue = ref(props.modelValue);
+watchEffect(() => {
+  debouncedValue.value = props.modelValue;
+});
 
 // Create a debounced function for emitting updates
 const emitDebounced = debounce((value: string) => {

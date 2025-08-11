@@ -1,9 +1,10 @@
+// 希伯来语
 let message = {
   // דף הבית
   HomePage: {
     home: "דף הבית",
     version: "גרסה בסיסית (חינם):",
-    times: "העתקה חינמית {times} פעמים ביום, נותרו לך {left} פעמים להעתקה.",
+    times: "נותרו {left} היום, {times} תמלולים חינמיים ביום.",
     tips: "שדרגו ל-Pro לתמלולים בלתי מוגבלים.",
     update: "שדרג עכשיו",
     folders: "תיקיות",
@@ -15,6 +16,7 @@ let message = {
     confirm: "צור",
     dialogLabel: "שם תיקייה",
     recently: "קבצים אחרונים",
+    loading: "טוען",
     tour: {
       step0: {
         title: "ברוכים הבאים ל{name}",
@@ -65,7 +67,9 @@ let message = {
       edit: "לערוך, לשפר ולייצא את התמלילים שלכם בפורמטים המתאימים לצרכים שלכם.",
       collaborate: "לשתף פעולה על ידי שיתוף הטקסט המתומלל שלכם עם אחרים.",
       button: "להתחיל",
-      tip: "מוכנים להפוך אודיו לטקסט מתומלל? התחילו לחקור עכשיו!"
+      tip: "מוכנים להפוך אודיו לטקסט מתומלל? התחילו לחקור עכשיו!",
+      tip2: "התחילו לחקור עכשיו!",
+      tip1: "מוכנים להפוך אודיו לטקסט מתומלל? "
     },
     subscriptionModal: {
       left: {
@@ -112,7 +116,8 @@ let message = {
       move: "העבר",
       failed: "נכשל",
       selected: "נבחר",
-      success: "הצלחה"
+      success: "הצלחה",
+      fileList: "רשימת קבצים"
     },
     dialog: {
       move: {
@@ -145,7 +150,7 @@ let message = {
       },
       export: {
         title: "ייצוא",
-        select: "בחר פורמט אחד או יותר",
+        select: "בחר את הפורמט שאתה צריך",
         settings: "הגדרות",
         speaker: "כלול דובר",
         timecodes: "כלול קודי זמן",
@@ -177,6 +182,7 @@ let message = {
       pause: "השהה",
       resume: "המשך",
       stop: "עצור",
+      endRecord: "סיים הקלטה",
       delete: "מחק",
       transcribe: "העתק",
       permissionDenied: "הרשאת מיקרופון נדחתה או המכשיר לא קיים",
@@ -200,7 +206,7 @@ let message = {
         title: "הדבק קישור",
         label:
           "הדבק קישורי מדיה מהפלטפורמות הבאות ועוד: יוטיוב, פייסבוק, X, דרופבוקס, גוגל דרייב, וימאו",
-        confirm: "העתק",
+        confirm: "הוסף",
         cancel: "ביטול",
         errorTitle: "כתובת הקישור שהזנת אינה נכונה. אנא בדוק ונסה שוב.",
         linkName: "קישור"
@@ -208,7 +214,8 @@ let message = {
       file: {
         orTitle: "העתק מדיה מקוונת",
         dialogTitle: "העתק קובץ",
-        tip: "לחץ להעלאה או גרור ושחרר",
+        tip1: "לחץ להעלאה",
+        tip2: "או גרור ושחרר",
         or: "או"
       },
       del: {
@@ -219,16 +226,18 @@ let message = {
       },
       files: "קבצים",
       resultDialogTitle: "העתק קבצים",
+      resultDialogTitle2: "תמלל קובץ",
       cancel: "ביטול",
       confirm: "העתק",
       return: "חזור",
       addMore: "הוסף עוד",
-      language: "שפת אודיו",
+      language: "שפת המדיה",
       failed: "נכשל",
       tooLarge: "הקובץ גדול מדי.",
+      linkUpload: "מעלה...",
       fileFormat: "פורמט הקובץ אינו מורשה",
       localFiles: "קבצים מקומיים",
-      pasteLink: "הדבק קישור",
+      pasteLink: "קישור מקוון",
       uploadErr: "שגיאת העלאה",
       hashErr: "שגיאת גיבוב",
       table: {
@@ -239,7 +248,7 @@ let message = {
       },
       maxFileNum: "מספר הקבצים לא יכול לעלות על {num}.",
       speaker: "זיהוי דובר",
-      speakerLabel: "מתייג כל קטע בתמלול עם הדובר המתאים."
+      speakerLabel: "תייג כל קטע בתמליל עם האדם שמדבר."
     }
   },
   // דף פרטי העתקה
@@ -537,11 +546,20 @@ let message = {
     closeTrans: "בטל תרגום",
     upgradeBtn: "שדרג עכשיו",
     upgradeTip30: "קובץ זה עולה על 30 דקות.",
-    upgradeTipMore: "שדרג ל-Scribify Pro לתמלול קבצים עד 10 שעות"
+    upgradeTipMore: "שדרג ל-Scribify Pro לתמלול קבצים עד 10 שעות",
+    errorTips: "משהו השתבש.",
+    copiedLink: "הקישור הועתק",
+    copyGotIt: "הבנתי"
   },
   // התחברות, הרשמה, איפוס סיסמה
   IdentityInfoManage: {
     or: "או",
+    LoginBtn: "התחבר עם אימייל",
+    LoginGoogle: "התחבר עם Google",
+    SignupBtn: "הירשם עם אימייל",
+    SignupGoogle: "הירשם עם Google",
+    SignupDes: "הירשם היום ותחווה את הקסם — בחינם.",
+    SignupTitle: "תמלול מדויק וללא הגבלה",
     signup: "הרשמה",
     sign_up: "הרשמה",
     loginByGoogle: "התחבר עם גוגל",
@@ -549,15 +567,13 @@ let message = {
     createAccount: "צור חשבון",
     accountExists: "כבר יש לך חשבון? ",
     agreeTerm: {
-      agree: "אני מסכים ל{proName}{terms} ו{policy}.",
-      terms: "תנאי השירות",
+      agree: "בממשיך, אתה מסכים לתנאינו ו{policy}.",
+      terms: "תנאים",
       policy: "מדיניות פרטיות"
     },
     setPassword: "הגדר סיסמה",
     code: "קוד אימות",
     resend: "שלח שוב",
-    codeToEmail:
-      "שלחנו קוד אימות לאימייל שלך. בדוק את תיבת הדואר והדבק את הקוד למעלה.",
     enterPassword: "הזן סיסמה.",
     passwordLeval: "חוזק סיסמה",
     Weak: "חלשה",
@@ -581,7 +597,14 @@ let message = {
     resetPassword: "אפס סיסמה",
     resetYourPassword: "אפס את הסיסמה שלך",
     newOldCantSame: "הסיסמה החדשה לא יכולה להיות זהה לישנה.",
-    passwordResetOk: "איפוס הסיסמה הצליח!"
+    passwordResetOk: "איפוס הסיסמה הצליח!",
+    signupToSaveProgress: "השלם את הרישום כדי לשמור את ההתקדמות שלך",
+    tip: "טיפ",
+    tipContentEmail: "כרגע שלחנו את סיסמת הכניסה שלך לחשבון אל המייל שלך.",
+    tipContentPassword:
+      "אנא בדוק את תיבת הדואר הנכנס והיכנס באמצעות המייל והסיסמה שלך.",
+    codeToEmail:
+      'זה עתה שלחנו קוד אימות לדוא"ל שלך. אנא בדוק את תיבת הדואר הנכנס והדבק את קוד האימות למעלה.'
   },
   // דף שיתוף
   Sharepage: {},
@@ -592,18 +615,12 @@ let message = {
     subscription: "תוכנית מנוי",
     freeversion: "חינם",
     transcribeTimesDay: "3 תמלולים יומיים",
-    freeThreeTimesDay: "תמלל 3 קבצים בחינם כל יום.",
     uploadMinutes: "העלאות של 30 דקות",
-    oneFileUploaded:
-      "כל קובץ יכול להיות באורך של עד 30 דקות, עם קובץ אחד מועלה בכל פעם",
     lowerPriority: "עדיפות נמוכה",
-    needsToWaitLonger:
-      "3 תמלולים יומיים חכה זמן רב יותר עד שהקבצים שלך יתומללו.",
     currentPlan: "תוכנית נוכחית",
     professionalEdition: "גרסה מקצועית",
     unlimitedTranscription: "תמלול בלתי מוגבל",
-    unlimitedNumberOfTimes: "תמלולים בלתי מוגבלים עבור אדם אחד.",
-    uploadWithinHours: "העלאה עד 10 שעות",
+    unlimitedNumberOfTimes: "תמלול בלתי מוגבל בתדירות ובמשך הזמן",
     filesUploadedAtOnce:
       "כל קובץ יכול להיות באורך של עד 10 שעות / 5 GB. העלה 50 קבצים בבת אחת.",
     highestPriority: "עדיפות גבוהה ביותר",
@@ -630,7 +647,6 @@ let message = {
     daily: "{start} מתוך {end} תמלולים יומיים בשימוש",
     upgradetoPro: "שדרג ל-Pro",
     accountSetting: "הגדרות חשבון",
-    returnAccountSetting: "חזור להגדרות חשבון",
     logOut: "התנתק",
     account: "חשבון",
     email: "אימייל",
@@ -642,7 +658,6 @@ let message = {
     notFund: "לא נמצא",
     couldntFind: "לא מצאנו את מה שחיפשת.",
     proAnnual: "Pro שנתי",
-    yourSubscription: "המנוי שלך יבוטל ב",
     proMonthly: "Pro חודשי",
     perMonth: "לחודש",
     afterwards: "לאחר מכן",
@@ -653,8 +668,18 @@ let message = {
     perYear: "לשנה",
     getProPlan: "קבל תוכנית Pro",
     changeToAnnual: "שנה לשנתי",
-    automaticRenewalon: "חידוש אוטומטי ב"
-  },
+    automaticRenewalon: "חידוש אוטומטי ב",
+    eachMonth: "חידוש אוטומטי ב-{time} בכל חודש.",
+    automaticRenewal: "חידוש אוטומטי נכשל, אנא בדוק את שיטת התשלום.",
+    eachYear: "חידוש אוטומטי ב-{time} בכל שנה.",
+    returnAccountSetting: "חזרה",
+    needsToWaitLonger: "המתן זמן רב יותר לפני שקובציך יתומללו.",
+    freeThreeTimesDay: "תמלל 3 קבצים בחינם כל יום.",
+    oneFileUploaded:
+      "כל קובץ יכול להיות באורך של עד 30 דקות. העלה קובץ אחד בכל פעם.",
+    uploadWithinHours: "העלאות של 10 שעות",
+      yourSubscription: "המנוי שלך יבוטל ב-{time}."
+},
   // מיפוי שפות
   LanguageMap: {
     sysLanguagesMap: {
@@ -1021,8 +1046,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

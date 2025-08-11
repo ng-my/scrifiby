@@ -1,10 +1,10 @@
+// 韩语
 let message = {
   // 홈페이지
   HomePage: {
     home: "홈",
     version: "기본 버전(무료):",
-    times:
-      "하루에 {times}번 무료 트랜스크립션, {left}번의 트랜스크립션이 남았습니다.",
+    times: "하루 {times}회 무료 전사, 오늘 {left}회 남음.",
     tips: "무제한 전사를 위해 Pro로 업그레이드하세요.",
     update: "지금 업그레이드",
     folders: "폴더",
@@ -16,6 +16,7 @@ let message = {
     confirm: "생성",
     dialogLabel: "폴더 이름",
     recently: "최근 파일",
+    loading: "로딩 중",
     tour: {
       step0: {
         title: "{name}에 오신 것을 환영합니다",
@@ -69,7 +70,9 @@ let message = {
       edit: "필요에 맞게 문서를 편집, 개선 및 다양한 형식으로 내보내기가 가능합니다.",
       collaborate: "변환된 텍스트를 다른 사람들과 공유하며협업하세요.",
       button: "시작하기",
-      tip: "오디오를 문서화된 텍스트로 변환할 준비가 되셨나요? 지금 바로 시작해 보세요!"
+      tip: "오디오를 문서화된 텍스트로 변환할 준비가 되셨나요? 지금 바로 시작해 보세요!",
+      tip2: "지금 탐색을 시작하세요!",
+      tip1: "오디오를 전사된 텍스트로 변환할 준비가 되었나요? "
     },
     subscriptionModal: {
       left: {
@@ -116,7 +119,8 @@ let message = {
       move: "이동",
       failed: "실패",
       selected: "선택됨",
-      success: "성공"
+      success: "성공",
+      fileList: "파일 목록"
     },
     dialog: {
       move: {
@@ -149,7 +153,7 @@ let message = {
       },
       export: {
         title: "내보내기",
-        select: "하나 이상의 형식 선택",
+        select: "필요한 형식을 선택하세요",
         settings: "설정",
         speaker: "화자 포함",
         timecodes: "타임코드 포함",
@@ -181,6 +185,7 @@ let message = {
       pause: "일시 중지",
       resume: "재개",
       stop: "중지",
+      endRecord: "녹음 종료",
       delete: "삭제",
       transcribe: "트랜스크립션",
       permissionDenied: "마이크 권한이 거부되었거나 장치가 존재하지 않습니다",
@@ -205,7 +210,7 @@ let message = {
         title: "링크 붙여넣기",
         label:
           "다음 플랫폼의 미디어 링크를 붙여넣으세요(이에 국한되지 않음): YouTube, Facebook, X, Dropbox, Google Drive, Vimeo",
-        confirm: "트랜스크립션",
+        confirm: "추가",
         cancel: "취소",
         // 올바른 링크를 입력하세요
         errorTitle:
@@ -215,7 +220,8 @@ let message = {
       file: {
         orTitle: "온라인 미디어 트랜스크립션",
         dialogTitle: "파일 트랜스크립션",
-        tip: "클릭하여 업로드하거나 드래그 앤 드롭",
+        tip1: "클릭하여 업로드",
+        tip2: "또는 드래그 앤 드롭",
         or: "또는"
       },
       del: {
@@ -227,16 +233,18 @@ let message = {
       },
       files: "파일",
       resultDialogTitle: "파일 트랜스크립션",
+      resultDialogTitle2: "파일 전사",
       cancel: "취소",
       confirm: "트랜스크립션",
       return: "돌아가기",
       addMore: "더 추가",
-      language: "오디오 언어",
+      language: "미디어 언어",
       failed: "실패",
       tooLarge: "파일이 너무 큽니다.",
+      linkUpload: "업로드 중...",
       fileFormat: "파일 형식이 허용되지 않습니다",
       localFiles: "로컬 파일",
-      pasteLink: "링크 붙여넣기",
+      pasteLink: "온라인 링크",
       uploadErr: "업로드 오류",
       hashErr: "해시 오류",
       table: {
@@ -247,7 +255,7 @@ let message = {
       },
       maxFileNum: "파일 수는 {num}개를 초과할 수 없습니다.",
       speaker: "화자 식별",
-      speakerLabel: "필사본의 각 섹션에 발화자 표시"
+      speakerLabel: "전사본의 각 구간에 말하는 사람을 라벨로 표시합니다."
     }
   },
   // 트랜스크립션 상세 페이지
@@ -546,11 +554,20 @@ let message = {
     upgradeBtn: "지금 업그레이드",
     upgradeTip30: "이 파일은 30분을 초과합니다.",
     upgradeTipMore:
-      "최대 10시간 길이의 파일을 자동으로 필사하려면 Scribify Pro로 업그레이드하세요"
+      "최대 10시간 길이의 파일을 자동으로 필사하려면 Scribify Pro로 업그레이드하세요",
+    errorTips: "문제가 발생했습니다.",
+    copiedLink: "링크가 복사되었습니다",
+    copyGotIt: "알고 있었다"
   },
   // 로그인, 회원가입, 비밀번호 변경
   IdentityInfoManage: {
     or: "또는", // 또는
+    LoginBtn: "이메일로 로그인",
+    LoginGoogle: "Google로 로그인",
+    SignupBtn: "이메일로 가입",
+    SignupGoogle: "Google로 가입",
+    SignupDes: "지금 가입하고 무료로 마법을 경험하세요.",
+    SignupTitle: "정확하고 무제한 전사",
     signup: "회원가입", // 회원가입
     sign_up: "회원가입", // 회원가입
     loginByGoogle: "Google로 계속하기", // Google로 로그인
@@ -559,16 +576,13 @@ let message = {
     accountExists: "이미 계정이 있으신가요? ", // 이미 계정이 있습니까? 로그인
     agreeTerm: {
       // 서비스 약관 및 개인정보 보호정책에 동의합니다
-      agree:
-        "{proName}을(를) 사용함으로써 {terms} 및 {policy}에 동의하게 됩니다.",
-      terms: "서비스 약관",
+      agree: "계속 진행하면, 저희 {terms} 및 {policy}에 동의하게 됩니다.",
+      terms: "약관",
       policy: "개인정보 보호정책"
     },
     setPassword: "비밀번호 설정", // 비밀번호 설정
     code: "인증 코드", // 인증 코드
     resend: "재전송", // 재전송
-    codeToEmail:
-      "임시 가입 코드를 이메일로 보냈습니다. 받은 편지함을 확인하고 위에 가입 코드를 붙여넣으세요.", // 방금 이메일로 인증 코드를 보냈습니다. 받은 편지함을 확인하고 위에 인증 코드를 붙여넣으세요.
     enterPassword: "비밀번호를 입력하세요.", // 비밀번호를 입력하세요
     passwordLeval: "비밀번호 수준", // 비밀번호 강도
     Weak: "약함", // 약함
@@ -592,7 +606,15 @@ let message = {
     resetPassword: "비밀번호 재설정", // 비밀번호 재설정
     resetYourPassword: "비밀번호 재설정", // 비밀번호 재설정
     newOldCantSame: "새 비밀번호는 이전 비밀번호와 달라야 합니다.", // 새 비밀번호는 이전 비밀번호와 동일할 수 없습니다.
-    passwordResetOk: "비밀번호가 성공적으로 재설정되었습니다!" // 비밀번호가 성공적으로 재설정되었습니다!
+    passwordResetOk: "비밀번호가 성공적으로 재설정되었습니다!", // 비밀번호가 성공적으로 재설정되었습니다!
+    signupToSaveProgress: "가입을 완료하여 진행 상황 저장",
+    tip: "팁",
+    tipContentEmail:
+      "고객님의 계정 로그인 비밀번호를 이메일로 발송해 드렸습니다.",
+    tipContentPassword:
+      "수신함을 확인하신 후 이메일과 비밀번호로 로그인해 주세요.",
+    codeToEmail:
+      "인증 코드를 이메일로 보냈습니다. 수신함을 확인하고 위에 인증 코드를 붙여넣어 주세요."
   },
   // 공유 세부 페이지
   Sharepage: {},
@@ -603,18 +625,12 @@ let message = {
     subscription: "구독 플랜",
     freeversion: "무료",
     transcribeTimesDay: "일일 3회 변환",
-    freeThreeTimesDay: "매일 3개의 파일을 무료로 변환하세요.",
     uploadMinutes: "30분 업로드",
-    oneFileUploaded:
-      "각 파일은 최대 30분 길이이며, 한 번에 하나의 파일만 업로드 가능",
     lowerPriority: "낮은 우선순위",
-    needsToWaitLonger:
-      "일일 3회 변환 파일 변환을 위해 더 오래 기다려야 합니다.",
     currentPlan: "현재 플랜",
     professionalEdition: "프로페셔널 버전",
     unlimitedTranscription: "무제한 변환",
-    unlimitedNumberOfTimes: "1인당 무제한 변환 가능",
-    uploadWithinHours: "10시간 이내 업로드",
+    unlimitedNumberOfTimes: "무제한 음성 텍스트 변환 횟수와 시간",
     filesUploadedAtOnce:
       "각 파일 최대 10시간/5GB. 한 번에 50개 파일 업로드 가능",
     highestPriority: "최고 우선순위",
@@ -640,7 +656,6 @@ let message = {
     daily: "일일 변환 {start}/{end} 사용",
     upgradetoPro: "Pro로 업그레이드",
     accountSetting: "계정 설정",
-    returnAccountSetting: "계정 설정으로 돌아가기",
     logOut: "로그아웃",
     account: "계정",
     email: "이메일",
@@ -652,7 +667,6 @@ let message = {
     notFund: "찾을 수 없음",
     couldntFind: "찾으시는 내용을 찾을 수 없습니다.",
     proAnnual: "프로 연간",
-    yourSubscription: "구독이 다음 날짜에 해지됩니다",
     proMonthly: "프로 월간",
     perMonth: "월",
     afterwards: "이후",
@@ -663,8 +677,18 @@ let message = {
     perYear: "연",
     getProPlan: "프로 플랜 구독",
     changeToAnnual: "연간으로 변경",
-    automaticRenewalon: "자동 갱신일"
-  },
+    automaticRenewalon: "자동 갱신일",
+    eachMonth: "매월 {time}일에 자동 갱신.",
+    automaticRenewal: "자동 갱신에 실패했습니다. 결제 방법을 확인해 주세요.",
+    eachYear: "매년 {time} 자동 갱신.",
+    returnAccountSetting: "돌아가기",
+    needsToWaitLonger: "파일이 전사되기 전에 좀 더 기다려 주세요.",
+    freeThreeTimesDay: "매일 3개의 파일을 무료로 전사할 수 있습니다.",
+    oneFileUploaded:
+      "각 파일은 최대 30분까지 가능합니다. 한 번에 1개의 파일을 업로드하세요.",
+    uploadWithinHours: "10시간 업로드",
+      yourSubscription: "구독은 {time}에 취소됩니다."
+},
   // 언어 맵핑 관계
   LanguageMap: {
     sysLanguagesMap: {
@@ -1037,8 +1061,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

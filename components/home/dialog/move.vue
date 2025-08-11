@@ -5,20 +5,24 @@
       :title="t('FolderPage.dialog.move.title')"
       width="30%"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       @open="handleOpen"
       @closed="handleClosed"
     >
       <el-select-v2
         v-model="value"
         :options="options"
+        ref="selectRef"
+        :loading="selectLoading"
+        :loading-text="t('HomePage.loading')"
         :placeholder="t('FolderPage.dialog.move.placeholder')"
+        @change="selectChange"
       />
       <template #footer>
-        <el-button @click="visible = false">
+        <el-button class="home-btn" @click="visible = false">
           {{ t("FolderPage.dialog.move.cancel") }}
         </el-button>
         <el-button
+          class="home-btn"
           :loading="loading"
           :disabled="!value"
           type="primary"
@@ -50,8 +54,10 @@ const visible = computed({
 });
 
 const options = ref<any[]>([]);
+const selectLoading = ref(false);
 const fetchOption = async () => {
   try {
+    selectLoading.value = true;
     const { useFolderApi } = await import("~/api/folder");
     const data = await useFolderApi.getFolderList();
     options.value = data.map((item: any) => ({
@@ -67,9 +73,13 @@ const fetchOption = async () => {
       );
     }
   } catch (e) {}
+  finally {
+    selectLoading.value = false;
+  }
 };
 const handleOpen = () => {
   fetchOption();
+  window.addEventListener("keydown", handleKeyPress);
 };
 const value = ref();
 
@@ -95,9 +105,21 @@ const handleConfirm = async () => {
 };
 
 const handleClosed = () => {
+  window.removeEventListener("keydown", handleKeyPress);
   value.value = "";
   options.value = [];
 };
+
+// 处理 Enter 按键
+const selectChange = () => {
+  selectRef.value?.blur()
+}
+const selectRef = useTemplateRef('selectRef')
+function handleKeyPress(e: any) {
+  if (e.key === "Enter" && !loading.value && value.value) {
+    handleConfirm();
+  }
+}
 </script>
 
 <style scoped>

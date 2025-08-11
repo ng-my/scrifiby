@@ -14,16 +14,18 @@
         v-model="code"
         :class="{ 'input-error': codeTip }"
         autocomplete="one-time-code"
-        :prefix-icon="Message"
         class="inputEl-style mb-1 h-formEl !w-full rounded-btn"
         :placeholder="$i('code')"
       >
+        <template #prefix>
+          <span class="iconfont icon-anquan text-[1.125rem]"></span>
+        </template>
         <template #suffix>
           <el-button
             v-if="countdown === 0"
             @click="sendCode()"
             type="text"
-            class="px-0 !text-mainColor-900"
+            class="bg-color-btn px-0 !text-mainColor-900"
           >
             {{ $i("resend") }}
           </el-button>
@@ -70,14 +72,16 @@
         {{ passwordTip }}
       </div>
       <div class="mb-6 flex h-[2rem] w-full items-center">
-        <span class="me-4 text-xs"> {{ $i("passwordLeval") }}： </span>
+        <span class="me-4 text-xs text-fontColor">
+          {{ $i("passwordLeval") }}：
+        </span>
         <div class="password-leve-wrap flex flex-1 items-center">
           <div class="password-leve-item">
             <div
               class="password-leve-line"
               :class="[passwordLevel >= 1 ? '!bg-subColor-normal' : '']"
             ></div>
-            <div class="password-leve-msg">
+            <div class="password-leve-msg text-fontColor">
               {{ $i("Weak") }}
             </div>
           </div>
@@ -86,7 +90,7 @@
               class="password-leve-line"
               :class="[passwordLevel >= 2 ? 'medium-bg' : '']"
             ></div>
-            <div class="password-leve-msg">
+            <div class="password-leve-msg text-fontColor">
               {{ $i("Medium") }}
             </div>
           </div>
@@ -95,7 +99,7 @@
               class="password-leve-line"
               :class="[passwordLevel >= 3 ? '!bg-thirdColor' : '']"
             ></div>
-            <div class="password-leve-msg">
+            <div class="password-leve-msg text-fontColor">
               {{ $i("Strong") }}
             </div>
           </div>
@@ -130,9 +134,8 @@
       </span>
       <!-- 注册按钮 -->
       <el-button
-        class="mb-[2.2rem] !h-formEl w-full !rounded-btn text-[1.1rem] font-bold"
+        class="sys-btn mb-[2.2rem] !h-formEl w-full !rounded-btn text-[1.1rem] font-bold"
         type="primary"
-        color="#3470FF"
         @click="submit"
         :loading="submitLoading"
         :disabled="!canSubmit"
@@ -155,6 +158,7 @@ import { useEmailStore } from "~/stores/useUserStore";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "~/stores/useUserStore";
 import resetSuc from "@/components/user/resetSuc.vue";
+import { useVisitor } from "~/hooks/useVisitor.js";
 
 const userStore = useUserStore();
 
@@ -171,8 +175,14 @@ const props = defineProps({
   agreeTerm: {
     type: Boolean,
     default: true
+  },
+  path: {
+    type: String,
+    default: ""
   }
 });
+console.log(props.path, "🚀===");
+
 // 从 prop 取值，默认为设置密码【set】。reset表示重置密码
 const pageType = props.pageSource || route.query.type || "set";
 const router = useRouter();
@@ -247,6 +257,8 @@ const sendCode = async (num = 60, sendRes = true) => {
   } catch (error) {
     countdown.value = 10;
     codeTip.value = error?.message || error?.code;
+  } finally {
+    // eamilStore.setCountdown();
   }
 };
 
@@ -298,6 +310,7 @@ const showDialog = ref(false); // 控制弹窗显示
 const localePath = useLocalePath();
 
 const submitLoading = ref(false);
+const { getVisitorId, visitorId } = useVisitor();
 const submit = async () => {
   codeTip.value = "";
   passwordTip.value = "";
@@ -324,7 +337,11 @@ const submit = async () => {
     let response;
     if (pageType === "set") {
       // 注册-设置密码直接登录
-      response = await userApi.sysSignupUser(params);
+      if (!visitorId.value) await getVisitorId();
+      response = await userApi.sysSignupUser({
+        ...params,
+        visitorClientId: visitorId.value
+      });
     } else if (pageType === "reset") {
       // 忘记密码-重置密码，确认后登录
       if (props.pageSource === "reset") {
@@ -334,7 +351,19 @@ const submit = async () => {
         // 忘记密码
         response = await userApi.forgetPassword(params);
       }
+    } else if (pageType === "noLogin") {
+      if (!visitorId.value) await getVisitorId();
+      response = await userApi.sysSignupUser({
+        ...params,
+        visitorClientId: visitorId.value
+      });
     }
+    if (response) {
+      clearInterval(timer);
+      eamilStore.setSendCodeFlag(true);
+      eamilStore.setCountdown();
+    }
+
     submitLoading.value = false;
 
     userStore.setUserInfo(response);
@@ -346,6 +375,10 @@ const submit = async () => {
     } else if (pageType === "reset") {
       // 忘记密码-重置密码，确认后登录
       showDialog.value = true;
+    } else if (pageType === "noLogin") {
+      router.push({
+        path: localePath("/home")
+      });
     }
   } catch (error) {
     submitLoading.value = false;
@@ -354,19 +387,32 @@ const submit = async () => {
     if ([14006, 14007].includes(code)) {
       // 验证码过期，验证码错误
       codeTip.value = error?.message;
+      return;
     }
     if ([14008].includes(code)) {
       // 密码相同
       passwordTip.value = error?.message;
     } else {
-      // ElMessage.error(error?.message || code || 'sysSignupUser error')
+      if (error?.message || error?.code) {
+        Msg({
+          message: error?.message || error?.code,
+          type: "error"
+        });
+      }
     }
+  } finally {
   }
 };
 
 const emit = defineEmits(["change"]);
 const onConfirm = () => {
   showDialog.value = false;
+  if (props.path) {
+    router.push({
+      path: localePath(props.path)
+    });
+    return;
+  }
   router.push({
     path: localePath("/home")
   });
@@ -425,13 +471,6 @@ onBeforeUnmount(() => {});
 </script>
 
 <style scoped lang="scss">
-:deep .input-error.el-input {
-  --el-input-border-color: var(--subColor-normal);
-  --el-input-hover-border-color: var(--subColor-normal);
-  --el-input-focus-border-color: var(--subColor-normal);
-  --el-input-clear-hover-color: var(--subColor-normal);
-}
-
 .medium-bg {
   background-color: #eab86a !important;
 }
@@ -461,5 +500,13 @@ onBeforeUnmount(() => {});
   :deep(.el-input__wrapper.is-focus) {
     box-shadow: 0 0 0 1px var(--mainColor-900) inset !important;
   }
+}
+::v-deep .rounded-btn .el-input__wrapper .el-input__prefix {
+  color: #000;
+  font-size: 18px;
+}
+::v-deep .rounded-btn .el-input__suffix .el-input__suffix-inner {
+  color: #000;
+  font-size: 18px;
 }
 </style>

@@ -16,7 +16,7 @@
         @mousemove="updateHoverPosition"
       >
         <div
-          class="progress-bar rounded-full bg-[#3470FF]"
+          class="progress-bar rounded-full bg-mainColor-900"
           :style="progressBarStyle"
         ></div>
         <div
@@ -42,33 +42,35 @@
     <template v-else>
       <!-- 播放/暂停按钮 -->
       <div class="play-control relative me-2 ms-1 cursor-pointer">
-        <button
-          @click="togglePlay"
-          class="play-pause-button flex !h-9 !w-9 items-center rounded-lg hover:bg-[rgba(0,0,0,0.15)] focus:outline-none"
+        <el-tooltip
+          :show-arrow="false"
+          effect="customized"
+          popper-class="popper-class-ZZMG2X2I"
+          :content="getTips"
+          :offset="6"
         >
-          <div
-            v-if="isPlaying"
-            class="flex h-6 w-6 items-center justify-center"
+          <button
+            @click="togglePlay"
+            class="play-pause-button flex !h-9 !w-9 items-center rounded-lg hover:bg-fontHover focus:outline-none"
           >
-            <span
-              class="iconfont icon-zanting text-black"
-              style="font-size: 1.375rem"
-            ></span>
-          </div>
-          <div v-else class="flex h-6 w-6 items-center justify-center">
-            <span
-              class="iconfont icon-bofang text-black"
-              style="font-size: 1.375rem"
-            ></span>
-          </div>
-        </button>
-
+            <div
+              v-if="isPlaying"
+              class="flex h-6 w-6 items-center justify-center"
+            >
+              <span
+                class="iconfont icon-zanting text-black"
+                style="font-size: 1.375rem"
+              ></span>
+            </div>
+            <div v-else class="flex h-6 w-6 items-center justify-center">
+              <span
+                class="iconfont icon-bofang text-black"
+                style="font-size: 1.375rem"
+              ></span>
+            </div>
+          </button>
+        </el-tooltip>
         <!-- 播放/暂停悬浮提示 -->
-        <div
-          class="play-pause-tooltip pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2 transform rounded px-0 py-0 text-xs opacity-0"
-        >
-          {{ getTips }}
-        </div>
       </div>
 
       <!-- 已播放时间 -->
@@ -88,7 +90,7 @@
         @mousemove="updateHoverPosition"
       >
         <div
-          class="progress-bar rounded-full bg-[#3470FF]"
+          class="progress-bar rounded-full bg-mainColor-900"
           :style="progressBarStyle"
         ></div>
         <div
@@ -116,102 +118,93 @@
       </div>
 
       <!-- 音量控制 -->
-      <div
-        class="volume-control relative me-5 ms-5 cursor-pointer"
-        @mouseenter="showVolumePopup = true"
-        @mouseleave="hideVolumePopupWithDelay"
-      >
-        <button
-          @click="toggleMute"
-          class="volume-button flex !h-9 !w-9 items-center rounded-lg hover:bg-[rgba(0,0,0,0.15)] focus:outline-none"
+      <div class="volume-control relative me-5 ms-5 cursor-pointer">
+        <el-popover
+          placement="top"
+          width="2rem"
+          trigger="hover"
+          :show-arrow="false"
+          :offset="6"
+          popper-class="!p-0 !min-w-[unset] !shadow-[unset] !border !border-borderColor"
+          popper-style="box-shadow: none;color: #000;border: 0.0625rem solid theme('colors.borderColor');border-radius:0.375rem"
         >
-          <span
-            v-if="!isMuted && volume > 0.5"
-            class="iconfont icon-shipinyinliangda text-black"
-            style="font-size: 1.175rem"
-          ></span>
-          <span
-            v-else-if="!isMuted && volume > 0"
-            class="iconfont icon-yinliang text-black"
-            style="font-size: 1.275rem"
-          ></span>
-          <span
-            v-else
-            class="iconfont icon-shipinjingyin text-black"
-            style="font-size: 1.275rem"
-          ></span>
-        </button>
-
-        <!-- 悬停时显示的垂直音量调节弹窗 -->
-        <div
-          class="volume-popup absolute bottom-11 left-1/2 z-10 -translate-x-1/2 transform rounded-lg bg-white p-3"
-          v-show="showVolumePopup"
-          @mouseenter="
-            showVolumePopup = true;
-            clearVolumePopupTimer();
-          "
-          @mouseleave="hideVolumePopupWithDelay"
-        >
-          <!-- 当前音量值显示 -->
-          <div class="mb-2 text-center text-xs text-black">
-            {{ isMuted ? 0 : Math.round(volume * 100) }}
-          </div>
-
-          <!-- 垂直音量调节容器（居中） -->
-          <div class="flex w-full items-center justify-center">
-            <!-- 垂直音量调节条 -->
-            <div
-              class="vertical-volume-container relative flex h-24 w-1 cursor-pointer items-center justify-center rounded-full bg-gray-400"
-              ref="verticalVolumeContainer"
-              @mousedown="startVerticalVolumeDrag"
-              @click="changeVerticalVolume"
+          <template #reference>
+            <button
+              @click="toggleMute"
+              class="volume-button flex !h-9 !w-9 items-center rounded-lg hover:bg-fontHover focus:outline-none"
             >
-              <!-- 已调节部分 -->
-              <div
-                class="vertical-volume-bar absolute bottom-0 w-full rounded-full bg-[#3470FF]"
-                :style="{ height: volumePercentage + '%' }"
-              ></div>
+              <span
+                v-if="!isMuted && volume > 0.5"
+                class="iconfont icon-shipinyinliangda text-black"
+                style="font-size: 1.175rem"
+              ></span>
+              <span
+                v-else-if="!isMuted && volume > 0"
+                class="iconfont icon-yinliang text-black"
+                style="font-size: 1.275rem"
+              ></span>
+              <span
+                v-else
+                class="iconfont icon-shipinjingyin text-black"
+                style="font-size: 1.275rem"
+              ></span>
+            </button>
+          </template>
+          <div class="py-3">
+            <!-- 当前音量值显示 -->
+            <div class="mb-2 select-none text-center text-xs text-black">
+              {{ isMuted ? 0 : Math.round(volume * 100) }}
+            </div>
 
-              <!-- 调节滑块 -->
+            <!-- 垂直音量调节容器（居中） -->
+            <div class="flex w-full items-center justify-center">
+              <!-- 垂直音量调节条 -->
               <div
-                class="vertical-volume-thumb absolute h-3 w-3 rounded-full border-2 border-[#3470FF] bg-white"
-                :style="{
-                  bottom: volumePercentage + '%',
-                  transform: 'translateY(50%)'
-                }"
-              ></div>
+                class="vertical-volume-container relative flex h-24 w-1 cursor-pointer items-center justify-center rounded-full bg-gray-400"
+                ref="verticalVolumeContainer"
+                @mousedown="startVerticalVolumeDrag"
+                @click="changeVerticalVolume"
+              >
+                <!-- 已调节部分 -->
+                <div
+                  class="vertical-volume-bar absolute bottom-0 w-full rounded-full bg-mainColor-900"
+                  :style="{ height: volumePercentage + '%' }"
+                ></div>
+
+                <!-- 调节滑块 -->
+                <div
+                  class="vertical-volume-thumb absolute h-[0.625rem] w-[0.625rem] rounded-full border-2 border-mainColor-900 bg-white"
+                  :style="{
+                    bottom: volumePercentage + '%',
+                    transform: 'translateY(50%)'
+                  }"
+                ></div>
+              </div>
             </div>
           </div>
-        </div>
+        </el-popover>
       </div>
 
       <!-- 倍速调节 -->
-      <div
-        class="playback-rate relative me-5 cursor-pointer"
-        @mouseenter="showPlaybackRatePopup = true"
-        @mouseleave="hidePlaybackRatePopupWithDelay"
-      >
-        <!-- 倍速显示按钮 -->
-        <div class="flex !h-12 !w-12 items-center">
-          <button
-            class="playback-rate-button flex !h-9 !w-10 items-center justify-center rounded-lg hover:bg-[rgba(0,0,0,0.15)] focus:outline-none"
-          >
-            <span class="text-sm">{{ ratesMap[playbackRate] }}</span>
-          </button>
-        </div>
-
-        <!-- 倍速选择弹窗 -->
-        <div
-          class="playback-rate-popup absolute bottom-11 left-1/2 z-10 -translate-x-1/2 transform rounded-lg bg-white p-2"
-          v-show="showPlaybackRatePopup"
-          @mouseenter="
-            showPlaybackRatePopup = true;
-            clearPlaybackRatePopupTimer();
-          "
-          @mouseleave="hidePlaybackRatePopupWithDelay"
+      <div class="playback-rate relative me-5 cursor-pointer">
+        <el-popover
+          ref="playbackRateRef"
+          placement="top"
+          width="4.875rem"
+          trigger="hover"
+          :show-arrow="false"
+          :offset="6"
+          popper-class="!p-0 !min-w-[unset] !shadow-[unset] !border !border-borderColor"
+          popper-style="box-shadow: none;color: #000;border: 0.0625rem solid theme('colors.borderColor');border-radius:0.5rem"
         >
-          <!-- 倍速选项列表 -->
-          <div class="flex w-[4.25rem] flex-col">
+          <template #reference>
+            <button
+              class="playback-rate-button flex !h-9 !w-11 items-center justify-center rounded-lg hover:bg-fontHover focus:outline-none"
+            >
+              <span class="text-sm">{{ ratesMap[playbackRate] }}</span>
+            </button>
+          </template>
+          <div class="flex w-full flex-col py-2">
             <button
               v-for="rate in rates"
               :key="rate"
@@ -225,7 +218,7 @@
               {{ rate }}X
             </button>
           </div>
-        </div>
+        </el-popover>
       </div>
     </template>
   </div>
@@ -268,14 +261,11 @@ const isDraggingProgress = ref(false);
 const isHoveringProgress = ref(false);
 const hoverTime = ref(0);
 const hoverPosition = ref(0);
-const showVolumePopup = ref(false);
 const verticalVolumeContainer = ref(null);
-const showPlaybackRatePopup = ref(false);
 const dragPlayingState = ref(false); // 记录拖拽开始时的播放状态
+const playbackRateRef = ref(null);
 
 // 延时隐藏相关的定时器
-let volumePopupTimer = null;
-let playbackRatePopupTimer = null;
 let syncInterval = null;
 
 // 拖动节流相关变量
@@ -669,8 +659,6 @@ const toggleMute = () => {
   }
   props.player.muted = isMuted.value;
   props.player.volume = volume.value;
-  // 点击音量按钮时显示音量浮窗
-  showVolumePopup.value = true;
 };
 
 // 更新悬停位置
@@ -739,85 +727,13 @@ const stopVerticalVolumeDrag = () => {
   document.removeEventListener("mouseup", stopVerticalVolumeDrag);
 };
 
-// 延迟隐藏音量弹窗
-const hideVolumePopupWithDelay = (event) => {
-  if (volumePopupTimer) {
-    clearTimeout(volumePopupTimer);
-  }
-
-  volumePopupTimer = setTimeout(() => {
-    // 检查鼠标是否在弹窗内
-    const volumePopup = document.querySelector(".volume-popup");
-    const volumeControl = document.querySelector(".volume-control");
-
-    if (volumePopup && volumeControl && event) {
-      const popupRect = volumePopup.getBoundingClientRect();
-      const controlRect = volumeControl.getBoundingClientRect();
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-
-      // 如果鼠标在弹窗内或控制按钮内，不隐藏
-      if (
-        (mouseX >= popupRect.left &&
-          mouseX <= popupRect.right &&
-          mouseY >= popupRect.top &&
-          mouseY <= popupRect.bottom) ||
-        (mouseX >= controlRect.left &&
-          mouseX <= controlRect.right &&
-          mouseY >= controlRect.top &&
-          mouseY <= controlRect.bottom)
-      ) {
-        return;
-      }
-    }
-
-    showVolumePopup.value = false;
-  }, 300);
-};
-
 // 设置播放速度
 const setPlaybackRate = (rate) => {
   if (!props.player) return;
 
   playbackRate.value = rate;
   props.player.playbackRate = parseFloat(rate);
-  showPlaybackRatePopup.value = false;
-};
-
-// 延迟隐藏倍速弹窗
-const hidePlaybackRatePopupWithDelay = (event) => {
-  if (playbackRatePopupTimer) {
-    clearTimeout(playbackRatePopupTimer);
-  }
-
-  playbackRatePopupTimer = setTimeout(() => {
-    // 检查鼠标是否在弹窗内
-    const ratePopup = document.querySelector(".playback-rate-popup");
-    const playbackRateControl = document.querySelector(".playback-rate");
-
-    if (ratePopup && playbackRateControl && event) {
-      const popupRect = ratePopup.getBoundingClientRect();
-      const controlRect = playbackRateControl.getBoundingClientRect();
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-
-      // 如果鼠标在弹窗内或控制按钮内，不隐藏
-      if (
-        (mouseX >= popupRect.left &&
-          mouseX <= popupRect.right &&
-          mouseY >= popupRect.top &&
-          mouseY <= popupRect.bottom) ||
-        (mouseX >= controlRect.left &&
-          mouseX <= controlRect.right &&
-          mouseY >= controlRect.top &&
-          mouseY <= controlRect.bottom)
-      ) {
-        return;
-      }
-    }
-
-    showPlaybackRatePopup.value = false;
-  }, 300);
+  playbackRateRef.value?.hide();
 };
 
 // 同步播放器状态到控制器
@@ -868,8 +784,6 @@ watch(
 
 // 组件卸载时清理
 onUnmounted(() => {
-  if (volumePopupTimer) clearTimeout(volumePopupTimer);
-  if (playbackRatePopupTimer) clearTimeout(playbackRatePopupTimer);
   if (syncInterval) clearInterval(syncInterval);
   if (rafId) cancelAnimationFrame(rafId);
 
@@ -878,22 +792,6 @@ onUnmounted(() => {
   document.removeEventListener("mousemove", handleVerticalVolumeDrag);
   document.removeEventListener("mouseup", stopVerticalVolumeDrag);
 });
-
-// 清除音量弹窗定时器
-const clearVolumePopupTimer = () => {
-  if (volumePopupTimer) {
-    clearTimeout(volumePopupTimer);
-    volumePopupTimer = null;
-  }
-};
-
-// 清除倍速弹窗定时器
-const clearPlaybackRatePopupTimer = () => {
-  if (playbackRatePopupTimer) {
-    clearTimeout(playbackRatePopupTimer);
-    playbackRatePopupTimer = null;
-  }
-};
 </script>
 
 <style scoped lang="scss">
@@ -912,36 +810,7 @@ const clearPlaybackRatePopupTimer = () => {
   margin-inline-end: 0.25rem;
 }
 
-/* 不再需要这些RTL特定的样式，因为现在通过计算属性处理 */
-/* [dir="rtl"] .progress-bar {
-  transform-origin: right;
-  position: absolute;
-  right: 0;
-  left: auto;
-}
-
-[dir="rtl"] .progress-thumb {
-  right: 0;
-  left: auto;
-  transform: translate(50%, -50%);
-}
-
-[dir="rtl"] .progress-container:hover .progress-thumb {
-  transform: translate(50%, -50%);
-}
-
-[dir="rtl"] .progress-thumb.dragging {
-  transform: translate(50%, -50%);
-} */
-
 [dir="rtl"] .play-pause-tooltip,
-[dir="rtl"] .volume-popup,
-[dir="rtl"] .playback-rate-popup {
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-}
-
 .progress-container {
   position: relative;
   overflow: visible;
@@ -959,7 +828,7 @@ const clearPlaybackRatePopupTimer = () => {
   box-shadow: none;
   background-color: white; /* 内环为白色 */
   border-style: solid;
-  border-color: #3470ff;
+  border-color: theme("colors.mainColor.900");
   opacity: 1;
   cursor: pointer;
   z-index: 5;
@@ -988,14 +857,6 @@ const clearPlaybackRatePopupTimer = () => {
   opacity: 1;
 }
 
-.volume-control:hover .volume-slider-container {
-  width: 3.75rem; /* 60px / 16 = 3.75rem */
-}
-
-.volume-slider-container {
-  transition: width 0.2s;
-}
-
 .volume-tooltip {
   opacity: 0;
   transition: opacity 0.2s;
@@ -1016,52 +877,10 @@ const clearPlaybackRatePopupTimer = () => {
   opacity: 1;
 }
 
-.volume-popup {
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.3s,
-    visibility 0.3s;
-  pointer-events: none;
-  box-shadow: none;
-  border: 0.0625rem solid #e7e7e7; /* 1px */
-  width: 2rem; /* 28px / 16 = 1.75rem */
-  padding: 0.625rem 0.3rem; /* 10px 8px */
-  z-index: 20; /* 增加层级 */
-}
-
-.volume-control:hover .volume-popup {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-/* 倍速调节弹窗 */
-.playback-rate-popup {
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.3s,
-    visibility 0.3s;
-  pointer-events: none;
-  box-shadow: none;
-  border: 0.0625rem solid #e7e7e7; /* 1px */
-  min-width: 4.375rem; /* 70px / 16 = 4.375rem */
-  padding: 0.25rem; /* 8px / 16 = 0.5rem */
-  margin-bottom: 0.375rem; /* 6px / 16 = 0.375rem */
-  z-index: 20; /* 增加层级 */
-}
-
-.playback-rate:hover .playback-rate-popup {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
 .playback-rate-item {
-  margin: 0 0.25rem;
+  margin: 0 0.5rem;
   color: #000;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   height: 1.75rem;
   padding: 0 0.375rem;
   line-height: 1.75rem;
@@ -1070,11 +889,11 @@ const clearPlaybackRatePopupTimer = () => {
 }
 
 .playback-rate-item:hover {
-  background-color: #f6f6f6;
+  background-color: theme("colors.boxBgColor");
 }
 
 .playback-rate-active {
-  color: #3470ff;
+  color: theme("colors.mainColor.900");
 }
 
 .volume-control {
@@ -1195,5 +1014,16 @@ const clearPlaybackRatePopupTimer = () => {
   width: 1rem; /* 16px */
   height: 1rem; /* 16px */
   border-width: 0.28125rem; /* 4.5px */
+}
+</style>
+<style lang="scss">
+.el-popper.is-customized.popper-class-ZZMG2X2I {
+  transition: opacity 0.15s;
+  white-space: nowrap;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.54);
+  border-radius: 0.25rem;
+  padding: 0.375rem;
+  line-height: 1rem;
 }
 </style>

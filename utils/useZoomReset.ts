@@ -4,12 +4,14 @@ export const useZoomReset = () => {
     if (!process.client) return false;
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   };
-  const forceResetZoom = () => {
+  const forceResetZoom = (emit: any) => {
     if (!process.client) return;
 
     if (isIos()) {
       window.location.href = window.location.pathname + "?r=" + Date.now();
       return;
+    } else {
+      emit("update:beginnersTutorial", true);
     }
 
     // 获取当前viewport设置
@@ -39,7 +41,7 @@ export const useZoomReset = () => {
   };
 
   const RESET_COOLDOWN = 90000; // 10秒冷却时间
-  const detectAndReset = () => {
+  const detectAndReset = (emit: any) => {
     if (!process.client) return false;
 
     // 检测多种缩放指标
@@ -59,10 +61,12 @@ export const useZoomReset = () => {
         : RESET_COOLDOWN + 1;
 
       if (timeSinceReset >= RESET_COOLDOWN) {
-        forceResetZoom();
+        forceResetZoom(emit);
         return !isIos();
       }
     }
+
+    emit("update:beginnersTutorial", true);
 
     return true;
   };

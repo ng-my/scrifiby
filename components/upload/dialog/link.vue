@@ -3,16 +3,22 @@
     <el-dialog
       v-model="visible"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       @closed="link = ''"
+      @open="handleOpen"
+      @close="handleClose"
       :title="t('FileUploadAndRecording.upload.link.dialogTitle')"
     >
       <upload-link v-model:link="link" />
       <template #footer>
-        <el-button @click="visible = false">
+        <el-button class="home-btn" @click="visible = false">
           {{ t("FileUploadAndRecording.upload.link.cancel") }}
         </el-button>
-        <el-button :loading="loading" @click="handleConfirm" type="primary">
+        <el-button
+          class="home-btn"
+          :loading="loading || linkLoading"
+          @click="confirm"
+          type="primary"
+        >
           {{ t("FileUploadAndRecording.upload.link.confirm") }}
         </el-button>
       </template>
@@ -27,9 +33,11 @@ const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: boolean;
+  isGuest?: boolean;
+  linkLoading?: boolean;
 }>();
 
-const emit = defineEmits(["update:modelValue", "confirm"]);
+const emit = defineEmits(["update:modelValue", "confirm", "open", "close"]);
 
 const visible = computed({
   get: () => props.modelValue,
@@ -37,8 +45,45 @@ const visible = computed({
 });
 
 const { link, loading, handleConfirm } = useLink(emit);
+
+const isOver = ref(false);
+const confirm = async () => {
+  // loading.value = true;
+  if (props.isGuest) {
+    emit("confirm", link.value);
+    return;
+  }
+
+  if (isOver.value) {
+    return;
+  }
+
+  const callback = () => {
+    isOver.value = true;
+  };
+  handleConfirm(callback);
+};
+
+function handleKeyPress(e: any) {
+  // if (e.target.tagName === "TEXTAREA") return;
+  if (e.key === "Enter" && !(loading.value || props.linkLoading)) {
+    confirm();
+  }
+}
+
+const handleOpen = () => {
+  isOver.value = false;
+  emit("open");
+  window.addEventListener("keypress", handleKeyPress);
+};
+const handleClose = () => {
+  loading.value = false;
+  emit("close");
+  window.removeEventListener("keypress", handleKeyPress);
+};
 </script>
 
 <style scoped>
 @import "./common.css";
+@import "~/layouts/homeMixin.css";
 </style>

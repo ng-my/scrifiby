@@ -1,6 +1,6 @@
 <template>
   <!--4、 五大优势 -->
-  <section class="mb-16 px-4">
+  <section class="px-4">
     <!-- 标题 -->
     <h2 class="mb-8 text-center text-[2.5rem] font-bold leading-snug">
       Here are the 5 major benefits of downloading<br />
@@ -15,7 +15,7 @@
         class="flex flex-shrink-0 justify-center md:flex-[0_0_38%] md:basis-[38%]"
       >
         <el-image
-          src="/assets/images/downloadMp4/major.png"
+          src="/assets/images/downloadMp4/black_major.png"
           class="h-60 w-60 object-contain md:h-80 md:w-80"
           fit="contain"
         ></el-image>
@@ -25,6 +25,7 @@
         class="max-w-[38.75rem] text-start text-[1.375rem] leading-[1.875rem] md:flex-[0_0_62%] md:basis-[62%] md:text-lg"
       >
         <li v-for="item in list" :key="item.id">
+          <span>{{ item.id }}. </span>
           <span class="font-semibold">
             {{ item.title }}
           </span>

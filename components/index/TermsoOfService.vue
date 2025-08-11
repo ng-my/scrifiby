@@ -1,5 +1,7 @@
 <template>
-  <section class="mx-auto max-w-[62.5rem] px-[2.5rem] pb-[6rem] pt-[3.5rem]">
+  <section
+    class="mx-auto max-w-[62.5rem] rounded-2xl bg-[#0F1523] px-[3.375rem] pb-[6rem] pt-[3.5rem]"
+  >
     <h2 class="mb-[3rem] text-center text-[2.5rem] font-medium">
       Terms of Service
     </h2>
@@ -247,9 +249,17 @@
         portion of the HTML, CSS, JavaScript, or visual design elements without
         express written permission from the Company. You must request permission
         to use the Company’s logo or any Service logos for promotional purposes.
-        Please email us (notification@scribify.ai) requests to use logos. We
-        reserve the right to rescind this permission if you violate these Terms
-        of Service.
+        Please
+        <a
+          href="mailto:support@scribify.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-500 hover:text-blue-500"
+        >
+          email us
+        </a>
+        requests to use logos. We reserve the right to rescind this permission
+        if you violate these Terms of Service.
       </p>
       <p class="content">
         - You agree not to reproduce, duplicate, copy, sell, resell or exploit
@@ -263,14 +273,21 @@
       <p class="content">
         - We respect the intellectual property rights of others. If you believe
         that any material available on or through the Site infringes upon any
-        copyright you own or control, please immediately contact us
-        (notification@scribify.ai). A copy of your Notification will be sent to
-        the person who posted or stored the material addressed in the
-        Notification. Please be advised that pursuant to applicable law you may
-        be held liable for damages if you make material misrepresentations in a
-        Notification. Thus, if you are not sure that material located on or
-        linked to by the Site infringes your copyright, you should consider
-        first contacting an attorney.
+        copyright you own or control, please immediately
+        <a
+          href="mailto:support@scribify.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-500 hover:text-blue-500"
+        >
+          contact us
+        </a>
+        .A copy of your Notification will be sent to the person who posted or
+        stored the material addressed in the Notification. Please be advised
+        that pursuant to applicable law you may be held liable for damages if
+        you make material misrepresentations in a Notification. Thus, if you are
+        not sure that material located on or linked to by the Site infringes
+        your copyright, you should consider first contacting an attorney.
       </p>
       <p class="title-h1">10. Prohibited Activities</p>
       <p class="content">
@@ -511,8 +528,15 @@
       </p>
       <p class="title-h1">17. Contact Us</p>
       <p class="content">
-        If you have a question about any of the Terms of Service, please contact
-        us (notification@scribify.ai).
+        If you have a question about any of the Terms of Service, please
+        <a
+          href="mailto:support@scribify.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-500 hover:text-blue-500"
+        >
+          contact us</a
+        >.
       </p>
     </div>
   </section>
@@ -525,17 +549,16 @@ const localePath = useLocalePath();
 
 <style scoped lang="scss">
 .important-content {
-  @apply text-[1.125rem] font-normal leading-[1.5rem] text-[#4B4B4B];
+  @apply text-[1.125rem] font-normal leading-[1.5rem] text-white;
 }
 .title-h1,
 .title-h3 {
   @apply mb-[0.5rem] text-[1.375rem] font-medium leading-[1.875rem];
 }
 .content {
-  @apply mb-[1.875rem] text-[1.125rem] font-normal leading-[1.5rem] text-[#4B4B4B];
+  @apply mb-[1.875rem] text-[1.125rem] font-normal leading-[1.5rem] text-[rgba(255,255,255,0.7)];
 }
 .BT {
-  @apply font-semibold;
-  color: #000;
+  @apply font-semibold text-white;
 }
 </style>

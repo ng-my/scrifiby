@@ -1,9 +1,9 @@
+// 日语
 let message = {
   proName: "Scribify",
   HomePage: {
     home: "ホームページ",
-    times:
-      "1日に{times}回の文字起こしが無料で利用可能です。残り{left}回の文字起こしが可能です。 ",
+    times: "1日{times}回の無料転写、今日は{left}回残っています。",
     tips: "無制限の文字起こしのためにProにアップグレードしてください。",
     version: "基本版（無料）: ",
     update: "今すぐアップグレード",
@@ -17,6 +17,7 @@ let message = {
     confirm: "作成",
     dialogLabel: "フォルダー名",
     recently: "最近使用したファイル",
+    loading: "読み込み中",
     tour: {
       step0: {
         title: "{name}へようこそ",
@@ -67,7 +68,9 @@ let message = {
       edit: "必要に応じたフォーマットで文字起こしの編集、改善、エクスポート。",
       collaborate: "文字起こしテキストを他の人と共有して協力作業。",
       button: "はじめる",
-      tip: "音声を文字起こしテキストに変換する準備はできましたか？今すぐ探索を始めましょう！"
+      tip: "音声を文字起こしテキストに変換する準備はできましたか？今すぐ探索を始めましょう！",
+      tip2: "今すぐ探索を始めましょう！",
+      tip1: "音声を文字起こしテキストに変換する準備はできましたか？ "
     },
     subscriptionModal: {
       left: {
@@ -113,7 +116,8 @@ let message = {
       move: "移動",
       failed: "失敗",
       selected: "選択済み",
-      success: "成功"
+      success: "成功",
+      fileList: "ファイルリスト"
     },
     dialog: {
       move: {
@@ -146,7 +150,7 @@ let message = {
       },
       export: {
         title: "エクスポート",
-        select: "1つ以上の形式を選択してください",
+        select: "必要な形式を選択してください",
         settings: "設定",
         speaker: "話者を含める",
         timecodes: "タイムコードを含める",
@@ -177,6 +181,7 @@ let message = {
       pause: "一時停止",
       resume: "再開",
       stop: "停止",
+      endRecord: "録音を終了",
       delete: "削除",
       transcribe: "文字起こし",
       permissionDenied: "マイク権限が拒否されたかデバイスが存在しません",
@@ -201,7 +206,7 @@ let message = {
         title: "リンクを貼り付け",
         label:
           "以下のプラットフォーム（YouTube、Facebook、X、Dropbox、Google Drive、Vimeo など）からメディアリンクを貼り付けてください",
-        confirm: "文字起こし",
+        confirm: "追加",
         cancel: "キャンセル",
         errorTitle:
           "入力したリンクアドレスが正しくありません。ご確認の上、再度お試しください。",
@@ -210,7 +215,8 @@ let message = {
       file: {
         orTitle: "オンラインメディアの文字起こし",
         dialogTitle: "ファイルの文字起こし",
-        tip: "クリックしてアップロード、またはドラッグ＆ドロップしてください",
+        tip1: "クリックしてアップロード",
+        tip2: "またはドラッグ＆ドロップ",
         or: "または"
       },
       del: {
@@ -222,16 +228,18 @@ let message = {
       },
       files: "ファイル",
       resultDialogTitle: "ファイルの文字起こし",
+      resultDialogTitle2: "ファイルを転写",
       cancel: "キャンセル",
       confirm: "文字起こし",
       return: "戻る",
       addMore: "さらに追加",
-      language: "音声言語",
+      language: "メディア言語",
       failed: "失敗",
       tooLarge: "ファイルが大きすぎます。",
+      linkUpload: "アップロード中...",
       fileFormat: "ファイル形式が許可されていません",
       localFiles: "ローカルファイル",
-      pasteLink: "リンクを貼り付け",
+      pasteLink: "オンラインリンク",
       uploadErr: "アップロードエラー",
       hashErr: "ハッシュエラー",
       table: {
@@ -242,7 +250,8 @@ let message = {
       },
       maxFileNum: "ファイル数は{num}を超えることはできません。",
       speaker: "話者識別",
-      speakerLabel: "文字起こしの各セクションに発話者をタグ付け"
+      speakerLabel:
+        "トランスクリプトの各セグメントに話している人をラベル付けします。"
     }
   },
   // 转录详情页
@@ -541,11 +550,20 @@ let message = {
     upgradeBtn: "今すぐアップグレード",
     upgradeTip30: "このファイルは30分を超えています",
     upgradeTipMore:
-      "Scribify Proにアップグレードすると、最大10時間のファイルを文字起こしできます"
+      "Scribify Proにアップグレードすると、最大10時間のファイルを文字起こしできます",
+    errorTips: "問題が発生しました。",
+    copiedLink: "リンクをコピーしました",
+    copyGotIt: "知っていた"
   },
   // 登录、注册、修改密码
   IdentityInfoManage: {
     or: "または",
+    LoginBtn: "メールでログイン",
+    LoginGoogle: "Googleでログイン",
+    SignupBtn: "メールで登録",
+    SignupGoogle: "Googleで登録",
+    SignupDes: "今すぐ無料でその魔法を体験しましょう。",
+    SignupTitle: "高精度かつ無制限の文字起こし",
     signup: "サインアップ",
     sign_up: "サインアップ",
     loginByGoogle: "Googleでログイン",
@@ -553,15 +571,13 @@ let message = {
     createAccount: "アカウントを作成",
     accountExists: "すでにアカウントをお持ちですか？",
     agreeTerm: {
-      agree: "{proName}の{terms}と{policy}に同意します。",
-      terms: "利用規約",
+      agree: "続行することで、当社の{terms}と{policy}に同意するものとします。",
+      terms: "規約",
       policy: "プライバシーポリシー"
     },
     setPassword: "パスワードを設定",
     code: "認証コード",
     resend: "再送信",
-    codeToEmail:
-      "認証コードをメールで送信しました。受信箱を確認し、上に貼り付けてください。",
     enterPassword: "パスワードを入力してください。",
     passwordLeval: "パスワード強度",
     Weak: "弱い",
@@ -585,7 +601,15 @@ let message = {
     resetPassword: "パスワードをリセット",
     resetYourPassword: "パスワードをリセット",
     newOldCantSame: "新しいパスワードは古いパスワードと同じにできません。",
-    passwordResetOk: "パスワードが正常にリセットされました！"
+    passwordResetOk: "パスワードが正常にリセットされました！",
+    signupToSaveProgress: "登録を完了して進捗を保存",
+    tip: "ご案内",
+    tipContentEmail:
+      "アカウントのログインパスワードをメールアドレス宛てに送信いたしました。",
+    tipContentPassword:
+      "受信トレイをご確認の上、メールアドレスとパスワードでログインしてください。",
+    codeToEmail:
+      "確認コードをメールで送信しました。受信トレイを確認し、上記に確認コードを貼り付けてください。"
   },
   // 分享详情页
   Sharepage: {},
@@ -596,18 +620,12 @@ let message = {
     subscription: "サブスクリプションプラン",
     freeversion: "無料",
     transcribeTimesDay: "1日3回の文字起こし",
-    freeThreeTimesDay: "毎日3ファイルを無料で文字起こしできます。",
     uploadMinutes: "30分のアップロード",
-    oneFileUploaded:
-      "各ファイルは最大30分まで、1回に1ファイルずつアップロード可能",
     lowerPriority: "低い優先度",
-    needsToWaitLonger:
-      "1日3回の文字起こし ファイルの文字起こしまでお待たせします。",
     currentPlan: "現在のプラン",
     professionalEdition: "プロフェッショナル版",
     unlimitedTranscription: "無制限の文字起こし",
-    unlimitedNumberOfTimes: "1人あたり無制限に文字起こし可能",
-    uploadWithinHours: "10時間までのアップロード",
+    unlimitedNumberOfTimes: "無制限の文字起こし頻度と時間",
     filesUploadedAtOnce:
       "各ファイルは最大10時間/5GBまで。一度に50ファイルアップロード可能",
     highestPriority: "最高優先度",
@@ -633,7 +651,6 @@ let message = {
     daily: "使用済み {start}/{end} 日次文字起こし",
     upgradetoPro: "Proにアップグレード",
     accountSetting: "アカウント設定",
-    returnAccountSetting: "アカウント設定に戻る",
     logOut: "ログアウト",
     account: "アカウント",
     email: "メール",
@@ -645,7 +662,6 @@ let message = {
     notFund: "見つかりません",
     couldntFind: "お探しのものを見つけられませんでした。",
     proAnnual: "Pro年間プラン",
-    yourSubscription: "サブスクリプションは以下の日に解約されます",
     proMonthly: "Pro月間プラン",
     perMonth: "月額",
     afterwards: "その後",
@@ -656,8 +672,20 @@ let message = {
     perYear: "年額",
     getProPlan: "Proプランを取得",
     changeToAnnual: "年間プランに変更",
-    automaticRenewalon: "自動更新日"
-  },
+    automaticRenewalon: "自動更新日",
+    eachMonth: "毎月{time}日に自動更新.",
+    automaticRenewal:
+      "自動更新に失敗しました。お支払い方法を確認してください。",
+    eachYear: "毎年{time}に自動更新.",
+    returnAccountSetting: "戻る",
+    needsToWaitLonger:
+      "ファイルが文字起こしされるまで、もう少しお待ちください。",
+    freeThreeTimesDay: "毎日3ファイルを無料で文字起こしできます。",
+    oneFileUploaded:
+      "各ファイルは最大30分まで。1回に1ファイルをアップロードしてください。",
+    uploadWithinHours: "10時間アップロード",
+      yourSubscription: "あなたのサブスクリプションは{time}にキャンセルされます。"
+},
   // 语言对应关系
   LanguageMap: {
     sysLanguagesMap: {
@@ -1201,8 +1229,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

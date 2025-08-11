@@ -14,7 +14,7 @@
         <el-input
           v-model="email"
           :class="{ 'input-error': emailTip }"
-          class="h-formEl !w-[20rem] rounded-[2rem]"
+          class="sys-input h-formEl !w-[20rem]"
           :placeholder="$i('emailAddress')"
           :prefix-icon="Message"
         />
@@ -27,8 +27,7 @@
         <el-button
           @click="submit()"
           :loading="submitLoading"
-          color="#3470FF"
-          class="mb-[2.25rem] mt-[1.5rem] !h-formEl w-[20rem] !rounded-btn text-[1.1rem] font-bold"
+          class="sys-btn mb-[2.25rem] mt-[1.5rem] !h-formEl w-[20rem] !rounded-btn text-[1.1rem] font-bold"
           type="primary"
           :disabled="!email"
         >
@@ -97,12 +96,4 @@ const submit = async () => {
 };
 </script>
 
-<style scoped lang="scss">
-/* 可根据需要补充自定义样式 */
-:deep .input-error.el-input {
-  --el-input-border-color: var(--subColor-normal);
-  --el-input-hover-border-color: var(--subColor-normal);
-  --el-input-focus-border-color: var(--subColor-normal);
-  --el-input-clear-hover-color: var(--subColor-normal);
-}
-</style>
+<style scoped lang="scss"></style>

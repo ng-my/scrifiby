@@ -6,12 +6,11 @@
       :close-on-press-escape="false"
       :destroy-on-close="true"
       :show-close="false"
+      @closed="handleClose"
     >
       <template #header>
         <div class="flex items-center justify-between">
-          <span>{{
-            t("FileUploadAndRecording.upload.resultDialogTitle")
-          }}</span>
+          <span>{{ t("FileUploadAndRecording.upload.confirm") }}</span>
           <div class="cursor-pointer" @click="showDelDialog = true">
             <el-icon>
               <Close />
@@ -81,11 +80,12 @@
               </div>
             </el-popover>
           </div>
-
           <el-table
             :data="tableData"
             style="width: 100%"
             max-height="9.375rem"
+            row-key="id"
+            :show-header="!isMobile"
             @cell-mouse-enter="handleCellEnter"
             @cell-mouse-leave="handleCellLeave"
           >
@@ -93,19 +93,77 @@
               t("FileUploadAndRecording.upload.table.noData")
             }}</template>
             <el-table-column
-              show-overflow-tooltip
+              :show-overflow-tooltip="!isMobile"
               prop="name"
               :label="t('FileUploadAndRecording.upload.table.file')"
-              width="220"
-            />
+              :width="isMobile ? '' : 276"
+            >
+              <template #default="scope">
+                <div
+                  class="overflow-hidden text-ellipsis text-nowrap"
+                  v-if="!isMobile"
+                >
+                  {{ scope.row.name }}
+                </div>
+                <div
+                  v-else
+                  class="flex w-full justify-between overflow-x-hidden"
+                >
+                  <div class="w-0 flex-1">
+                    <div
+                      class="overflow-hidden text-ellipsis text-nowrap text-black"
+                    >
+                      {{ scope.row.name }}
+                    </div>
+                    <div class="flex w-full items-center text-[#999999]">
+                      <div class="me-4 flex-shrink-0">
+                        {{ scope.row.detailSize }}
+                      </div>
+                      <div class="w-44 text-xs">
+                        <div
+                          v-if="scope.row.status === 'success'"
+                          class="text-start text-thirdColor"
+                        >
+                          <span
+                            class="iconfont icon-duihao text-xs text-thirdColor"
+                          ></span>
+                        </div>
+                        <div v-else-if="scope.row.status === 'error'">
+                          <span class="text-subColor-normal me-1">{{t('FolderPage.table.failed')}}</span>
+                          <span>{{ scope.row.errorText }}</span>
+                        </div>
+                        <div v-else-if="scope.row.uploadText">
+                          <span>{{ scope.row.uploadText }}</span>
+                        </div>
+                        <el-progress
+                          v-else
+                          striped
+                          striped-flow
+                          :percentage="scope.row.progress || 0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex w-4 flex-shrink-0 cursor-pointer items-center"
+                    @click="handleRemove(scope.row, scope.$index)"
+                  >
+                    <span
+                      class="iconfont icon-shanchu text-xs text-fontColor"
+                    ></span>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column
+              v-if="!isMobile"
               prop="detailSize"
               :label="t('FileUploadAndRecording.upload.table.size')"
               width="90"
             />
             <el-table-column
+              v-if="!isMobile"
               prop="status"
-              width="180"
               :label="t('FileUploadAndRecording.upload.table.status')"
             >
               <template #default="{ row, $index }">
@@ -120,12 +178,18 @@
                       ></span>
                     </div>
                     <div v-else-if="row.status === 'error'">
-                      <span
-                        class="iconfont icon-shanchu me-3.5 text-xs text-subColor-normal"
-                      ></span>
-                      <span>{{ row.errorText }}</span>
+                      <div class="text-subColor-normal">{{t('FolderPage.table.failed')}}</div>
+                      <div class="text-fontColor">{{ row.errorText }}</div>
                     </div>
-                    <el-progress v-else :percentage="row.progress || 0" />
+                    <div v-else-if="row.uploadText">
+                      <span>{{ row.uploadText }}</span>
+                    </div>
+                    <el-progress
+                      v-else
+                      striped
+                      striped-flow
+                      :percentage="row.progress || 0"
+                    />
                   </div>
 
                   <div
@@ -162,9 +226,11 @@
         </div>
 
         <div class="mt-5">
-          <div>{{ t("FileUploadAndRecording.upload.speaker") }}</div>
-          <el-checkbox>
-            <span class="test-sm text-wrap">{{
+          <div class="mb-0.5">
+            {{ t("FileUploadAndRecording.upload.speaker") }}
+          </div>
+          <el-checkbox v-model="diarizeEnabled">
+            <span class="max-w-full whitespace-normal break-words text-sm">{{
               t("FileUploadAndRecording.upload.speakerLabel")
             }}</span>
           </el-checkbox>
@@ -173,10 +239,11 @@
 
       <template #footer>
         <div class="flex w-full items-center justify-end">
-          <el-button @click="showDelDialog = true">{{
+          <el-button class="home-btn" @click="showDelDialog = true">{{
             t("FileUploadAndRecording.upload.cancel")
           }}</el-button>
           <el-button
+            class="home-btn"
             @click="handleTranscribe"
             :disabled="disabled"
             :loading="transcribing"
@@ -201,14 +268,15 @@
       @change="handleAddFile"
     />
   </div>
-  <subscription-modal v-if="isFreeUser" v-model="showSubModal" />
+  <subscription-modal v-model="showSubModal" />
 </template>
 
 <script setup lang="ts">
 import { type UploadFile, useUpload } from "~/components/upload/useUpload";
 import { Close } from "@element-plus/icons-vue";
 import { useSubscript } from "~/components/layout/header/useSubscript";
-import Utils from "~/utils/tools";
+import { Msg } from "~/utils/tools";
+import { ref } from "vue";
 
 const { t } = useI18n();
 
@@ -225,7 +293,7 @@ const visible = computed({
 
 const { selectRawFiles, fileTypes } = storeToRefs(useUploadStore());
 const accept = computed(() =>
-  fileTypes.value.map((type) => `.${type}`).join(",")
+  fileTypes.value.map((type) => `.${type}`).join(", ")
 );
 const maxNum = 50;
 
@@ -276,9 +344,10 @@ watchEffect(async () => {
 
 function validateMaxNum(len: number) {
   if (len > maxNum) {
-    ElMessage.error({
+    Msg({
       message: t("FileUploadAndRecording.upload.maxFileNum", { num: maxNum }),
-      customClass: "!z-[9999]"
+      customClass: "!z-[9999]",
+      type: "error"
     });
     return false;
   }
@@ -332,7 +401,8 @@ const leftCount = computed(() => {
 const router = useRouter();
 const localePath = useLocalePath();
 
-const isMobile = ref(Utils.isMobile());
+const isMobile = useState("isMobile");
+
 const showPro = () => {
   if (isMobile.value) {
     handleRemoveAll();
@@ -342,6 +412,11 @@ const showPro = () => {
   showSubModal.value = true;
 };
 
+const diarizeEnabled = ref(false);
+const getFileNameWithoutExt = (fileName: string) => {
+  const lastDotIndex = fileName.lastIndexOf(".");
+  return lastDotIndex === -1 ? fileName : fileName.substring(0, lastDotIndex);
+};
 const handleTranscribe = async () => {
   if (isNoTimes.value) {
     showPro();
@@ -363,7 +438,7 @@ const handleTranscribe = async () => {
               parentId: route?.path?.includes("folder")
                 ? selectedFolder.value?.id || 0
                 : 0,
-              fileName: file.name,
+              fileName: getFileNameWithoutExt(file.name),
               fileSize: file.size
             };
           })
@@ -379,7 +454,8 @@ const handleTranscribe = async () => {
     await transcribeFile({
       language: lang.value.transCode,
       langName: lang.value.lang,
-      fileIds
+      fileIds,
+      diarizeEnabled: diarizeEnabled.value
     });
     if (isFreeUser.value) {
       await fetchSubscript();
@@ -388,6 +464,10 @@ const handleTranscribe = async () => {
     clearSelectRawFiles();
     tableData.value = [];
     updateNewFileList(fileIds);
+  } catch (error) {
+    if (error?.code === 15010) {
+      showPro();
+    }
   } finally {
     transcribing.value = false;
   }
@@ -399,14 +479,19 @@ const handleClickAddMore = () => {
     showPro();
   }
 };
+
+const handleClose = () => {
+  diarizeEnabled.value = false;
+};
 </script>
 
 <style scoped>
 @import "./common.css";
+@import "~/layouts/homeMixin.css";
 
 :deep(.el-dialog) {
-  max-width: 36.25rem;
-  @apply sm:w-[36.25rem];
+  max-width: 38.75rem;
+  @apply sm:w-[38.75rem];
 }
 
 :deep(.el-select__wrapper) {
@@ -434,8 +519,11 @@ const handleClickAddMore = () => {
   @apply bg-mainColor-900;
 }
 
-:deep(.el-progress__text) {
-  @apply me-3 !text-sm text-black;
+:deep(.el-checkbox) {
+  align-items: flex-start;
+}
+:deep(.el-checkbox__input) {
+  margin-top: 3px;
 }
 :deep(.el-checkbox__label) {
   color: unset !important;

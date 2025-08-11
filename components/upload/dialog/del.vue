@@ -3,7 +3,6 @@
     <el-dialog
       v-model="visible"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       :title="t('FileUploadAndRecording.upload.del.title')"
     >
       <div>{{ t("FileUploadAndRecording.upload.del.content") }}</div>
@@ -11,12 +10,12 @@
       <template #footer>
         <div class="flex flex-wrap items-center justify-end">
           <div class="mb-2 flex w-auto">
-            <el-button @click="handleRemoveAll" type="danger">
+            <el-button class="home-btn" @click="handleRemoveAll" type="danger">
               {{ t("FileUploadAndRecording.upload.del.cancel") }}
             </el-button>
           </div>
           <div class="mb-2 ms-3 flex w-auto">
-            <el-button @click="visible = false" type="primary">
+            <el-button class="home-btn" @click="visible = false" type="primary">
               {{ t("FileUploadAndRecording.upload.del.confirm") }}
             </el-button>
           </div>
@@ -47,6 +46,7 @@ const handleRemoveAll = () => {
 
 <style scoped>
 @import "./common.css";
+@import "~/layouts/homeMixin.css";
 :deep(.el-dialog) {
   max-width: calc(100% - 2rem) !important;
   @apply !w-[30.4375rem] !rounded-lg p-5;

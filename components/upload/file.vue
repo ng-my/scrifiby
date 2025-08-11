@@ -1,8 +1,9 @@
 <template>
-  <div class="flex w-full flex-col items-center">
+  <div class="upload-file flex w-full flex-col items-center">
     <el-upload
       drag
       action=""
+      class="w-full"
       :multiple="!isFreeUser"
       :accept="accept"
       :auto-upload="false"
@@ -13,14 +14,19 @@
         <span
           class="iconfont icon-shangchuan mb-5 text-2xl text-mainColor-900"
         ></span>
-        <p class="mb-1 text-sm text-black">
-          {{ t("FileUploadAndRecording.upload.file.tip") }}
+        <p class="tip mb-1 text-sm text-black">
+          {{ t("FileUploadAndRecording.upload.file.tip1") }}
+          <span v-if="!isMobile">{{
+            t("FileUploadAndRecording.upload.file.tip2")
+          }}</span>
         </p>
 
-        <div class="flex flex-wrap justify-center text-xs text-fontColor">
+        <div class="type flex flex-wrap justify-center text-xs text-fontColor">
           <span v-for="(type, index) in fileTypes" :key="index">
-            {{ type }}
-            <span class="" v-show="index < fileTypes.length - 1">、</span>
+            {{ type
+            }}<span class="mr-1.5" v-show="index < fileTypes.length - 1"
+              >,</span
+            >
           </span>
         </div>
       </div>
@@ -30,7 +36,10 @@
       <el-divider class="me-3">{{
         t("FileUploadAndRecording.upload.file.or")
       }}</el-divider>
-      <div @click="handleShowLink" class="flex cursor-pointer items-center">
+      <div
+        @click="handleShowLink"
+        class="flex cursor-pointer items-center rounded-lg px-3 py-2 hover:bg-[#ECECEC]"
+      >
         <span
           class="iconfont icon-yulanlianjie me-2.5 text-xs text-fontColor"
         ></span>
@@ -43,26 +52,33 @@
 </template>
 
 <script setup>
-import { ElMessage } from "element-plus";
+import { Msg } from "~/utils/tools";
 
 const { t } = useI18n();
 
-defineProps({
+const props = defineProps({
   showLink: {
+    type: Boolean,
+    default: false
+  },
+  useUploadValidate: {
     type: Boolean,
     default: false
   }
 });
+
+const isMobile = useState("isMobile");
 
 const { isFreeUser } = storeToRefs(useSubscriptionStore());
 
 const { fileTypes } = storeToRefs(useUploadStore());
 const { updateSelectRawFiles } = useUploadStore();
 const accept = computed(() =>
-  fileTypes.value.map((type) => `.${type}`).join(",")
+  fileTypes.value.map((type) => `.${type}`).join(", ")
 );
 
-const handleFileChange = (uploadFile) => {
+const handleFileChange = async (uploadFile) => {
+  await beforeUpload(uploadFile.raw);
   updateSelectRawFiles(uploadFile.raw);
 };
 
@@ -73,16 +89,37 @@ const handleShowLink = () => {
 
 // 上传前校验
 const beforeUpload = (file) => {
-  // 获取文件扩展名并转为大写
-  const extension = file.name.split(".").pop().toUpperCase();
+  return new Promise((resolve, reject) => {
+    if (!props.useUploadValidate) return resolve(true);
+    if (file.size > 5 * 1024 * 1024 * 1024) {
+      Msg({
+        message: t("FileUploadAndRecording.upload.tooLarge"),
+        type: "error"
+      });
+      return reject(false);
+    }
 
-  // 类型校验
-  if (!fileTypes.value.includes(extension)) {
-    ElMessage.error(`不支持的文件类型: ${extension}`);
-    return false;
-  }
+    const isMimeValid = [
+      ...fileTypes.value,
+      "webm",
+      "x-m4a",
+      "quicktime",
+      "vnd.dlna.adts",
+      "x-ms-wma",
+      "x-ms-wmv"
+    ].includes(file.type?.split("/")[1]?.toLowerCase());
 
-  return true;
+    // 返回结果
+    if (!isMimeValid) {
+      Msg({
+        message: t("FileUploadAndRecording.upload.fileFormat"),
+        type: "error"
+      });
+      return reject(false);
+    }
+
+    resolve(true);
+  });
 };
 </script>
 
@@ -90,6 +127,10 @@ const beforeUpload = (file) => {
 :deep(.el-upload-dragger) {
   @apply flex h-40 w-full flex-1 items-center justify-center rounded-lg border border-dashed border-mainColor-900 bg-mainColor-900 bg-opacity-5;
   transition: all 0.3s;
+}
+
+:deep(.el-upload:focus .el-upload-dragger) {
+  @apply border-mainColor-900;
 }
 
 :deep(.el-divider) {

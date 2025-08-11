@@ -8,7 +8,7 @@
       class="flex flex-shrink-0 justify-start md:flex-[0_0_38%] md:basis-[38%]"
     >
       <el-image
-        :src="`/assets/images/index/${data.img}.png`"
+        :src="`/assets/images/index_black/${data.img}.png`"
         class="max-w-full object-contain"
         fit="contain"
       ></el-image>
@@ -26,12 +26,12 @@
         >
           <span class="mt-[-0.25rem] text-[1.6rem]">
             <el-image
-              :src="`/assets/images/index/to-right.svg`"
+              :src="`/assets/images/index_black/to-right.svg`"
               class="h-[0.75rem] w-[0.875rem] object-contain"
               fit="contain"
             ></el-image>
           </span>
-          <span>
+          <span class="text-[rgba(255,255,255,0.7)]">
             {{ item.content }}
           </span>
         </li>
@@ -63,3 +63,4 @@ const data = ref({
 </script>
 
 <style scoped></style>
+<script setup lang="ts"></script>

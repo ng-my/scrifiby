@@ -2,7 +2,6 @@
   <el-dialog
     v-model="visible"
     :show-close="false"
-    :close-on-press-escape="false"
     :close-on-click-modal="false"
     :destroy-on-close="true"
     append-to-body

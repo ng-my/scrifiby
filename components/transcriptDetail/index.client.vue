@@ -1,7 +1,7 @@
 <template>
   <div class="transcript-box relative flex w-full flex-col text-sm">
     <div class="share-login">
-      <layout-upgrade v-if="!isShare && isFreeUser" />
+      <layout-upgrade v-if="!isShare && isFreeUser" ref="showSubRef" />
       <layout-header v-if="isShare" />
     </div>
     <div class="content-box flex flex-1 flex-col overflow-hidden">
@@ -12,7 +12,7 @@
         <div class="left-box flex flex-1 items-center overflow-hidden">
           <div
             v-if="!isShare"
-            class="icon-wrap me-2 flex cursor-pointer items-center rounded-sm text-lg text-black hover:bg-[#D3D3D3]"
+            class="icon-wrap me-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-lg text-lg text-black hover:bg-fontHover"
           >
             <el-icon @click="handleBack">
               <ArrowLeft />
@@ -22,28 +22,45 @@
             <div class="file-name line-clamp-1 break-all leading-5 text-black">
               <span
                 v-if="!isShare"
-                ref="fileNameElement"
-                class="file-text text-base font-medium"
-                :class="{
-                  editing: isEditing,
-                  'hover-effect': !isEditing,
-                  'inline-block': isEditing
-                }"
-                :contenteditable="isEditing"
-                :title="isEditing ? undefined : fileName"
                 @click="startEditing"
-                @keydown.enter.prevent="saveFileName"
-                @keydown.esc="cancelEditing"
-                @blur="cancelEditing"
+                ref="fileNameElement"
+                class="file-text cursor-pointer text-base font-medium"
+                :title="fileName"
               >
                 {{ fileName }}
               </span>
               <span v-else class="file-text text-base font-medium"
                 >{{ fileName }}
               </span>
+              <el-popover
+                ref="fileNamePopoverRef"
+                :virtual-ref="fileNameElement"
+                :offset="4"
+                width="20rem"
+                :show-arrow="false"
+                virtual-triggering
+                placement="bottom-start"
+                popper-style="padding:0;"
+                popper-class="!rounded-lg !border-0"
+                trigger="click"
+                @hide="saveFileName"
+              >
+                <el-input
+                  ref="fileNameInputRef"
+                  class="sys-input rounded-lg !text-black"
+                  v-model="fileName"
+                  @input="fileNameInput"
+                  @keydown.enter.prevent="
+                    () => {
+                      fileNamePopoverRef.hide();
+                    }
+                  "
+                  style="width: 20rem"
+                />
+              </el-popover>
             </div>
             <div class="file-upload-time text-sm text-fontColor">
-              {{ getTime(fileUploadTime) }}
+              {{ fileUploadTime && getTime(fileUploadTime) }}
             </div>
           </div>
         </div>
@@ -81,9 +98,15 @@
                 >
                   <span class="iconfont icon-youchexiao text-xs"></span>
                 </el-button>
-                <el-button text class="h-8" @click="handleSaveRightTranscript">
+                <el-button
+                  text
+                  class="h-8 !bg-mainColor-600 hover:!bg-hoverColor-deepen"
+                  @click="handleSaveRightTranscript"
+                >
                   <span class="iconfont icon-baocun1 me-2 text-xs"></span>
-                  {{ t("TranscriptionPage.save") }}
+                  <span class="!text-black">
+                    {{ t("TranscriptionPage.save") }}</span
+                  >
                 </el-button>
               </div>
             </Transition>
@@ -137,6 +160,7 @@
                   ></lang-choose-v1>
                 </el-popover>
                 <el-button
+                  v-if="fileBaseInfo.diarizeEnabled"
                   text
                   :bg="isShowSpeaker"
                   class="h-8"
@@ -204,7 +228,7 @@
                 :disabled="!canUndo"
                 @click="undoOperation"
               >
-                <span class="iconfont icon-zuochexiao text-xs"></span>
+                <span class="iconfont icon-zuochexiao text-base"></span>
               </el-button>
               <el-button
                 text
@@ -213,10 +237,10 @@
                 :disabled="!canRedo"
                 @click="redoOperation"
               >
-                <span class="iconfont icon-youchexiao text-xs"></span>
+                <span class="iconfont icon-youchexiao text-base"></span>
               </el-button>
               <el-button text class="h-8" @click="handleSaveRightTranscript">
-                <span class="iconfont icon-baocun1 me-2 text-xs"></span>
+                <span class="iconfont icon-baocun1 me-2 text-base"></span>
               </el-button>
             </div>
           </Transition>
@@ -230,7 +254,7 @@
           >
             <div
               v-if="!isEditRightTranscript"
-              class="relative flex flex-1 justify-between text-[#999999]"
+              class="relative flex flex-1 justify-between text-fontColor"
             >
               <div
                 class="icon-wrap flex cursor-pointer items-center text-lg text-black"
@@ -245,18 +269,23 @@
                     placement="bottom"
                     width="12rem"
                     trigger="click"
-                    popper-style="padding:0; min-width:unset; border-radius: 0.5rem"
+                    popper-class="mobile-popper-more-A0KQ7lsC"
+                    popper-style="padding:0; min-width:unset; border-radius: 0.5rem;"
+                    ref="mobilePopover"
                   >
                     <template #reference>
                       <span
-                        class="iconfont icon-suolve me-2 inline-block rotate-90 text-xs"
+                        class="iconfont icon-suolve me-2 inline-block rotate-90 text-base"
                       ></span>
                     </template>
                     <div class="flex flex-col px-4 py-2">
-                      <div class="flex h-8 items-center justify-between">
-                        <div class="flex flex-1 overflow-hidden">
+                      <div
+                        v-if="fileBaseInfo.diarizeEnabled"
+                        class="flex h-8 items-center justify-between"
+                      >
+                        <div class="flex flex-1 items-center overflow-hidden">
                           <span
-                            class="iconfont icon-jiangyanzhe me-2 text-sm"
+                            class="iconfont icon-jiangyanzhe me-2 text-base"
                           ></span>
                           <span class="flex-1 overflow-hidden truncate">
                             {{ t("TranscriptionPage.showSpeaker") }}
@@ -268,9 +297,9 @@
                         ></el-checkbox>
                       </div>
                       <div class="flex h-8 items-center justify-between">
-                        <div class="flex flex-1 overflow-hidden">
+                        <div class="flex flex-1 items-center overflow-hidden">
                           <span
-                            class="iconfont icon-shijian me-2 text-sm"
+                            class="iconfont icon-shijian me-2 text-base"
                           ></span>
                           <span class="flex-1 overflow-hidden truncate">
                             {{ t("TranscriptionPage.showTimestamp") }}
@@ -280,7 +309,7 @@
                       </div>
                       <div class="flex h-8 items-center" @click="handleShare">
                         <span
-                          class="iconfont icon-fenxiang me-2 text-sm"
+                          class="iconfont icon-fenxiang me-2 text-base"
                         ></span>
                         <span> {{ t("TranscriptionPage.share") }} </span>
                       </div>
@@ -288,7 +317,7 @@
                   </el-popover>
                 </div>
                 <div class="ms-5 h-8 leading-8" @click="handleDownload">
-                  <span class="iconfont icon-xiazai me-2 text-xs"></span>
+                  <span class="iconfont icon-xiazai me-2 text-base"></span>
                 </div>
                 <el-popover
                   ref="langChoosePopoverRef"
@@ -301,8 +330,8 @@
                 >
                   <template #reference>
                     <div class="pop ms-5 leading-8">
-                      <span class="iconfont icon-fanyi text-sm"></span>
-                      <el-icon class="el-icon--right !ms-0 !text-xs">
+                      <span class="iconfont icon-fanyi text-base"></span>
+                      <el-icon class="el-icon--right !ms-0 !text-sm">
                         <arrow-down />
                       </el-icon>
                     </div>
@@ -321,7 +350,7 @@
                   ]"
                   @click="handleEditRightTranscript"
                 >
-                  <span class="iconfont icon-bianji me-2 text-xs"></span>
+                  <span class="iconfont icon-bianji me-2 text-base"></span>
                 </div>
               </div>
             </div>
@@ -329,15 +358,16 @@
         </template>
         <template v-else>
           <div class="flex h-8 min-w-20 items-center justify-center">
-            {{ shareName }} {{ t("TranscriptionPage.shared") }}
+            "{{ shareName }}" {{ t("TranscriptionPage.shared") }}
           </div>
           <el-button text class="ms-2 h-8" @click="handleDownload">
-            <span class="iconfont icon-xiazai me-2 text-xs"></span>
+            <span class="iconfont icon-xiazai me-2 text-base"></span>
             {{ t("TranscriptionPage.export") }}
           </el-button>
         </template>
       </div>
       <div
+        v-if="!fileBaseInfo.hasError"
         ref="container"
         class="draggable-panels grid-container flex-1 overflow-hidden rounded-xl bg-white px-4 py-[1.125rem]"
         :class="[!displayVideo ? '!py-0' : '']"
@@ -347,8 +377,14 @@
         <div
           v-show="displayVideo && isVideo"
           ref="leftPanel"
-          :style="leftPanelStyle"
-          class="flex bg-white"
+          :style="{
+            ...leftPanelStyle,
+            '--device-pixel-ratio-diff':
+              devicePixelRatioDiff > 1
+                ? devicePixelRatioDiff * 3 + 'rem'
+                : '0rem'
+          }"
+          class="flex overflow-hidden bg-white"
         >
           <div id="mse" class="tm-xg-video rounded-lg"></div>
         </div>
@@ -358,7 +394,7 @@
           v-show="displayVideo && isVideo"
           ref="resizer"
           :style="resizerStyle"
-          class="drag-handle z-10 mx-2 bg-mainColor-600"
+          class="drag-handle z-10 mx-2 bg-mainColor-900"
           @mousedown="handleDragStart"
           :class="{ dragging: isDragging, 'drag-disabled': !dragEnabled }"
           @mouseenter="enableDrag"
@@ -367,6 +403,7 @@
         <!-- 右侧面板 -->
         <div
           ref="rightPanel"
+          :dir="transcriptDirection"
           class="relative flex overflow-hidden px-4"
           :style="{
             ...rightPanelStyle,
@@ -388,41 +425,63 @@
         >
           <span
             v-if="langId"
-            class="iconfont icon-shanchu cursor-pointer text-xs"
             :class="[
               !isDesktop
                 ? 'flex h-[1.75rem] w-full justify-end'
                 : 'absolute top-4',
-              isRtl ? 'left-4' : 'right-4'
+              transcriptDirection === 'rtl' ? 'left-16' : 'right-16',
+              'z-20'
             ]"
             :title="t('TranscriptionPage.closeTrans')"
-            @click="langId = ''"
-          ></span>
+          >
+            <span
+              class="iconfont icon-shanchu h-4 w-4 cursor-pointer text-xs"
+              @click="langId = ''"
+            ></span>
+          </span>
           <div class="file-wrap overflow-hidden" v-if="!isDesktop">
             <div class="file-name line-clamp-1 break-all leading-5 text-black">
-              <div
+              <span
                 v-if="!isShare"
-                ref="fileNameElement"
-                class="file-text text-base font-medium"
-                :class="{
-                  editing: isEditing,
-                  'hover-effect': !isEditing && isDesktop,
-                  'inline-block': isEditing
-                }"
-                :contenteditable="isEditing"
                 @click="startEditing"
-                @keydown.enter.prevent="saveFileName"
-                @keydown.esc="cancelEditing"
-                @blur="cancelEditing"
+                ref="fileNameElement"
+                class="file-text cursor-pointer text-base font-medium"
+                :title="fileName"
               >
                 {{ fileName }}
-              </div>
+              </span>
               <span v-else class="file-text text-base font-medium"
                 >{{ fileName }}
               </span>
+              <el-popover
+                ref="fileNamePopoverRef"
+                :virtual-ref="fileNameElement"
+                :offset="4"
+                width="20rem"
+                :show-arrow="false"
+                virtual-triggering
+                placement="bottom-start"
+                popper-style="padding:0;"
+                popper-class="!rounded-lg !border-0"
+                trigger="click"
+                @hide="saveFileName"
+              >
+                <el-input
+                  ref="fileNameInputRef"
+                  class="sys-input rounded-lg !text-black"
+                  v-model="fileName"
+                  @input="fileNameInput"
+                  @keydown.enter.prevent="
+                    () => {
+                      fileNamePopoverRef.hide();
+                    }
+                  "
+                  style="width: 20rem"
+                />
+              </el-popover>
             </div>
             <div class="file-upload-time text-sm text-fontColor">
-              {{ getTime(fileUploadTime) }}
+              {{ fileUploadTime && getTime(fileUploadTime) }}
             </div>
           </div>
           <DynamicScroller
@@ -445,31 +504,34 @@
                 class="dy-item"
               >
                 <div
-                  :key="item.pid"
+                  :key="item.pk || item.pid"
                   :data-active="active"
                   :data-pid="item.pid"
                   class="virtual-item-wrap relative flex bg-white"
                   :class="[isDesktop ? 'flex-row pb-4' : 'flex-col']"
                 >
                   <div
-                    v-show="isShowSpeaker"
-                    class="left-speaker flex-shrink-0"
+                    v-show="isShowSpeaker || (!isDesktop && isShowTimestamp)"
+                    class="left-speaker flex-shrink-0 items-end"
                     :class="[
-                      !isDesktop ? 'my-2.5 flex flex-1' : 'w-[6rem] pt-4'
+                      !isDesktop ? 'my-2.5 flex flex-1' : 'pt-5',
+                      !isShowTimestamp && isDesktop ? '!pt-0' : ''
                     ]"
                   >
                     <!-- 一个段落对应一个说话人 -->
                     <div
+                      v-if="fileBaseInfo.diarizeEnabled"
+                      v-show="isShowSpeaker"
                       ref="speakerBtnRef"
                       v-click-outside="handleOutsideClick"
                       :class="{
                         'is-shared': isShare,
-                        'hover:bg-[#FAFAFA]': !isShare && isDesktop,
-                        'w-28 px-3.5 py-2': isDesktop,
+                        'hover:bg-fontHover': !isShare && isDesktop,
+                        'w-[7.25rem] px-2.5 py-[0.3125rem]': isDesktop,
                         'inline-block max-w-72 overflow-hidden': !isDesktop,
                         'cursor-pointer': !isShare
                       }"
-                      class="speaker-container inline-flex items-center rounded-[1.375rem] transition-colors"
+                      class="speaker-container me-2.5 inline-flex items-center rounded-[0.5rem] transition-colors"
                       @click="
                         handleSpeakerPopoverShow(
                           item.speakerId,
@@ -483,11 +545,18 @@
                         v-if="isDesktop"
                       ></span>
                       <span
-                        class="truncate text-base font-medium text-fontColor"
+                        class="truncate text-base font-medium leading-[1.375rem] text-fontColor"
                         :title="item.speaker"
                       >
                         {{ item.speaker }}
                       </span>
+                    </div>
+                    <div
+                      v-if="!isDesktop"
+                      v-show="isShowTimestamp"
+                      class="h-5 text-sm font-normal text-fontColor"
+                    >
+                      <span>{{ formatSecondsFromMs(item.start_time) }}</span>
                     </div>
                     <el-popover
                       v-if="speakerPopoverVisible && selectedPid === item.pid"
@@ -512,7 +581,7 @@
                           :class="{
                             'is-active text-[#F5F7FA]':
                               selectedSpeakerId === speaker.id,
-                            'hover:bg-[#EFF4FF]': true
+                            'hover:bg-hoverColor-normal': true
                           }"
                         >
                           <div
@@ -557,7 +626,7 @@
                       </div>
 
                       <div
-                        class="flex h-11 items-center overflow-hidden border-b border-solid border-borderColor ps-5"
+                        class="flex h-11 items-center overflow-hidden border-b border-solid border-borderColor pe-5 ps-5"
                         v-if="hasDuplicateSpeakers"
                       >
                         <el-checkbox
@@ -570,7 +639,7 @@
                             :title="
                               t('TranscriptionPage.applyToAllMatchingSpeakers')
                             "
-                            class="overflow-hidden truncate !pl-0 ps-2 text-black"
+                            class="overflow-hidden truncate !pl-0 ps-2 leading-6 text-black"
                           >
                             {{
                               t("TranscriptionPage.applyToAllMatchingSpeakers")
@@ -582,6 +651,7 @@
                       <div class="dialog-footer flex justify-end py-3 pe-4">
                         <el-button
                           plain
+                          :loading="speakerSaveLoading"
                           class="!rounded-lg !border-borderColor !px-4 !text-black"
                           @click="confirmSpeakerSelection"
                         >
@@ -593,18 +663,16 @@
                   <div
                     class="right-content transcript-content-wrap flex flex-1 flex-col"
                     :class="[
-                      isDesktop
-                        ? isShowSpeaker
-                          ? 'ms-[1.5rem]'
-                          : 'ms-[0.625rem]'
-                        : ''
+                      isDesktop ? (isShowSpeaker ? 'pe-4' : 'px-4') : ''
                     ]"
                   >
                     <!--      说话人的开始时间       -->
-                    <div class="h-5 text-sm font-normal text-fontColor">
-                      <span v-show="isShowTimestamp">{{
-                        formatSecondsFromMs(item.start_time)
-                      }}</span>
+                    <div
+                      v-if="isDesktop"
+                      v-show="isShowTimestamp"
+                      class="h-5 text-sm font-normal text-fontColor"
+                    >
+                      <span>{{ formatSecondsFromMs(item.start_time) }}</span>
                     </div>
                     <div
                       class="grid w-full flex-1"
@@ -612,93 +680,89 @@
                         isDesktop && langId ? 'grid-cols-2' : 'grid-cols-1'
                       ]"
                     >
-                      <!-- 组装成段落的文本  桌面端或者 移动端且未选择翻译其他语言-->
+                      <!-- 段落  桌面端或者 移动端且未选择翻译其他语言-->
                       <div
                         v-if="isDesktop || (!isDesktop && !langId)"
                         :data-pid="item.pid"
-                        class="content-span-parent-node whitespace-normal break-words break-all text-lg tracking-[0.35px]"
-                        :class="[
-                          isDesktop ? 'pe-4' : '',
-                          isEditRightTranscript ? 'outline-none' : ''
-                        ]"
+                        class="content-span-parent-node paragraph-container whitespace-normal break-words text-lg tracking-[0.35px] outline-none"
                       >
-                        <template
-                          v-for="(sentence, sentIndex) in item.sentences"
-                          :key="`${item.pid}-sent-${sentIndex}`"
+                        <!-- 句子容器 - 支持容器级别的contenteditable -->
+                        <span
+                          class="sentence-container select-text whitespace-break-spaces outline-none"
+                          :contenteditable="isEditRightTranscript"
+                          :class="{
+                            'editable-container': isEditRightTranscript
+                          }"
+                          @input="handleRealTimeInput"
+                          @compositionstart="handleCompositionStart"
+                          @compositionend="handleCompositionEnd"
                         >
                           <span
-                            v-for="(content, contentIndex) in sentence.contents"
-                            :key="`${item.pid}-${sentIndex}-${contentIndex}`"
-                            :data-content-index="contentIndex"
-                            :data-cid="content.cid"
-                            :data-sent-index="sentIndex"
+                            v-for="(sentence, sentIndex) in item.sentences"
+                            :key="sentence.sid"
+                            class="sentence-wrapper cursor-pointer whitespace-break-spaces break-words border-b border-solid border-transparent text-lg !leading-[2.125rem] tracking-[0.35px] outline-none"
+                            :data-sid="sentence.sid"
+                            :data-sentence-index="sentIndex"
                             :data-pid="item.pid"
-                            @keydown="handleKeyDown($event)"
-                            @click.self="
-                              isEditRightTranscript
-                                ? setActiveEditElement(
-                                    item.pid,
-                                    sentIndex,
-                                    contentIndex,
-                                    content,
-                                    $event
-                                  )
-                                : handleWordClick(
-                                    item.pid,
-                                    sentIndex,
-                                    contentIndex,
-                                    content
-                                  )
-                            "
-                            :contenteditable="isEditRightTranscript"
-                            @input="
-                              handleContentEdit(
-                                $event,
-                                item.pid,
-                                sentIndex,
-                                contentIndex,
-                                content
-                              )
-                            "
-                            @focus.self="
-                              setActiveEditElement(
-                                item.pid,
-                                sentIndex,
-                                contentIndex,
-                                content,
-                                $event
-                              )
-                            "
-                            @blur="resetActiveEditElement"
-                            :class="[
-                              'cursor-pointer whitespace-pre-wrap break-words break-all border-b border-solid border-transparent py-1 text-lg !leading-[2.125rem] tracking-[0.35px] outline-none transition-colors',
-                              isEditRightTranscript &&
-                              isActiveEditElement(
-                                item.pid,
-                                sentIndex,
-                                contentIndex
-                              )
-                                ? 'content-editable !rounded-none !text-black'
-                                : '',
-                              isEditRightTranscript
-                                ? '!cursor-text'
-                                : isWordActive(
-                                      content,
-                                      item.pid,
-                                      sentIndex,
-                                      contentIndex
-                                    )
-                                  ? 'rounded-md bg-mainColor-900 text-white'
-                                  : 'md:rounded-md md:hover:bg-mainColor-900 md:hover:text-white'
-                            ]"
-                            @keydown.enter.prevent="handleEnterEdit"
+                            :class="{
+                              'content-editable !rounded-none py-1 !text-black':
+                                isActiveEditingSentence(sentence.sid)
+                            }"
                           >
-                            {{ filterEnterStr(content.content) }}
+                            <!-- 统一的句子显示/编辑容器 -->
+                            <span
+                              v-for="(word, wordIndex) in sentence.contents"
+                              :key="word.cid"
+                              class="word-span whitespace-break-spaces break-words rounded-[0.25rem] py-1 !leading-[2.125rem] tracking-[0.35px] transition-colors duration-200"
+                              :class="[
+                                {
+                                  'md:hover:bg-hoverColor-deepen md:hover:text-black':
+                                    !isEditRightTranscript
+                                },
+                                {
+                                  '!cursor-text': isEditRightTranscript
+                                },
+                                isWordActive(
+                                  word,
+                                  item.pid,
+                                  sentIndex,
+                                  wordIndex
+                                )
+                                  ? 'bg-hoverColor-deepen text-black'
+                                  : 'md:hover:bg-hoverColor-deepen md:hover:text-black'
+                              ]"
+                              :data-word-index="wordIndex"
+                              :data-sent-index="sentIndex"
+                              :data-content-index="wordIndex"
+                              :data-cid="word.cid"
+                              :data-leaf="true"
+                              :data-pid="item.pid"
+                              :data-sid="sentence.sid"
+                              @dblclick="
+                                !isEditRightTranscript &&
+                                handleWordDblClick(
+                                  item.pid,
+                                  sentIndex,
+                                  wordIndex,
+                                  word
+                                )
+                              "
+                              @click="
+                                handleWordClick(
+                                  item.pid,
+                                  sentIndex,
+                                  wordIndex,
+                                  word
+                                )
+                              "
+                              >{{ word.content }}</span
+                            >
                           </span>
-                        </template>
+                        </span>
                       </div>
                       <div
                         v-if="langId && !isShare"
+                        :dir="translateDirection"
                         :class="[!isDesktop ? '!px-0' : '']"
                         class="other-lange-wrap whitespace-normal break-words px-16 text-lg !leading-8"
                       >
@@ -718,11 +782,13 @@
                     class="half-wrap absolute bottom-0 left-0 h-[5.25rem] w-full"
                   ></div>
                 </div>
+                <!--  最后一项 升级提示-->
                 <div
+                  :key="item.pid + 'upgrade'"
                   ref="upgradeTipRef"
                   v-if="!isShare && item.isLast && fileBaseInfo.isHalfHour"
                   :class="[displayVideo && isVideo ? '!w-full' : '']"
-                  class="mx-auto flex w-full flex-col items-center justify-center rounded-lg bg-[#DFEAFF] p-[2.25rem] md:w-1/2"
+                  class="mx-auto flex w-full flex-col items-center justify-center rounded-lg bg-mainColor-600 p-[2.25rem] md:w-1/2"
                 >
                   <div class="leading-5 text-black rtl:text-right">
                     {{ t("TranscriptionPage.upgradeTip30") }}
@@ -749,12 +815,21 @@
         </div>
       </div>
       <div
-        class="audio-container sticky bottom-0 flex w-full items-center justify-center"
-        :class="[isDesktop ? 'h-[4.5rem]' : 'h-[3.5rem]']"
+        v-else
+        class="flex flex-1 items-center justify-center overflow-hidden text-lg"
+      >
+        {{ t("TranscriptionPage.errorTips") }}
+      </div>
+      <div
+        :class="[
+          isDesktop
+            ? 'h-[4.5rem] border-t border-solid border-borderColor'
+            : 'h-[3.5rem]'
+        ]"
+        class="audio-container sticky bottom-0 mx-auto flex w-full items-center justify-center"
       >
         <div
-          class="audio-wrap relative flex h-full w-full items-center md:px-4"
-          :class="[isDesktop ? 'border-t border-solid border-borderColor' : '']"
+          class="audio-wrap relative flex h-full w-full max-w-[67.5rem] items-center justify-center"
         >
           <div id="audioID" class="hidden"></div>
           <div class="flex h-full w-full items-center">
@@ -770,21 +845,27 @@
             <div
               v-if="isDesktop && isVideo"
               :class="[langId ? 'cursor-not-allowed opacity-50' : '']"
-              class="mt-0.5 flex !h-9 !w-9 items-center justify-center rounded-lg hover:bg-[#D3D3D3]"
+              class="display-video-wrap relative mt-0.5 flex !h-9 !w-9 items-center justify-center rounded-lg hover:bg-fontHover"
             >
-              <span
-                :title="
+              <el-tooltip
+                :show-arrow="false"
+                effect="customized"
+                popper-class="popper-class-ZZMG2X2I"
+                :content="
                   isShowVideo
                     ? t('TranscriptionPage.hideVideo')
                     : t('TranscriptionPage.showVideo')
                 "
-                class="iconfont cursor-pointer text-[1.375rem]"
-                :class="[
-                  isShowVideo ? 'icon-shipinbofang' : 'icon-guanbishipin',
-                  langId ? 'pointer-events-none' : ''
-                ]"
-                @click="handelToggleVideo"
-              ></span>
+              >
+                <span
+                  class="iconfont cursor-pointer text-[1.375rem]"
+                  :class="[
+                    isShowVideo ? 'icon-shipinbofang' : 'icon-guanbishipin',
+                    langId ? 'pointer-events-none' : ''
+                  ]"
+                  @click="handelToggleVideo"
+                ></span>
+              </el-tooltip>
             </div>
           </div>
         </div>
@@ -808,8 +889,11 @@
       append-to-body
       :close-on-click-modal="false"
       class="edit-speaker-dialog common-dialog-S5NaD2"
+      @open="() => dialogOpen('.edit-speaker-dialog', confirmEditSpeaker)"
+      @close="() => dialogClose('.edit-speaker-dialog')"
     >
       <el-input
+        class="sys-input"
         v-model="editingSpeakerName"
         :placeholder="t('TranscriptionPage.speakerName')"
       ></el-input>
@@ -817,14 +901,14 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button
-            class="!rounded-lg !border-borderColor !px-4 !text-black"
+            class="!rounded-lg !border-borderColor !px-4 !text-black hover:!border-transparent hover:!bg-borderColor"
             @click="editSpeakerDialogVisible = false"
           >
             {{ t("TranscriptionPage.cancel") }}</el-button
           >
           <el-button
             type="primary"
-            class="!rounded-lg !px-4"
+            class="sys-btn !rounded-lg !px-4"
             @click="confirmEditSpeaker"
           >
             {{
@@ -846,25 +930,51 @@
       append-to-body
       :close-on-click-modal="false"
       class="share-dialog-i1mbjq1KV common-dialog-S5NaD2"
+      @open="
+        () =>
+          dialogOpen('.share-dialog-i1mbjq1KV', () => {
+            shareDialogVisible = false;
+          })
+      "
+      @close="() => dialogClose('.share-dialog-i1mbjq1KV')"
     >
-      <div class="content-wrap">
+      <div class="content-wrap pb-4">
         <div class="mb-[0.625rem] leading-5 text-black">
           {{ t("TranscriptionPage.shareTips") }}
         </div>
         <div
-          :title="sharedUrl"
-          class="h-[2.125rem] w-full truncate rounded-lg border border-borderColor bg-boxBgColor px-4 leading-[2.125rem]"
+          class="flex h-auto w-full flex-col items-center overflow-hidden rounded-lg border border-borderColor bg-boxBgColor p-4 sm:h-[2.125rem] sm:flex-row sm:flex-nowrap sm:p-0"
         >
-          {{ sharedUrl }}
+          <div
+            class="mb-3 flex-1 break-all sm:mb-0 sm:h-[2.125rem] sm:truncate sm:px-4 sm:leading-[2.125rem]"
+            :title="sharedUrl"
+          >
+            {{ sharedUrl }}
+          </div>
+          <div
+            v-if="hasCopy"
+            class="me-1 flex items-center justify-center rounded-xl bg-mainColor-600 px-7 py-2 text-mainColor-900 sm:h-[1.625rem] sm:rounded-lg sm:px-3 sm:py-2.5"
+          >
+            <span class="iconfont icon-duihao me-2 text-xs"></span>
+            <span> {{ t("TranscriptionPage.copiedLink") }}</span>
+          </div>
+          <div
+            v-else
+            class="me-1 flex items-center justify-center rounded-xl bg-subColor-light px-7 py-2 text-subColor-normal sm:h-[1.625rem] sm:rounded-lg sm:px-3 sm:py-2.5"
+          >
+            <span class="iconfont icon-shanchu me-2 text-xs"></span>
+            <span> {{ t("TranscriptionPage.copyFail") }}</span>
+          </div>
         </div>
-        <br />
-        <el-button type="primary" @click="handleCopy1">复制原文</el-button>
-        <el-button type="primary" @click="handleCopy2">复制译文</el-button>
       </div>
       <template #footer>
         <div class="dialog-footer flex items-center justify-center">
-          <el-button type="primary" class="w-[17.5rem]" @click="handleCopy">
-            {{ t("TranscriptionPage.copyLink") }}
+          <el-button
+            type="primary"
+            class="sys-btn !h-[2.75rem] !w-[16.25rem] !rounded-3xl sm:!h-8 sm:!w-72 sm:!rounded-lg"
+            @click="shareDialogVisible = false"
+          >
+            {{ t("TranscriptionPage.copyGotIt") }}
           </el-button>
         </div>
       </template>
@@ -872,7 +982,10 @@
     <home-dialog-export
       :taskId="fileBaseInfo.taskId"
       :translateLang="langCode"
+      :tableData="[fileBaseInfo]"
       :fileId="fileBaseInfo.fileId"
+      :isShowTimestamp="isShowTimestamp"
+      :isShowSpeaker="isShowSpeaker"
       v-model="exportDialogVisible"
     />
   </div>
@@ -890,7 +1003,7 @@ import { ClickOutside as vClickOutside } from "element-plus";
 import { onMounted, onUnmounted, watch } from "vue";
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import { useClipboard } from "@vueuse/core";
-import { ElMessage } from "element-plus";
+import { Msg } from "~/utils/tools";
 import { languageTransMap } from "~/components/langChoose/langFlag.js";
 import { scrollToParagraph } from "./hook/utils.js";
 // 导入拆分后的 hooks
@@ -898,9 +1011,11 @@ import useTranscript from "./hook/useTranscript.js";
 import usePlayer from "./hook/usePlayer.js";
 import useLayout from "./hook/useLayout.js";
 import useTranscriptEdit from "./hook/useTranscriptEdit.js";
+import useTranscriptEditV1 from "./hook/useTranscriptEditV1.js";
 import useSpeaker from "./hook/useSpeaker.js";
 import useFileInfo from "./hook/useFileInfo.js";
 import useTranslation from "./hook/useTranslation.js";
+import { Events } from "xgplayer";
 const props = defineProps({
   speakers: {
     type: Array,
@@ -943,7 +1058,16 @@ const route = useRoute();
 let { transcriptInfo: transcriptData, speakers } = toRefs(props);
 // 转写数据相关
 const { getParagraphText } = useTranscript();
-
+// 翻译相关
+const {
+  langChooseV1Ref,
+  langChoosePopoverRef,
+  handleTranslateLangChoose,
+  handleLangPopShow,
+  upgradeTipRef,
+  upgradeVisibleHeight,
+  handleScrollEnd
+} = useTranslation(emit);
 // 布局相关
 const {
   container,
@@ -965,7 +1089,8 @@ const {
   leftPanelStyle,
   resizerStyle,
   rightPanelStyle,
-  handleJumpUpgrade
+  devicePixelRatioDiff,
+  finalOffsetX
 } = useLayout(props);
 
 // 播放器相关
@@ -977,34 +1102,36 @@ const {
   initPlayers,
   updateOverlappingSegments,
   handleWordClick,
+  handleWordDblClick,
   isWordActive,
   setupI18nWatch,
   isVideo,
   currentTime,
   updateSubtitle,
-  isRtl
+  isRtl,
+  activeWord
 } = usePlayer(transcriptData, isShowVideo, props);
 // 转写编辑相关
 const {
+  // 状态
   isEditRightTranscript,
+  activeEditElement,
   canUndo,
   canRedo,
-  handleEditRightTranscript,
-  handleSaveRightTranscript,
-  handleContentEdit,
-  setActiveEditElement,
-  isActiveEditElement,
-  resetActiveEditElement,
-  undoOperation,
-  redoOperation,
-  handleDocumentClick,
   editHistory,
   currentHistoryIndex,
-  activeEditElement,
-  handleKeyDown,
-  handleEnterEdit,
-  filterEnterStr
-} = useTranscriptEdit(
+
+  // 方法
+  handleEditRightTranscript,
+  handleSaveRightTranscript,
+  isActiveEditingSentence,
+  undoOperation,
+  redoOperation,
+  handleCompositionStart,
+  handleCompositionEnd,
+  // 事件处理器
+  handleRealTimeInput
+} = useTranscriptEditV1(
   transcriptData,
   dynamicScroller,
   handleWordClick,
@@ -1018,19 +1145,19 @@ const {
 const {
   fileName,
   fileUploadTime,
-  isEditing,
   fileNameElement,
   isShowTimestamp,
   startEditing,
   saveFileName,
-  cancelEditing,
   handleShowTimestamp,
-  formatSecondsFromMs
+  formatSecondsFromMs,
+  fileNameInputRef,
+  fileNamePopoverRef,
+  fileNameInput
 } = useFileInfo(props);
 
 // 说话人管理相关
 const {
-  speakerDialogVisible,
   editSpeakerDialogVisible,
   originSelectedSpeakerId,
   selectedSpeakerId,
@@ -1054,115 +1181,76 @@ const {
   handleShowSpeaker,
   handleOutsideClick,
   editAddSpeakersMap,
-  scrollbarRef
+  scrollbarRef,
+  speakerSaveLoading,
+  dialogOpen,
+  dialogClose
 } = useSpeaker(transcriptData, speakers, emit, props);
-
-// 翻译相关
-const {
-  langChooseV1Ref,
-  langChoosePopoverRef,
-  handleTranslateLangChoose,
-  handleLangPopShow,
-  upgradeTipRef,
-  upgradeVisibleHeight,
-  handleScrollEnd
-} = useTranslation(emit);
 
 // 设置i18n监听
 setupI18nWatch(locale, getLocaleMessage);
+// 翻译语言
+const rtlTranslateLangCode = [
+  "ug",
+  "bm-Nkoo",
+  "fa",
+  "ur",
+  "sd",
+  "ps",
+  "ar",
+  "iw",
+  "fa-AF",
+  "ms-Arab",
+  "dv",
+  "yi",
+  "ckb",
+  "pa-Arab",
+  "ug"
+];
 const langCode = computed(() => {
   if (!langId.value) {
     return "";
   }
   return languageMap[langId.value]?.langCode;
 });
+const translateDirection = computed(() => {
+  return rtlTranslateLangCode.includes(langCode.value) ? "rtl" : "ltr";
+});
+// 转录语言
+const rtlTranscriptLangCode = ["fa", "ur", "sd", "ps", "ar", "he", "yi"];
+const transcriptDirection = computed(() => {
+  return rtlTranscriptLangCode.includes(props.fileBaseInfo.language)
+    ? "rtl"
+    : "ltr";
+});
+
 watch([langId, isShowSpeaker, isShowTimestamp], () => {
   emit("saveConfig");
 });
 // 分享相关
+const mobilePopover = ref(null);
 const userStore = useUserStore();
 const shareDialogVisible = ref(false);
 const sharedUrl = ref("");
-const handleShare = () => {
-  const shareName = userStore.userInfo?.userInfoVO?.email;
+const hasCopy = ref(false);
+const { copy, copied } = useClipboard({ legacy: true });
+
+const handleShare = async () => {
+  mobilePopover.value?.hide();
+  const shareName = userStore.userInfo?.userInfoVO?.email ?? "Scribify";
   const shareId = userStore.userInfo?.userInfoVO?.userid;
   const taskId = route.query.taskId;
   sharedUrl.value =
     window.location.origin +
     route.path +
-    `?shareId=${encodeURIComponent(shareId)}&shareName=${encodeURIComponent(shareName)}&taskId=${taskId}`;
+    `?shareId=${shareId}&shareName=${shareName}&taskId=${taskId}`;
   shareDialogVisible.value = true;
-};
-const { copy, copied } = useClipboard({ legacy: true });
-
-const handleCopy = async () => {
-  await copy(sharedUrl.value);
-  if (copied.value) {
-    ElMessage({
-      message: t("TranscriptionPage.copySuccessful"),
-      type: "success",
-      plain: true,
-      appendTo: ".share-dialog-i1mbjq1KV"
-    });
-  } else {
-    ElMessage({
-      message: t("TranscriptionPage.copyFail"),
-      type: "warning",
-      plain: true,
-      appendTo: ".share-dialog-i1mbjq1KV"
-    });
-  }
-  setTimeout(() => {
-    shareDialogVisible.value = false;
-  }, 1000);
-};
-// 后续去掉
-const handleCopy1 = async () => {
-  let str = "";
-  transcriptData.value.paragraphs.forEach((paragraph) => {
-    str += getParagraphText(paragraph);
-  });
-  await copy(str);
-  if (copied.value) {
-    ElMessage({
-      message: t("TranscriptionPage.copySuccessful"),
-      type: "success",
-      plain: true,
-      appendTo: ".share-dialog-i1mbjq1KV"
-    });
-  } else {
-    ElMessage({
-      message: t("TranscriptionPage.copyFail"),
-      type: "warning",
-      plain: true,
-      appendTo: ".share-dialog-i1mbjq1KV"
-    });
-  }
-};
-const handleCopy2 = async () => {
-  //   translateContent
-  let str = "";
-  transcriptData.value.paragraphs.forEach((paragraph) => {
-    if (paragraph.translateContent !== undefined) {
-      str += paragraph.translateContent;
-    }
-  });
-  await copy(str);
-  if (copied.value) {
-    ElMessage({
-      message: t("TranscriptionPage.copySuccessful"),
-      type: "success",
-      plain: true,
-      appendTo: ".share-dialog-i1mbjq1KV"
-    });
-  } else {
-    ElMessage({
-      message: t("TranscriptionPage.copyFail"),
-      type: "warning",
-      plain: true,
-      appendTo: ".share-dialog-i1mbjq1KV"
-    });
-  }
+  const url =
+    window.location.origin +
+    route.path +
+    `?shareId=${encodeURIComponent(shareId)}&shareName=${encodeURIComponent(shareName)}&taskId=${taskId}`;
+  await copy(url);
+  hasCopy.value = copied.value;
 };
 // 下载导出
 const exportDialogVisible = ref(false);
@@ -1183,7 +1271,9 @@ const getFileConfig = () => {
     isShowTimestamp: isShowTimestamp.value, // 是否显示时间戳
     translateLang: langId.value, // 翻译语言
     isShowVideo: isShowVideo.value, // 是否显示视频
-    isShowSpeaker: isShowSpeaker.value
+    isShowSpeaker: isShowSpeaker.value,
+    devicePixelRatioDiff: devicePixelRatioDiff.value || 1,
+    finalOffsetX: finalOffsetX.value || 0
   };
 };
 
@@ -1202,19 +1292,34 @@ watchEffect(() => {
   document?.body?.setAttribute("dir", isRtl.value ? "rtl" : "ltr");
   document?.documentElement?.setAttribute("dir", isRtl.value ? "rtl" : "ltr");
 });
+const bindShortEvent = (player) => {
+  player.value.on(Events.SHORTCUT, (data) => {
+    if (isEditRightTranscript.value) {
+      return;
+    }
+    if (data.action === "customPlayPause") {
+      if (player.value) {
+        const isPlaying = !player.value.paused;
+        isPlaying ? player.value.pause() : player.value.play();
+      }
+    }
+  });
+};
+const showSubRef = ref(null);
+const handleJumpUpgrade = () => {
+  showSubRef.value?.showSubHandle();
+};
 // 生命周期钩子
 onMounted(async () => {
   await nextTick();
-  document.addEventListener("click", handleDocumentClick);
   // 更新重叠段落
   updateOverlappingSegments();
 
   // 初始化播放器
-  initPlayers(props.fileBaseInfo, locale, allSegments);
+  initPlayers(props.fileBaseInfo, locale, allSegments, bindShortEvent);
   if (!props.isShare) getRecentLang();
 });
 onUnmounted(() => {
-  document.removeEventListener("click", handleDocumentClick);
   playerVideo.value = null;
   playerAudio.value = null;
 });
@@ -1226,8 +1331,12 @@ defineExpose({
 
 <style scoped lang="scss" src="./style.scss"></style>
 <style lang="scss">
+.mobile-popper-more-A0KQ7lsC {
+  --el-color-primary: theme("colors.mainColor.900");
+}
 .pop-iAHFsY2 {
-  --el-color-primary: #3470ff;
+  --el-color-primary: theme("colors.mainColor.900");
+  --el-popover-border-radius: 0.5rem;
   .el-checkbox__label {
     overflow: hidden;
   }
@@ -1238,19 +1347,8 @@ defineExpose({
   }
 }
 .common-dialog-S5NaD2 {
-  --el-color-primary: #3470ff;
   --el-border-radius-base: 0.5rem;
-  .el-button--primary {
-    --el-button-text-color: #fff;
-    --el-button-bg-color: #3470ff;
-    --el-button-border-color: #3470ff;
-    --el-button-hover-bg-color: #3470ff;
-    --el-button-hover-text-color: #fff;
-    --el-button-hover-border-color: #3470ff;
-    &:hover {
-      opacity: 0.8;
-    }
-  }
+  --el-dialog-padding-primary: 1.25rem;
   .el-dialog__header {
     @apply mb-5 p-0 text-base font-medium;
   }
@@ -1263,10 +1361,6 @@ defineExpose({
   .el-dialog__footer {
     @apply mt-11 pt-0;
   }
-  .el-button {
-    // prettier-ignore
-    @apply text-sm !rounded-lg hover:bg-opacity-90;
-  }
   .el-dialog__headerbtn {
     @apply rtl:left-0 rtl:right-auto;
   }
@@ -1274,5 +1368,14 @@ defineExpose({
     // prettier-ignore
     @apply text-sm !ms-2 !ml-0;
   }
+}
+.el-popper.is-customized.popper-class-ZZMG2X2I {
+  transition: opacity 0.15s;
+  white-space: nowrap;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.54);
+  border-radius: 0.25rem;
+  padding: 0.375rem;
+  line-height: 1rem;
 }
 </style>

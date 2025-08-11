@@ -1,14 +1,14 @@
 <template>
   <!-- 协议 -->
-  <div class="text-center text-fontColor">
+  <div class="px-[1rem] text-center text-fontColor">
     <i18n-t keypath="IdentityInfoManage.agreeTerm.agree" tag="span">
-      <template #proName> Scribify </template>
+      <template #proName> Scribify</template>
       <template #terms>
         <router-link
           :to="localePath('/user/terms')"
           target="_blank"
           rel="noopener noreferrer"
-          class="underline hover:text-blue-500"
+          class="underline hover:text-mainColor-900"
         >
           {{ t("IdentityInfoManage.agreeTerm.terms") }}
         </router-link>
@@ -18,7 +18,7 @@
           :to="localePath('/user/privacy')"
           target="_blank"
           rel="noopener noreferrer"
-          class="underline hover:text-blue-500"
+          class="underline hover:text-mainColor-900"
         >
           {{ t("IdentityInfoManage.agreeTerm.policy") }}
         </router-link>

@@ -1,19 +1,23 @@
 <template>
-  <nav>
-    语言：<language></language> 路由：<el-select
-      @change="switchRoute"
-      v-model="menu"
-      placeholder="Select"
-      size="large"
-      style="width: 240px"
-    >
-      <el-option
-        v-for="item in menus"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
+  <nav class="flex items-center justify-between">
+    <span class="flex items-center"> 语言：<language></language> </span>
+    <span>
+      路由：
+      <el-select
+        @change="switchRoute"
+        v-model="menu"
+        placeholder="Select"
+        size="large"
+        style="width: 240px"
+      >
+        <el-option
+          v-for="item in menus"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+    </span>
   </nav>
 </template>
 
@@ -88,6 +92,6 @@ nav {
   left: 0;
   right: 0;
   z-index: 50;
-  background-color: aqua;
+  /* background-color: aqua; */
 }
 </style>

@@ -1,10 +1,10 @@
+// 土耳其语
 let message = {
   // Ana Sayfa
   HomePage: {
     home: "Ana Sayfa",
     version: "Temel Sürüm (Ücretsiz):",
-    times:
-      "Günde {times} ücretsiz yazıya dökme hakkınız var, {left} hakkınız kaldı.",
+    times: "Günde {times} ücretsiz transkripsiyon, bugün {left} kaldı.",
     tips: "Sınırsız transkripsiyon için Pro'ya yükseltin.",
     update: "Hemen Yükselt",
     folders: "Klasörler",
@@ -17,6 +17,7 @@ let message = {
     confirm: "Oluştur",
     dialogLabel: "Klasör Adı",
     recently: "Son Dosyalar",
+    loading: "Yükleniyor",
     tour: {
       step0: {
         title: "{name}'e Hoş Geldiniz",
@@ -73,7 +74,9 @@ let message = {
       collaborate:
         "Transkripsiyon metinlerinizi başkalarıyla paylaşarak işbirliği yapın.",
       button: "Başlayın",
-      tip: "Sesi transkripsiyon metnine dönüştürmeye hazır mısınız? Şimdi keşfetmeye başlayın!"
+      tip: "Sesi transkripsiyon metnine dönüştürmeye hazır mısınız? Şimdi keşfetmeye başlayın!",
+      tip2: "Şimdi keşfetmeye başlayın!",
+      tip1: "Sesi transkript metne dönüştürmeye hazır mısınız? "
     },
     subscriptionModal: {
       left: {
@@ -120,7 +123,8 @@ let message = {
       move: "Taşı",
       failed: "Başarısız",
       selected: "Seçildi",
-      success: "Başarılı"
+      success: "Başarılı",
+      fileList: "Dosya Listesi"
     },
     dialog: {
       move: {
@@ -153,7 +157,7 @@ let message = {
       },
       export: {
         title: "Dışa Aktar",
-        select: "Bir veya daha fazla format seçin",
+        select: "İhtiyacınız olan formatı seçin",
         settings: "Ayarlar",
         speaker: "Konuşmacı Dahil Et",
         timecodes: "Zaman Kodlarını Dahil Et",
@@ -185,6 +189,7 @@ let message = {
       pause: "Duraklat",
       resume: "Devam Et",
       stop: "Durdur",
+      endRecord: "Kaydı sonlandır",
       delete: "Sil",
       transcribe: "Yazıya Dök",
       permissionDenied: "Mikrofon izni reddedildi veya cihaz mevcut değil",
@@ -209,7 +214,7 @@ let message = {
         title: "Bağlantı Yapıştır",
         label:
           "YouTube, Facebook, X, Dropbox, Google Drive, Vimeo gibi platformlardan medya bağlantılarını yapıştırın",
-        confirm: "Yazıya Dök",
+        confirm: "Ekle",
         cancel: "İptal",
         errorTitle:
           "Girdiğiniz bağlantı adresi doğru değil. Lütfen kontrol edip tekrar deneyin.",
@@ -218,7 +223,8 @@ let message = {
       file: {
         orTitle: "Çevrimiçi Medyayı Yazıya Dök",
         dialogTitle: "Dosyayı Yazıya Dök",
-        tip: "Yüklemek için tıklayın veya sürükleyip bırakın",
+        tip1: "Yüklemek için tıklayın",
+        tip2: "veya sürükleyip bırakın",
         or: "veya"
       },
       del: {
@@ -230,16 +236,18 @@ let message = {
       },
       files: "Dosyalar",
       resultDialogTitle: "Dosyaları Yazıya Dök",
+      resultDialogTitle2: "Dosyayı transkribe et",
       cancel: "İptal",
       confirm: "Yazıya Dök",
       return: "Geri Dön",
       addMore: "Daha Fazla Ekle",
-      language: "Ses Dili",
+      language: "Medya dili",
       failed: "Başarısız",
       tooLarge: "Dosya çok büyük.",
+      linkUpload: "Yükleniyor...",
       fileFormat: "Dosya formatına izin verilmiyor",
       localFiles: "Yerel Dosyalar",
-      pasteLink: "Bağlantı Yapıştır",
+      pasteLink: "Çevrimiçi bağlantı",
       uploadErr: "Yükleme Hatası",
       hashErr: "Hash Hatası",
       table: {
@@ -250,7 +258,7 @@ let message = {
       },
       maxFileNum: "Dosya sayısı {num} adedi geçemez.",
       speaker: "Konuşmacı Tanımlama",
-      speakerLabel: "Transkriptin her bölümünü konuşmacıya göre etiketler."
+      speakerLabel: "Transkriptin her bölümünü konuşan kişiyle etiketleyin."
     }
   },
   // Yazıya Dökme Detay Sayfası
@@ -549,11 +557,20 @@ let message = {
     upgradeBtn: "Şimdi Yükselt",
     upgradeTip30: "Bu dosya 30 dakikayı aşıyor.",
     upgradeTipMore:
-      "10 saate kadar dosyayı dönüştürmek için Scribify Pro'ya yükseltin"
+      "10 saate kadar dosyayı dönüştürmek için Scribify Pro'ya yükseltin",
+    errorTips: "Bir şeyler ters gitti.",
+    copiedLink: "Bağlantı kopyalandı",
+    copyGotIt: "biliyordu"
   },
   // Giriş, Kayıt, Şifre Değiştirme
   IdentityInfoManage: {
     or: "veya",
+    LoginBtn: "E-posta ile giriş yap",
+    LoginGoogle: "Google ile giriş yap",
+    SignupBtn: "E-posta ile kaydol",
+    SignupGoogle: "Google ile kaydol",
+    SignupDes: "Bugün kaydolun ve sihri ücretsiz yaşayın.",
+    SignupTitle: "Doğru ve sınırsız transkripsiyon",
     signup: "Kayıt Ol",
     sign_up: "Kayıt Ol",
     loginByGoogle: "Google ile Giriş Yap",
@@ -561,15 +578,13 @@ let message = {
     createAccount: "Hesap Oluştur",
     accountExists: "Zaten bir hesabınız var mı? ",
     agreeTerm: {
-      agree: "{proName}{terms} ve {policy} kabul ediyorum.",
-      terms: "Hizmet Şartları",
+      agree: "Devam ederek {terms} ve {policy} kabul etmiş olursunuz.",
+      terms: "Şartlar",
       policy: "Gizlilik Politikası"
     },
     setPassword: "Şifre Belirle",
     code: "Doğrulama Kodu",
     resend: "Yeniden Gönder",
-    codeToEmail:
-      "E-posta adresinize bir doğrulama kodu gönderdik, lütfen gelen kutunuzu kontrol edin ve kodu yukarıya yapıştırın.",
     enterPassword: "Lütfen şifre girin.",
     passwordLeval: "Şifre Gücü",
     Weak: "Zayıf",
@@ -593,7 +608,14 @@ let message = {
     resetPassword: "Şifreyi Sıfırla",
     resetYourPassword: "Şifrenizi Sıfırlayın",
     newOldCantSame: "Yeni şifre eskisiyle aynı olamaz.",
-    passwordResetOk: "Şifre başarıyla sıfırlandı!"
+    passwordResetOk: "Şifre başarıyla sıfırlandı!",
+    signupToSaveProgress: "Kaydınızı tamamlayarak ilerlemenizi kaydedin",
+    tip: "İpucu",
+    tipContentEmail: "Hesap giriş şifrenizi e-postanıza yeni gönderdik.",
+    tipContentPassword:
+      "Lütfen gelen kutunuzu kontrol edin ve e-posta adresinizle şifrenizi kullanarak giriş yapın.",
+    codeToEmail:
+      "Doğrulama kodunu e-posta adresinize gönderdik. Lütfen gelen kutunuzu kontrol edin ve doğrulama kodunu yukarıya yapıştırın."
   },
   // Paylaşım Detay Sayfası
   Sharepage: {},
@@ -604,18 +626,12 @@ let message = {
     subscription: "Abonelik planı",
     freeversion: "Ücretsiz",
     transcribeTimesDay: "Günde 3 Transkripsiyon",
-    freeThreeTimesDay: "Her gün 3 dosyayı ücretsiz transkribe edin.",
     uploadMinutes: "30 Dakikalık Yükleme",
-    oneFileUploaded:
-      "Her dosya en fazla 30 dakika uzunluğunda olabilir, her seferinde bir dosya yüklenir",
     lowerPriority: "Düşük öncelik",
-    needsToWaitLonger:
-      "Günde 3 Transkripsiyon. Dosyalarınızın transkripsiyonu için daha uzun süre beklemelisiniz.",
     currentPlan: "Mevcut plan",
     professionalEdition: "profesyonel sürüm",
     unlimitedTranscription: "Sınırsız transkripsiyon",
-    unlimitedNumberOfTimes: "Bir kişi için sınırsız transkripsiyon.",
-    uploadWithinHours: "10 Saate Kadar Yükleme",
+    unlimitedNumberOfTimes: "Sınırsız transkripsiyon sıklığı ve süresi.",
     filesUploadedAtOnce:
       "Her dosya en fazla 10 saat / 5 GB olabilir. Aynı anda 50 dosya yükleyin.",
     highestPriority: "en yüksek öncelik",
@@ -642,7 +658,6 @@ let message = {
     daily: "{start} / {end} günlük transkripsiyon kullanıldı",
     upgradetoPro: "Pro'ya Yükselt",
     accountSetting: "Hesap Ayarları",
-    returnAccountSetting: "Hesap ayarlarına dön",
     logOut: "Çıkış Yap",
     account: "Hesap",
     email: "E-posta",
@@ -654,7 +669,6 @@ let message = {
     notFund: "Bulunamadı",
     couldntFind: "Aradığınız şeyi bulamadık.",
     proAnnual: "Pro Yıllık",
-    yourSubscription: "Aboneliğiniz şu tarihte iptal edilecek:",
     proMonthly: "Pro Aylık",
     perMonth: "aylık",
     afterwards: "sonrasında",
@@ -665,8 +679,20 @@ let message = {
     perYear: "yıllık",
     getProPlan: "Pro Planı Edinin",
     changeToAnnual: "Yıllığa Geç",
-    automaticRenewalon: "Otomatik yenileme tarihi"
-  },
+    automaticRenewalon: "Otomatik yenileme tarihi",
+    eachMonth: "Her ayın {time}. günü otomatik yenileme.",
+    automaticRenewal:
+      "Otomatik yenileme başarısız oldu, lütfen ödeme yöntemini kontrol edin.",
+    eachYear: "Her yıl {time} otomatik yenileme.",
+    returnAccountSetting: "Geri",
+    needsToWaitLonger:
+      "Dosyalarınız transkript edilmeden önce daha uzun süre bekleyin.",
+    freeThreeTimesDay: "Her gün 3 dosyayı ücretsiz olarak transkript edin.",
+    oneFileUploaded:
+      "Her dosya en fazla 30 dakika uzunluğunda olabilir. Bir seferde 1 dosya yükleyin.",
+    uploadWithinHours: "10 Saatlik Yüklemeler",
+      yourSubscription: "Aboneliğiniz {time} tarihinde iptal edilecek."
+},
   // Dil Eşleştirme
   LanguageMap: {
     sysLanguagesMap: {
@@ -1043,8 +1069,8 @@ let message = {
   }
 };
 
-export default defineI18nLocale(async locale => {
-  return message
-})
+export default defineI18nLocale(async (locale) => {
+  return message;
+});
 
-export { message }
+export { message };

@@ -32,9 +32,15 @@
             <div class="text-sm">{{ item.title }}</div>
           </div>
 
-          <!-- 进度图标区域，当鼠标悬浮时隐藏 -->
+          <!-- 进度图标区域 -->
           <div class="h-4 w-4">
-            <div class="progress transition-all group-hover:hidden">
+            <!-- 当进度未完成时，hover隐藏进度条 -->
+            <div
+              :class="[
+                'progress transition-all',
+                item.progress !== 100 ? 'group-hover:hidden' : ''
+              ]"
+            >
               <el-progress
                 v-if="item.progress !== 100"
                 type="circle"
@@ -42,6 +48,7 @@
                 :width="16"
                 :show-text="false"
                 :stroke-width="2"
+                :color="item.progress > 100 ? '#ea6a6a' : '#6f4cf0'"
                 :status="item.progress > 100 ? 'exception' : undefined"
               />
               <div
@@ -52,8 +59,9 @@
               </div>
             </div>
 
-            <!-- 删除按钮，当鼠标悬浮时显示 -->
+            <!-- 删除按钮，仅在进度未完成时显示 -->
             <div
+              v-if="item.progress !== 100"
               class="close hidden h-4 w-4 cursor-pointer items-center justify-center transition-all group-hover:flex"
               @click="deleteTask(item.id)"
               :title="t('HomePage.export.cancel')"
@@ -114,7 +122,9 @@ const isFetching = ref(false);
 const stopPolling = ref(false);
 
 const { userInfo } = storeToRefs(useUserStore());
-const isLogin = computed(() => !!userInfo.value);
+const isLogin = computed(() => {
+  return !route.query.shareId;
+});
 
 const route = useRoute();
 const fetchExportStatus = async () => {
@@ -271,6 +281,7 @@ const handleClose = () => {
 </script>
 
 <style scoped>
+@import "~/layouts/homeMixin.css";
 .export {
   box-shadow: 0 0 0.3125rem 0 rgba(0, 0, 0, 0.14);
 }
