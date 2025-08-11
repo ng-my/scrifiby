@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 你的自定义样式 */
+body {
+  font-size: 0.875rem;
+  color: #000;
+}
+
+@layer base {
+  :root {
+    --mainColor-900: #3470FF;
+    --subColor-normal: #EA6A6A;
+  }
+  .dark {
+  }
+}
+
+@layer base {
+} 

@@ -1,0 +1,17 @@
+.el-input__prefix-inner>:last-child {
+  margin-right: 0 !important;
+  margin-inline-end: 0.5rem !important;
+}
+
+::-webkit-scrollbar {
+  width: 0.375rem;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-borderColor;
+  border-radius: 0.25rem;
+}
+
+html, body {
+  overscroll-behavior: none;
+}
