@@ -31,40 +31,40 @@ export default defineNuxtConfig({
     // prerender index route by default
     '/': { prerender: true },
   },
-  nitro: { // 开发环境代理配置
-    preset: 'vercel',
-    output: {
-      dir: '.output',
-      serverDir: '.output/server',
-      publicDir: '.output/public'
-    },
-    devProxy: {
-      '/wapi': {
-        target: 'https://dev.scribify.ai/wapi',
-        changeOrigin: true,
-        prependPath: true,
-        secure: false
-      },
-      '/domainServer': {
-        target: 'https://blue.wechatsi.com/domainServer',
-        changeOrigin: true,
-        prependPath: true,
-        secure: false
-      },
-      '/userServer': {
-        target: 'http://rap2api.taobao.org/app/mock/324058/userServer',
-        changeOrigin: true,
-        prependPath: true,
-        secure: false
-      },
-      '/stripeServer': {
-        target: 'http://localhost:4242',
-        changeOrigin: true,
-        prependPath: true,
-        secure: false
-      }
-    }
-  },
+  // nitro: { // 开发环境代理配置
+  //   // preset: 'vercel',
+  //   // output: {
+  //   //   dir: '.output',
+  //   //   serverDir: '.output/server',
+  //   //   publicDir: '.output/public'
+  //   // },
+  //   devProxy: {
+  //     '/wapi': {
+  //       target: 'https://dev.scribify.ai/wapi',
+  //       changeOrigin: true,
+  //       prependPath: true,
+  //       secure: false
+  //     },
+  //     '/domainServer': {
+  //       target: 'https://blue.wechatsi.com/domainServer',
+  //       changeOrigin: true,
+  //       prependPath: true,
+  //       secure: false
+  //     },
+  //     '/userServer': {
+  //       target: 'http://rap2api.taobao.org/app/mock/324058/userServer',
+  //       changeOrigin: true,
+  //       prependPath: true,
+  //       secure: false
+  //     },
+  //     '/stripeServer': {
+  //       target: 'http://localhost:4242',
+  //       changeOrigin: true,
+  //       prependPath: true,
+  //       secure: false
+  //     }
+  //   }
+  // },
   css: [ //指定全局css  注意顺序下覆盖上
     '~/assets/css/tailwind.css',
     '~/assets/css/element.scss'
