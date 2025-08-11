@@ -3,5 +3,20 @@
   "buildCommand": "npm run build:test",
   "outputDirectory": ".output/public",
   "framework": "nuxtjs",
-  "version": 2
+  "version": 2,
+  "builds": [
+    {
+      "src": "nuxt.config.ts",
+      "use": "@nuxtjs/vercel-builder",
+      "config": {
+        "serverFiles": [
+          "package.json",
+          "tsconfig.json",
+          ".env.test",
+          "i18n/**",
+          "public/**"
+        ]
+      }
+    }
+  ]
 }
