@@ -9,7 +9,8 @@
           "package.json",
           ".env.prod",
           "i18n/**",
-          "public/**"
+          "public/**",
+          "tsconfig.json"
         ],
         "generateStaticRoutes": true
       }
