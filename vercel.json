@@ -5,24 +5,5 @@
   "framework": "nuxtjs",
   "version": 2,
   "regions": ["hnd1"],
-  "installCommand": "npm install",
-  "builds": [
-    {
-      "src": "nuxt.config.js",
-      "use": "@nuxtjs/vercel-builder",
-      "config": {
-        "serverFiles": ["server/**/*", "nuxt.config.js"]
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/.*",
-      "dest": "/server/api/"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/server/index.js"
-    }
-  ]
+  "installCommand": "npm install"
 }
