@@ -1,9 +1,28 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build:test",
-  "outputDirectory": ".output/public",
+  "outputDirectory": ".output",
   "framework": "nuxtjs",
   "version": 2,
   "regions": ["hnd1"],
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "builds": [
+    {
+      "src": "nuxt.config.js",
+      "use": "@nuxtjs/vercel-builder",
+      "config": {
+        "serverFiles": ["server/**/*", "nuxt.config.js"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/.*",
+      "dest": "/server/api/"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/server/index.js"
+    }
+  ]
 }
