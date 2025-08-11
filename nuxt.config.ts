@@ -30,6 +30,11 @@ export default defineNuxtConfig({
   output: 'server',
   nitro: { // 开发环境代理配置
     preset: 'vercel',
+    output: {
+      dir: '.output',
+      serverDir: '.output/server',
+      publicDir: '.output/public'
+    },
     devProxy: {
       '/wapi': {
         target: 'https://dev.scribify.ai/wapi',

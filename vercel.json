@@ -4,20 +4,25 @@
   "outputDirectory": ".output/public",
   "framework": "nuxtjs",
   "version": 2,
+  "regions": ["hnd1"],
+  "installCommand": "npm install",
   "builds": [
     {
-      "src": "nuxt.config.ts",
-      "use": "@nuxtjs/vercel-builder@0.25.0",
+      "src": "nuxt.config.js",
+      "use": "@nuxtjs/vercel-builder",
       "config": {
-        "serverFiles": [
-          "package.json",
-          "tsconfig.json",
-          ".env.test",
-          "i18n/**",
-          "public/**",
-          "nuxt.config.ts"
-        ]
+        "serverFiles": ["server/**/*", "nuxt.config.js"]
       }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/.*",
+      "dest": "/server/api/"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/server/index.js"
     }
   ]
 }
