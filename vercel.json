@@ -19,6 +19,6 @@
     "NUXT_PUBLIC_ENV": "production",
     "NODE_ENV": "production"
   },
-  "outputDirectory": ".output",
+  "outputDirectory": ".output/public",
   "installCommand": "npm ci --prefer-offline --no-audit"
 }
