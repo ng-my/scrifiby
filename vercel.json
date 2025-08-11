@@ -7,14 +7,15 @@
   "builds": [
     {
       "src": "nuxt.config.ts",
-      "use": "@nuxtjs/vercel-builder",
+      "use": "@nuxtjs/vercel-builder@0.25.0",
       "config": {
         "serverFiles": [
           "package.json",
           "tsconfig.json",
           ".env.test",
           "i18n/**",
-          "public/**"
+          "public/**",
+          "nuxt.config.ts"
         ]
       }
     }
