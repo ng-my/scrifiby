@@ -124,7 +124,12 @@ const langChooseV1Ref = useTemplateRef("langChooseV1Ref");
 
 const getLocalRecent = async () => {
   await nextTick();
-  const obj = (langChooseV1Ref.value!.popularLanguages[0] || {}) as any;
+  let lang = langChooseV1Ref.value?.popularLanguages;
+  let obj = {} as any;
+  if (langChooseV1Ref.value && lang) {
+    obj = (langChooseV1Ref.value?.popularLanguages[0] || {}) as any;
+  }
+
   value.value = {
     ...obj,
     lang: obj.name
