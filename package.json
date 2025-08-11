@@ -45,7 +45,6 @@
     "vite-plugin-remove-console": "^2.2.0"
   },
   "devDependencies": {
-    "@nuxtjs/vercel-builder": "^0.25.0",
     "@babel/core": "^7.27.4",
     "@babel/plugin-transform-runtime": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
