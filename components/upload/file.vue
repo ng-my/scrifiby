@@ -10,23 +10,23 @@
       :show-file-list="false"
       :on-change="handleFileChange"
     >
-      <div class="flex flex-col items-center text-center">
+      <div class="flex flex-col items-center text-center h-full">
         <span
           class="iconfont icon-shangchuan mb-5 text-2xl text-mainColor-900"
         ></span>
         <p class="tip mb-1 text-sm text-black">
-          {{ t("FileUploadAndRecording.upload.file.tip1") }}
-          <span v-if="!isMobile">{{
-            t("FileUploadAndRecording.upload.file.tip2")
-          }}</span>
+          <span v-if="!isMobile && !isMobileFromIndex">{{
+              t("FileUploadAndRecording.upload.file.tip1")
+            }}</span>
+          <span v-else>
+          {{ t("FileUploadAndRecording.upload.file.tip2") }}
+          </span>
         </p>
 
         <div class="type flex flex-wrap justify-center text-xs text-fontColor">
+          <span class="mr-1">{{ t("FileUploadAndRecording.upload.file.supported") }}:</span>
           <span v-for="(type, index) in fileTypes" :key="index">
-            {{ type
-            }}<span class="mr-1.5" v-show="index < fileTypes.length - 1"
-              >,</span
-            >
+            {{ type }}<span v-show="index < fileTypes.length - 1">,&nbsp;</span>
           </span>
         </div>
       </div>
@@ -52,11 +52,15 @@
 </template>
 
 <script setup>
-import { Msg } from "~/utils/tools";
+import Utils, { Msg } from "~/utils/tools";
 
 const { t } = useI18n();
 
 const props = defineProps({
+  isMobileFromIndex: {
+    type: Boolean,
+    default: false
+  },
   showLink: {
     type: Boolean,
     default: false
@@ -73,9 +77,10 @@ const { isFreeUser } = storeToRefs(useSubscriptionStore());
 
 const { fileTypes } = storeToRefs(useUploadStore());
 const { updateSelectRawFiles } = useUploadStore();
-const accept = computed(() =>
-  fileTypes.value.map((type) => `.${type}`).join(", ")
-);
+const accept = computed(() => {
+  const type = fileTypes.value.map((type) => `.${type}`).join(", ")
+  return `${type}, .mpg`
+});
 
 const handleFileChange = async (uploadFile) => {
   await beforeUpload(uploadFile.raw);

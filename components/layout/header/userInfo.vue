@@ -12,8 +12,8 @@
         class="flex h-[2rem] w-[2rem] cursor-pointer items-center justify-center rounded-full bg-mainColor-900 text-white hover:bg-mainColor-990"
       >
         <span class="text-base font-semibold" v-if="userNameEmail">{{
-          firstLetter
-        }}</span>
+            firstLetter
+          }}</span>
         <span class="iconfont icon-jiangyanzhe text-xl" v-else></span>
       </div>
     </template>
@@ -26,8 +26,8 @@
             {{ t(`${firstLetter}`) }}
           </div>
           <span class="font-bold" v-if="userNameEmail?.length < 15">{{
-            userNameEmail
-          }}</span>
+              userNameEmail
+            }}</span>
           <el-popover
             placement="top-start"
             trigger="hover"
@@ -36,8 +36,8 @@
           >
             <template #reference>
               <span class="font-bold">{{
-                userNameEmailFiter(userNameEmail)
-              }}</span>
+                  userNameEmailFiter(userNameEmail)
+                }}</span>
             </template>
             <template #default>
               <div class="whitespace-nowrap font-medium">
@@ -51,7 +51,7 @@
           class="mt-[0.5rem] flex w-full items-center py-[0.5rem] hover:text-mainColor-900"
           @click="backHome"
         >
-          <i class="iconfont icon-home ng-shezhi iconfont-common-class"></i>
+          <i class="iconfont icon-icon_quanbuwenjian ng-shezhi iconfont-common-class"></i>
           {{ t("HomePage.home") }}
         </button>
         <hr class="my-[0.5rem]" />
@@ -85,11 +85,13 @@ import { useRouter } from "vue-router";
 import { useI18nModule } from "~/utils/i18n";
 import { useUserStore } from "~/stores/useUserStore";
 import loginInfoCard from "./loginInfoCard.vue";
+import useJumpPage from "~/hooks/useJumpPage";
 const userStore = useUserStore();
 const { t } = useI18n();
 const localePath = useLocalePath();
 const $i = useI18nModule("AccountSettingsPage");
 const router = useRouter();
+const { $mitt } = useNuxtApp();
 const userName = computed(() => {
   try {
     return userStore.userInfo &&
@@ -129,29 +131,20 @@ const isIndexPage = inject("isIndexPage");
 const loginOut = () => {
   unref(popoverRef).hide();
   userStore.setUserInfo("");
-  if (isIndexPage) {
-    return;
-  }
   setTimeout(() => {
     router.push({
-      path: localePath("/user/login")
+      path: localePath("/")
     });
   }, 10);
 };
 
 const settingAccount = () => {
   unref(popoverRef).hide();
-  router.push({
-    path: localePath("/accountSettings"),
-    query: { type: 1 }
-  });
+  $mitt.emit("goToEvent", { path: "/accountSettings?type=1" });
 };
 const upgrade = () => {
   unref(popoverRef).hide();
-  router.push({
-    path: localePath("/accountSettings"),
-    query: { type: 2 }
-  });
+  $mitt.emit("goToEvent", { path: "/accountSettings?type=2" });
 };
 const showPopover = async () => {
   loginInfoCardRef.value?.getDailyCount &&
@@ -169,9 +162,7 @@ const userNameEmailFiter = (val: string) => {
 };
 const backHome = () => {
   unref(popoverRef).hide();
-  router.push({
-    path: localePath("/home")
-  });
+  $mitt.emit("goToEvent", { path: "/" });
 };
 </script>
 

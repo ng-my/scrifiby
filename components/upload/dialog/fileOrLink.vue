@@ -21,10 +21,20 @@
         </div>
       </template>
       <div class="mb-4">
-        <upload-file v-if="!showLink" show-link @showLink="handleShowLink" />
+        <upload-file
+          v-if="!showLink"
+          :loading="loading"
+          show-link
+          @showLink="handleShowLink"
+        />
       </div>
-
-      <upload-link v-if="showLink" v-model:link="link">
+      <upload-link
+        v-if="showLink"
+        :is-overed="isOver"
+        :is-loading="loading"
+        v-model:link="link"
+        @enter="confirm"
+      >
         <div class="mb-3 text-sm font-normal text-black">
           {{ t("FileUploadAndRecording.upload.file.orTitle") }}
         </div>
@@ -37,7 +47,7 @@
         <el-button
           class="home-btn"
           :loading="loading"
-          @click="handleConfirm"
+          @click="confirm"
           type="primary"
         >
           {{ t("FileUploadAndRecording.upload.link.confirm") }}
@@ -70,13 +80,26 @@ const handleShowLink = () => {
   showLink.value = true;
 };
 
+const isOver = ref(false);
+const confirm = async () => {
+  if (isOver.value) {
+    return;
+  }
+  const callback = () => {
+    isOver.value = true;
+  };
+  handleConfirm(callback);
+};
+
 function handleKeyPress(e: any) {
-  if (e.key === "Enter" && showLink.value && !loading.value ) {
-    handleConfirm()
+  if (e.key === "Enter" && showLink.value && !loading.value) {
+    confirm();
   }
 }
 
 const handleOpen = () => {
+  loading.value = false;
+  isOver.value = false;
   window.addEventListener("keypress", handleKeyPress);
 };
 const handleClose = () => {
@@ -84,7 +107,6 @@ const handleClose = () => {
   showLink.value = false;
   window.removeEventListener("keypress", handleKeyPress);
 };
-
 </script>
 
 <style scoped>

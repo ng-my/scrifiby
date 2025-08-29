@@ -8,7 +8,7 @@
         class="mb-[1rem] flex items-center space-x-[0.625rem] text-[1rem] leading-[1.375rem] md:mb-0"
       >
         <router-link
-          :to="localePath('/user/terms')"
+          :to="localePath('/terms-of-use')"
           target="_blank"
           rel="noopener noreferrer"
           class="hover:text-blue-500"
@@ -17,7 +17,7 @@
         </router-link>
         <span class="h-[0.875rem] w-[0.0625rem] bg-[#E2E2E2]"></span>
         <router-link
-          :to="localePath('/user/privacy')"
+          :to="localePath('/privacy')"
           target="_blank"
           rel="noopener noreferrer"
           class="hover:text-blue-500"
@@ -26,7 +26,7 @@
         </router-link>
         <span class="h-[0.875rem] w-[0.0625rem] bg-[#E2E2E2]"></span>
         <router-link
-          :to="localePath('/user/aboutUs')"
+          :to="localePath('/about')"
           rel="noopener noreferrer"
           class="hover:text-blue-500"
         >

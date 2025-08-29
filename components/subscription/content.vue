@@ -84,10 +84,7 @@
                     class="relative z-10 flex items-center justify-center px-2 py-0.5 sm:px-3 sm:py-1"
                   >
                     <span class="text-xs text-thirdColor"
-                      >{{
-                        t("HomePage.subscriptionModal.right.save")
-                      }}
-                      $108</span
+                      >{{ t("AccountSettingsPage.save") }} $108</span
                     >
                   </div>
                 </div>
@@ -187,10 +184,10 @@
 import { Close, Select } from "@element-plus/icons-vue";
 import { useSubscribeVersion } from "~/components/subscriptionUpgrade/useSubscribeVersion";
 import { useRecordStore } from "~/stores/useRecordStore";
+import useJumpPage from "~/hooks/useJumpPage";
 const { t } = useI18n();
 const userStore = useUserStore();
-const localePath = useLocalePath();
-const router = useRouter();
+const { $mitt } = useNuxtApp();
 const props = defineProps({
   isMobile: {
     type: Boolean,
@@ -241,21 +238,22 @@ const userNameEmail = computed(() => {
 const { clearSelectRawFiles } = useUploadStore();
 const { endRecord } = useRecordStore();
 const subscribe = async () => {
+  const { showPromatDialog } = useRecordStore();
+  await showPromatDialog();
+
   if (!userNameEmail.value) {
     clearSelectRawFiles();
     endRecord();
     setTimeout(() => {
-      router.push({
-        path: localePath("/user/signup"),
-        query: { type: "noLogin" }
-      });
+      $mitt.emit("goToEvent", { path: "/user/signup?type=noLogin" });
     }, 300);
     return;
   }
   try {
     loading.value = true;
     const res = await createSession(selectedPlan.value);
-    location.href = res;
+    // location.href = res;
+    window.location.replace(res);
   } finally {
     loading.value = false;
   }

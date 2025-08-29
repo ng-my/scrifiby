@@ -1,3 +1,5 @@
+import { useCrossDomainCookie } from "~/hooks/useCrossDomainCookie.js";
+
 export function injectGoogleScript(useHead) {
   useHead({
     script: [
@@ -39,7 +41,8 @@ function getGoogleOAuthLanguage() {
   let currentLocale = "en-US"; // 默认值
 
   if (typeof window !== "undefined" && window.localStorage) {
-    currentLocale = localStorage.getItem("i18n_localLanguage") || "en-US";
+    const cookie = useCrossDomainCookie('i18n_localLanguage')
+    currentLocale = cookie.value || "en-US";
   }
 
   return googleOAuthLanguages[currentLocale] || "en";

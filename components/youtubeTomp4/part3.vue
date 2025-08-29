@@ -8,15 +8,10 @@
       class="max-w-[38.75rem] text-start text-[1.375rem] leading-[1.875rem] md:flex-[0_0_62%] md:basis-[62%] md:text-lg"
     >
       <p>
-        Ever found yourself needing to watch YouTube videos offline?<br />
-        Whether you're commuting on the subway, flying on a plane, studying a
-        crucial tutorial, diving deep into skill–building content, or archiving
-        important video material—having reliable offline access is a common
-        frustration. This is where our downloader shines.<br />
-        The downloader lets you quickly and easily convert YouTube videos to MP4
-        format for download. Save them to your device, and watch anytime.<br />
-        The process is fast, simple, and hassle–free. Once downloaded, enjoy
-        your favorite videos whenever and wherever you are—no internet needed.
+        {{ $i("content[0]") }}<br />
+        {{ $i("content[1]") }}<br />
+        {{ $i("content[2]") }}<br />
+        {{ $i("content[3]") }}
       </p>
     </div>
     <!-- 右侧图片 -->
@@ -34,6 +29,8 @@
 
 <script setup lang="ts">
 /* part1 组件 */
+import { useI18nModule } from "~/utils/i18n";
+const $i = useI18nModule("Resources.YouTubeToMP4.part3");
 </script>
 
 <style scoped></style>

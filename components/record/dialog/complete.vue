@@ -4,6 +4,8 @@
       v-model="visible"
       :close-on-click-modal="false"
       :show-close="false"
+      append-to-body
+      class="customer-dialog-link2"
       :title="t('FileUploadAndRecording.record.dialog.complete.title')"
       @open="handleOpen"
       @close="handleClose"

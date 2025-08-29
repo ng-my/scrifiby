@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="lang-title mb-2 text-sm">
+    <div class="lang-title mb-2 text-lg font-medium">
       {{ title ? title : t("FileUploadAndRecording.upload.language") }}
     </div>
 
@@ -37,6 +37,7 @@
         </el-input>
       </template>
       <lang-choose-v1
+        v-if="isMounted"
         ref="langChooseV1Ref"
         :modelValue="value.id"
         :recentLanguageKeys="recentLanguageKeys"
@@ -56,6 +57,7 @@ import {
   languageData,
   languageTransMap
 } from "~/components/langChoose/langFlag";
+import { useCrossDomainCookie } from "~/hooks/useCrossDomainCookie";
 
 const { t } = useI18n();
 
@@ -78,6 +80,11 @@ const props = defineProps({
     type: String,
     default: ""
   }
+});
+
+const isMounted = ref(false);
+onMounted(() => {
+  isMounted.value = true;
 });
 
 watchEffect(() => {
@@ -124,12 +131,14 @@ const langChooseV1Ref = useTemplateRef("langChooseV1Ref");
 
 const getLocalRecent = async () => {
   await nextTick();
-  let lang = langChooseV1Ref.value?.popularLanguages;
-  let obj = {} as any;
-  if (langChooseV1Ref.value && lang) {
-    obj = (langChooseV1Ref.value?.popularLanguages[0] || {}) as any;
+  if (!langChooseV1Ref.value) {
+    setTimeout(() => {
+      getLocalRecent();
+    }, 500);
+    return;
   }
 
+  const obj = (langChooseV1Ref.value!.popularLanguages[0] || {}) as any;
   value.value = {
     ...obj,
     lang: obj.name
@@ -138,7 +147,7 @@ const getLocalRecent = async () => {
 
 const getRecentLang = async () => {
   try {
-    const token = useCookie("token");
+    const token = useCrossDomainCookie("token");
     if (token.value) {
       const { transcriptApi } = await import("~/api/transcript");
       const res = await transcriptApi.getTranRecentLang();
@@ -154,6 +163,13 @@ const getRecentLang = async () => {
       (item) => item.lang === recentLanguageKeys.value?.[0]
     );
 
+    if (props.lang?.id) {
+      value.value = {
+        ...props.lang,
+      }
+      return;
+    }
+
     if (select) {
       value.value = {
         name: select.lang,
@@ -161,6 +177,13 @@ const getRecentLang = async () => {
         ...select
       };
     } else {
+      if (props.lang?.id) {
+        value.value = {
+          ...props.lang,
+        }
+        return;
+      }
+
       getLocalRecent();
     }
   } catch (e) {

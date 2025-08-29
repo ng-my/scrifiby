@@ -22,7 +22,7 @@
             {{ $t("AccountSettingsPage.displayLanguage") }}
           </span>
         </div>
-        <div style="overflow: auto; height: 18rem">
+        <div style="overflow: auto; height: 18rem" class="overscroll-contain">
           <div
             v-for="(item, index) in localeOptions"
             :key="item.value"
@@ -48,6 +48,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n, useLocalePath, useSwitchLocalePath } from "#imports";
 import { useIPLanguage } from "~/utils/useIPLanguage";
 import { type LocaleKey } from "~/i18n/index";
+import { useCrossDomainCookie } from "~/hooks/useCrossDomainCookie";
 
 const route = useRoute();
 const router = useRouter();
@@ -67,11 +68,11 @@ const LanguageFixRoute = computed(() => {
 
 const { ipapiCo } = useIPLanguage();
 /**languageInitStatus = { '第一次打开': '没值', '手动切换过': 'changed', }**/
-const languageInitStatus = window?.localStorage?.getItem("languageInitStatus");
-if (!languageInitStatus && !LanguageFixRoute.value) {
+const languageInitStatus = useCrossDomainCookie("languageInitStatus");
+if (!languageInitStatus.value && !LanguageFixRoute.value) {
   ipapiCo().then((ipInfo) => {
     // 有时间差。如果这个时候languageInitStatus有值说明请求过程中切换过语言，那么就不设置默认语言了
-    if (!languageInitStatus) {
+    if (!languageInitStatus.value) {
       // 判断ipInfo.language是否在i18n[LocaleLangs]里面
       let langArr: { code: string; name?: string }[] = [];
       let langSplitArr: { code: string; name?: string }[] = [];
@@ -127,17 +128,15 @@ getLocaleOptions();
 
 // 组件挂载时的处理
 onMounted(async () => {
+  const cookie = useCrossDomainCookie("i18n_localLanguage");
+
   if (LanguageFixRoute.value) {
-    let savedLocale =
-      activeLanguage.value ||
-      window?.localStorage?.getItem("i18n_localLanguage");
-    window?.localStorage?.setItem("i18n_localLanguage", savedLocale);
+    let savedLocale = activeLanguage.value || cookie.value;
     locale.value = savedLocale as LocaleKey;
     return;
   }
   // 从 URL 或 localStorage 恢复语言设置
-  let savedLocale =
-    window?.localStorage?.getItem("i18n_localLanguage") || activeLanguage.value;
+  let savedLocale = cookie.value || activeLanguage.value;
 
   let isSame = true;
   if (savedLocale !== activeLanguage.value) {
@@ -154,10 +153,9 @@ onMounted(async () => {
 const popoverRef = ref();
 // 切换语言方法
 const switchLanguage = async (newLocale: any) => {
-  window?.localStorage?.setItem("languageInitStatus", "changed");
+  languageInitStatus.value = "changed"; // 设置值
   activeLanguage.value = newLocale;
   locale.value = newLocale;
-  window?.localStorage?.setItem("i18n_localLanguage", newLocale);
   unref(popoverRef)?.hide();
 
   const path = switchLocalePath(newLocale);
@@ -168,6 +166,7 @@ const switchLanguage = async (newLocale: any) => {
       query: route.query
     });
   }
+
   getLocaleOptions();
 };
 

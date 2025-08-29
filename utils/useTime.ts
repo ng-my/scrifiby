@@ -96,6 +96,8 @@ export const useTime = () => {
       return formatMonthDay(localObj, local);
     }
     if (yearMonthDay) {
+      console.log(dayjs(localObj).format("ll"), "🚀===");
+
       return dayjs(localObj).format("ll");
     }
 

@@ -1,4 +1,6 @@
 import COS from "cos-js-sdk-v5";
+import { useErrorReporting } from "~/utils/fsReport";
+const { reportSystemError } = useErrorReporting();
 
 export interface UploadFile {
   id: string;
@@ -45,7 +47,9 @@ const initCosInstance = async (file: UploadFile) => {
   const bucket = auth.bucket;
   const region = auth.region;
   const allowedPath = auth.allowedPath;
+  const config = useRuntimeConfig();
   const instance = new COS({
+    Domain: config.public.cosDomain || '', // 自定义加速域名
     getAuthorization: async (options, callback) => {
       callback({
         TmpSecretId: auth.tmpSecretId,
@@ -103,10 +107,10 @@ export const useUpload = () => {
     return new Promise((resolve, reject) => {
       file
         .cosInstance!.headObject({
-          Bucket: file.bucket!,
-          Region: file.region!,
-          Key: file.key
-        })
+        Bucket: file.bucket!,
+        Region: file.region!,
+        Key: file.key
+      })
         .then((res) => {
           if (res) {
             resolve(true);
@@ -128,28 +132,27 @@ export const useUpload = () => {
     //   file.progress = 100;
     //   return;
     // }
-
     return new Promise((resolve) => {
       file
         .cosInstance!.uploadFile({
-          Bucket: file.bucket!,
-          Region: file.region!,
-          Key: file.key,
-          Body: file.file,
-          ChunkSize: CHUNK_SIZE,
-          AsyncLimit: 6,
-          SliceSize: NOTNEEDCHUNK_SIZE,
-          onTaskReady: (taskId) => {
-            file.taskId = taskId;
-          },
-          onProgress(progressData) {
-            let progress = Math.max(
-              parseInt(String(progressData.percent * 100)),
-              file.progress
-            );
-            file.progress = progress === 100 ? (progress = 99) : progress;
-          }
-        })
+        Bucket: file.bucket!,
+        Region: file.region!,
+        Key: file.key,
+        Body: file.file,
+        ChunkSize: CHUNK_SIZE,
+        AsyncLimit: 6,
+        SliceSize: NOTNEEDCHUNK_SIZE,
+        onTaskReady: (taskId) => {
+          file.taskId = taskId;
+        },
+        onProgress(progressData) {
+          let progress = Math.max(
+            parseInt(String(progressData.percent * 100)),
+            file.progress
+          );
+          file.progress = progress === 100 ? (progress = 99) : progress;
+        }
+      })
         .then((_) => {
           setTimeout(() => {
             file.status = "success";
@@ -158,6 +161,10 @@ export const useUpload = () => {
         })
         .catch(async (error) => {
           if (error?.toString().includes("expired")) {
+            console.log('cos过期重试');
+            reportSystemError({
+              message: 'cos 过期重试',
+            })
             auth = null;
             authPromise = null;
             await initCosInstance(reactive(file));
@@ -166,7 +173,10 @@ export const useUpload = () => {
             return;
           }
           if (times > 0) {
-            console.log("retry directUpload");
+            console.log('cos上传重试');
+            reportSystemError({
+              message: 'cos 上传重试',
+            })
             directUpload(file, times - 1);
             return;
           }
@@ -181,13 +191,6 @@ export const useUpload = () => {
   const initUpload = async (file: UploadFile) => {
     if (!validateFile(file)) return;
 
-    setTimeout(() => {
-      file.progress = Math.max(
-        Number(Math.floor(Math.random() * 5) + 1),
-        file.progress
-      );
-    }, 1000);
-
     file.status = "hashing";
 
     // 创建Web Worker处理大文件计算
@@ -201,7 +204,8 @@ export const useUpload = () => {
       // worker.onmessage = async (e) => {
       //
       // };
-      const hash = Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      const date = new Date();
+      const hash = `${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}`;
       // worker.terminate();
       file.worker = undefined;
       file.hash = hash;
@@ -212,12 +216,6 @@ export const useUpload = () => {
       } else {
         await initCosInstance(file);
 
-        setTimeout(() => {
-          file.progress = Math.max(
-            Number(Math.floor(Math.random() * 10) + 5),
-            file.progress
-          );
-        }, 1000);
 
         file.key = `${file.allowedPath!}${hash}/${file.name || "filename"}`;
 
@@ -294,7 +292,7 @@ export const useUpload = () => {
     const obj = {
       id: Date.now() + file.name,
       file,
-      name: file.name,
+      name: file.name.slice(0, 80),
       size: file.size,
       detailSize: niceBytes(String(file.size)),
       status: "pending",

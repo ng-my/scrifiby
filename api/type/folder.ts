@@ -30,6 +30,7 @@ export interface FileItem {
   diarizeEnabled: boolean;
   language: string;
   isDefaultFile?: boolean;
+  errorMsg?: string;
 }
 
 export interface FolderCreateParams {

@@ -46,7 +46,7 @@
             @click="selectLanguage(lang)"
           >
             <span
-              class="flex-1 overflow-hidden truncate whitespace-nowrap text-sm"
+              class="flex-1 overflow-hidden truncate whitespace-nowrap text-sm text-black"
               :title="t('TranscriptionPage.langChooseV1.' + lang.name)"
             >
               {{ t("TranscriptionPage.langChooseV1." + lang.name) }}
@@ -86,7 +86,7 @@
             @click="selectLanguage(lang)"
           >
             <span
-              class="flex-1 overflow-hidden truncate whitespace-nowrap text-sm"
+              class="flex-1 overflow-hidden truncate whitespace-nowrap text-sm text-black"
               :title="t('TranscriptionPage.langChooseV1.' + lang.name)"
             >
               {{ t("TranscriptionPage.langChooseV1." + lang.name) }}
@@ -133,7 +133,7 @@
               @click="selectLanguage(lang)"
             >
               <span
-                class="flex-1 overflow-hidden truncate whitespace-nowrap text-sm"
+                class="flex-1 overflow-hidden truncate whitespace-nowrap text-sm text-black"
                 :title="t('TranscriptionPage.langChooseV1.' + lang.name)"
               >
                 {{ t("TranscriptionPage.langChooseV1." + lang.name) }}

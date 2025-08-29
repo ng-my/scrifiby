@@ -2,7 +2,7 @@
   <!--7、 FAQ -->
   <section class="px-4 text-white">
     <h2 class="mb-10 text-center text-[2.5rem] font-bold">
-      Key Questions on Downloading YouTube Videos
+      {{ $i("title") }}
     </h2>
     <div class="mx-auto max-w-[55rem]">
       <div v-for="(item, idx) in list" :key="item.id" class="mb-[1.25rem]">
@@ -11,7 +11,7 @@
           @click="toggle(idx)"
         >
           <span class="me-4 text-[1.25rem] font-semibold leading-[1.75rem]">
-            {{ item.question }}
+            {{ $i(`list[${idx}].question`) }}
           </span>
           <span class="flex">
             <!-- 可用svg或图片 -->
@@ -28,7 +28,7 @@
             v-show="activeIdx === idx"
             class="origin-top overflow-hidden bg-black pb-[1.375rem] pe-[2rem] ps-[2.125rem] pt-[0.875rem] text-[1rem] leading-[1.75rem] text-[rgba(255,255,255,0.7)]"
           >
-            {{ item.answer }}
+            {{ $i(`list[${idx}].answer`) }}
           </div>
         </transition>
       </div>
@@ -37,6 +37,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18nModule } from "~/utils/i18n";
+const $i = useI18nModule("Resources.YouTubeToMP4.part7");
 const activeIdx = ref<number | null>(null);
 const toggle = (idx: number) => {
   activeIdx.value = activeIdx.value === idx ? null : idx;

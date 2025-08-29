@@ -6,6 +6,62 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "45349735",
+      "name": "icon_全部文件",
+      "font_class": "icon_quanbuwenjian",
+      "unicode": "e757",
+      "unicode_decimal": 59223
+    },
+    {
+      "icon_id": "45262994",
+      "name": "对号",
+      "font_class": "a-icon_duihao-mian3",
+      "unicode": "e756",
+      "unicode_decimal": 59222
+    },
+    {
+      "icon_id": "45256551",
+      "name": "文件集合",
+      "font_class": "a-wenjian7",
+      "unicode": "e755",
+      "unicode_decimal": 59221
+    },
+    {
+      "icon_id": "45237514",
+      "name": "问号",
+      "font_class": "a-wenhao3",
+      "unicode": "e754",
+      "unicode_decimal": 59220
+    },
+    {
+      "icon_id": "45230570",
+      "name": "登录邮件",
+      "font_class": "dengluyoujian",
+      "unicode": "e753",
+      "unicode_decimal": 59219
+    },
+    {
+      "icon_id": "45142724",
+      "name": "录音停止",
+      "font_class": "luyintingzhi",
+      "unicode": "e752",
+      "unicode_decimal": 59218
+    },
+    {
+      "icon_id": "45142690",
+      "name": "录音暂停",
+      "font_class": "luyinzanting",
+      "unicode": "e750",
+      "unicode_decimal": 59216
+    },
+    {
+      "icon_id": "45142689",
+      "name": "录音播放",
+      "font_class": "luyinbofang",
+      "unicode": "e751",
+      "unicode_decimal": 59217
+    },
+    {
       "icon_id": "45042781",
       "name": "官网箭头",
       "font_class": "guanwangjiantou",

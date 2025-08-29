@@ -2,20 +2,21 @@
   <div class="me-auto ms-auto flex flex-col items-center px-4">
     <!--1、 标题和输入框 -->
     <h1 class="title-wrap mb-[2.125rem] text-center text-[2.8125rem] font-bold">
-      Download YouTube Videos As MP4
+      {{ $i("title") }}
     </h1>
     <div
-      class="relative mb-[1.5rem] flex h-[2.75rem] w-full max-w-[43.25rem] justify-center ps-[0.5rem]"
+      class="relative mb-[1.5rem] flex h-[2.75rem] w-full max-w-[43.25rem] justify-center sm:ps-[0.5rem]"
     >
       <el-input
         v-model="link"
         class="!h-[2.75rem]"
-        placeholder="Search or paste your Youtube link here"
+        :class="{link}"
+        :placeholder="$i('placeholder')"
       />
       <span
         @click="link = ''"
         v-if="link"
-        class="iconfont icon-shanchu1 absolute right-[8.125rem] top-[0.625rem] cursor-pointer text-[#6A1B85]"
+        class="iconfont icon-shanchu1 absolute sm:right-[7.5rem] right-[7.1rem] top-[0.625rem] cursor-pointer text-[#6A1B85]"
       ></span>
       <el-button
         @click="handleDownload"
@@ -24,11 +25,11 @@
         type="primary"
         class="download-btn relative left-[-0.125rem] !h-[2.75rem] !w-[8.125rem] cursor-pointer !bg-mainColor-900"
       >
-        Download
+        {{ $i("Download") }}
       </el-button>
     </div>
     <div
-      class="text-center text-sm text-[rgba(255,255,255,0.7)]"
+      class="text-center text-sm text-[rgba(255,255,255,0.7)] flex items-center"
       :class="[loading ? 'mb-[1.375rem]' : '']"
     >
       <el-image
@@ -36,19 +37,21 @@
         src="/assets/images/downloadMp4/play_1.png"
         class="me-[0.5rem] h-5 w-5 cursor-pointer align-middle"
       ></el-image>
-      <el-link @click="handleHowDownload" type="primary">
-        How to download?
+      <el-link @click="handleHowDownload" type="primary" class="mr-2">
+        {{ $i("howToDownload") }}
       </el-link>
-      Watch the tutorial
+      {{ $i("tutorial") }}
     </div>
     <div v-if="loading" class="text-[rgba(255,255,255,0.7)]">
-      Processing the link to download. Stay on the page.
+      {{ $i("loading_text") }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { downloadVideo } from "./downloadVideo";
+import { useI18nModule } from "~/utils/i18n";
+const $i = useI18nModule("Resources.YouTubeToMP4.part1");
 const emit = defineEmits([
   "download-click-pre",
   "download-click",
@@ -79,8 +82,11 @@ const handleHowDownload = () => {
   --el-text-color-regular: #fff;
   --el-text-color-placeholder: rgba(255, 255, 255, 0.7);
   .el-input__wrapper {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
+    border-bottom-right-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    padding-right: 0;
+    padding-left: 0;
+    padding-inline-start: 8px;
   }
 }
 .download-btn {
@@ -98,5 +104,8 @@ const handleHowDownload = () => {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+:deep(.link .el-input__inner) {
+  padding-inline-end: 30px;
 }
 </style>

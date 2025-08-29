@@ -67,13 +67,6 @@
               selectPlanCycle === selectPlanDetail.version
             "
           >
-            <!-- {{
-              selectPlanNowStatus === 1
-                ? t("AccountSettingsPage.automaticRenewalon")
-                : t("AccountSettingsPage.subscriptionWillCancelledOn")
-            }}
-            {{ getTime(endTime) }} -->
-
             {{
               [1, 3].includes(selectPlanNowStatus)
                 ? selectPlanCycle === 1
@@ -87,9 +80,16 @@
                     time: getTime(endTime, false, false, true)
                   })
             }}
+            <!-- {{ endTime }} -->
           </div>
 
-          <div class="text-subColor-normal" v-if="selectPlanNowStatus === 3">
+          <div
+            class="text-subColor-normal"
+            v-if="
+              (selectPlanNowStatus === 3 || selectPlanNowStatus === 2) &&
+              !selectPlanNowStatusReal
+            "
+          >
             {{ t("AccountSettingsPage.automaticRenewal") }}
           </div>
         </div>
@@ -289,14 +289,14 @@
 import { defineEmits, ref } from "vue";
 import { useUserStore } from "~/stores/useUserStore";
 import { useSubscribeVersion } from "./useSubscribeVersion";
+import useJumpPage from "~/hooks/useJumpPage";
 const userStore = useUserStore();
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const subscriptionStore = useSubscriptionStore();
 const { getTime } = useTime();
 const emit = defineEmits(["change"]);
-const router = useRouter();
-const localePath = useLocalePath();
+const { $mitt } = useNuxtApp();
 // 方案数据
 type ButtonType =
   | ""
@@ -425,7 +425,7 @@ const plans = ref<Plan[]>([
     afterwards: t("HomePage.subscriptionModal.right.afterwards"),
     tagClass: "text-[#5EB972]",
     saveMoney: "$108",
-    saved: t("HomePage.subscriptionModal.right.save"),
+    saved: t("AccountSettingsPage.save"),
     perYear: t("AccountSettingsPage.perYear"),
     totalMoney: "$107.88",
     version: 2
@@ -449,9 +449,12 @@ const selectPlanCycle: any = computed(() => {
 const selectPlanNowStatus: any = computed(() => {
   return subscriptionStore.subscriptionDetail?.status;
 });
+const selectPlanNowStatusReal: any = computed(() => {
+  return subscriptionStore.subscriptionDetail?.statusReal;
+});
 
 const endTime = computed(() => {
-  return subscriptionStore.subscriptionDetail.endTime;
+  return subscriptionStore.subscriptionDetail?.endTime;
 });
 const userNameEmail = computed(() => {
   try {
@@ -471,12 +474,12 @@ const {
   upgradeSubscription
 } = useSubscribeVersion();
 const subscribeTo = async (type: string) => {
+  const { showPromatDialog } = useRecordStore();
+  await showPromatDialog();
+
   if (!userNameEmail.value) {
     setTimeout(() => {
-      router.push({
-        path: localePath("/user/signup"),
-        query: { type: "noLogin" }
-      });
+      $mitt.emit("goToEvent", { path: "/user/signup?type=noLogin" });
     }, 300);
     return;
   }
@@ -486,7 +489,10 @@ const subscribeTo = async (type: string) => {
   try {
     loading.value = true;
     let res: any = "";
-    if (selectPlanNowStatus.value === 1) {
+    if (
+      selectPlanNowStatus.value === 1 ||
+      (selectPlanNowStatus.value === 0 && !isItDue.value)
+    ) {
       res = await upgradeSubscription();
     } else {
       res = await createSession(type);
@@ -535,19 +541,23 @@ const isDisabled = (val: string) => {
 };
 
 const subscribeToChangeToAnnual = async (isnew?: any) => {
+  const { showPromatDialog } = useRecordStore();
+  await showPromatDialog();
+
   if (!userNameEmail.value) {
     setTimeout(() => {
-      router.push({
-        path: localePath("/user/signup"),
-        query: { type: "noLogin" }
-      });
+      $mitt.emit("goToEvent", { path: "/user/signup?type=noLogin" });
     }, 300);
     return;
   }
   try {
     loading.value = true;
     let res: any = "";
-    if (selectPlanNowStatus.value === 1 && !isnew) {
+    if (
+      (selectPlanNowStatus.value === 1 ||
+        (selectPlanNowStatus.value === 0 && !isItDue.value)) &&
+      !isnew
+    ) {
       res = await upgradeSubscription();
     } else {
       res = await paymentManageUser();

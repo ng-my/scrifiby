@@ -174,7 +174,10 @@ export const useRecorderCore = ({
           // currentTime.value = getTime(0);
 
           // 关闭录音，释放录音资源
+          console.log("rec", rec.stream);
           rec.close();
+
+          Recorder.Destroy();
           rec = null;
           wave = null;
           isReady.value = false;

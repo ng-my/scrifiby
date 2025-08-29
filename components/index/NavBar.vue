@@ -13,18 +13,20 @@
           'cursor-pointer': isShowIconPointer
         }"
       >
-        <el-image
+        <NuxtImg
           src="/assets/images/index_black/logo.svg"
-          alt="Scribify Logo"
+          alt="Nevercap Logo"
           class="h-6 w-auto sm:h-[1.875rem]"
           fit="contain"
-        ></el-image>
+          loading="eager"
+        />
       </div>
       <template v-if="isLargeScreen">
         <!-- Menu -->
         <ul
           v-if="props.showMenu"
-          class="flex space-x-[4.25rem] text-[1rem] font-normal text-white"
+          class="flex text-[1rem] font-normal text-white"
+          :class="isMounted ? 'space-x-[4.25rem]' : 'space-x-[2.25rem]'"
         >
           <li
             @click="scrollIntoView(item.name)"
@@ -107,6 +109,7 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "#vue-router";
 import { useUserStore } from "~/stores/useUserStore";
 import { storeToRefs } from "pinia";
+import useJumpPage from "~/hooks/useJumpPage";
 const userStore = useUserStore();
 const { userInfo } = storeToRefs(userStore);
 const props = defineProps({
@@ -115,6 +118,7 @@ const props = defineProps({
     default: true
   }
 });
+const { $mitt } = useNuxtApp();
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
@@ -134,7 +138,7 @@ const emit = defineEmits(["scrollIntoView"]);
 const scrollIntoView = (id: string) => {
   showPopup.value = false;
   const path = route.path;
-  if (path.includes("user/aboutUs")) {
+  if (path.includes("about")) {
     if (process.client) {
       window.sessionStorage.setItem("anchorId", `ID_${id}`);
     }
@@ -146,20 +150,25 @@ const scrollIntoView = (id: string) => {
 };
 
 const goToHome = () => {
+  const path = route.path;
+  const urls = ["terms-of-use", "privacy"];
+  if (isLogin.value && urls.find((url) => path.includes(url))) {
+    return $mitt.emit("goToEvent", { path: "/" });
+  }
   router.push({
     path: localePath("/")
   });
 };
 //登录
 const login = () => {
-  router.push({
-    path: localePath("/user/login")
-  });
+  $mitt.emit("goToEvent", { path: "/user/login" });
 };
 const isShowIconPointer = computed(() => {
   return route.name && !route.name?.startsWith("index");
 });
+const isMounted = ref(false);
 onMounted(() => {
+  isMounted.value = true;
   const anchorId = window.sessionStorage.getItem("anchorId");
   if (anchorId) {
     window.sessionStorage.removeItem("anchorId");

@@ -1,4 +1,4 @@
-🌍 [简体中文](README_zh.md) 
+🌍 [简体中文](README_zh.md)
 
 # WhisperX: 服务端渲染 SSR · Vue3 · Nuxt3 · TypeScript · 多语言 i18n · Element Plus · rem 自适应 · 支付 · SEO
 
@@ -16,7 +16,7 @@ WhisperX 是一款基于 Nuxt3 的 AI 转录项目，预集成全球支付网关
 - 🎨 **Tailwindcss**：快速 UI 开发的 CSS 框架
 - 💰 **Stripe**：全球领先的在线支付服务
 - 👄 **i18n**：轻松为 Nuxt 项目添加国际化支持
-- 💨 **plausible**：隐私友好的 Google Analytics 替代品
+- 💨 **Google Analytics**：隐私友好的 Google Analytics
 
 ---
 
@@ -79,7 +79,6 @@ npm run dev
 ### 二、项目部署流程
 
 1. **上传项目代码**
-
    - 将本地项目（排除 node_modules）上传至服务器目录
    - 进入项目目录安装依赖
 
@@ -88,7 +87,6 @@ npm run dev
    ```
 
 2. **构建 SSR 项目**
-
    - 执行构建命令生成服务端渲染所需文件
 
    ```bash
@@ -102,7 +100,6 @@ npm run dev
    pm2 start npm --name "whisperx" -- run start:prod
    # "whisperx" 可自定义，用于 PM2 进程管理
    ```
-
    - 验证服务是否运行
 
    ```bash
@@ -133,7 +130,6 @@ npm run dev
      }
    }
    ```
-
    - 重载 Nginx 使配置生效
 
    ```bash
@@ -156,7 +152,6 @@ npm run dev
    ```
 
 2. **性能调优**
-
    - **Nginx 缓存**：为静态资源（如图片、CSS/JS）配置浏览器缓存
    - **Gzip 压缩**：在 Nginx 中启用以减少传输体积
    - **CDN 加速**：将 static/ 或 assets/ 目录托管至 CDN
@@ -167,7 +162,7 @@ npm run dev
 
 ```ini
 NODE_ENV=development
-NUXT_PUBLIC_ENV=development 
+NUXT_PUBLIC_ENV=development
 PORT=3000
 NUXT_PUBLIC_BASE_URL=http://localhost:3000
 NUXT_RESEND_API_KEY=
@@ -277,3 +272,5 @@ GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE= # Google 搜索控制台验证码
 如需一键部署或有疑问，欢迎联系：365398920@qq.com
 
 - [Github](http://source.aihujing.com/weber/WhisperX)
+
+

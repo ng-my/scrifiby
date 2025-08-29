@@ -4,49 +4,54 @@
       v-show="!hideRecord"
       ref="element"
       :style="style"
-      class="record fixed z-[9999] touch-none select-none rounded-[0.625rem] bg-black text-white"
+      class="record mt-[36px] mb-[10px] fixed z-[3900] touch-none select-none rounded-[0.625rem] bg-[#F9FAFC] text-black"
     >
       <div
         v-if="!isStopped"
         class="md:px-13 record-content flex w-[36.875rem] justify-center px-4 py-4 sm:px-10"
       >
         <div class="flex w-full flex-col items-center">
-          <div class="recording flex items-center">
+          <div class="recording flex items-center text-base mb-2">
             <img
-              class="me-2.5"
+              class="me-2.5 w-[15px]"
               src="/assets/images/home/recording.svg"
               alt=""
             />
-            {{ t("FolderPage.buttons.recording") }}
+            <span class="text-base font-medium">{{ t("FolderPage.buttons.recording") }}</span>
           </div>
-          <div class="mb-4 text-sm">{{ formattedTime }}</div>
+          <div class="mb-3 text-2xl tracking-wider">{{ formattedTime }}</div>
 
           <div class="mb-6 h-5 w-full overflow-hidden" ref="container"></div>
 
           <div class="flex w-full items-center justify-center">
-            <button
-              @click.stop.prevent="toggleRecording"
-              class="me-8 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2"
-              :title="
+            <el-tooltip
+              :show-arrow="false"
+              :content="
                 isRecording
                   ? t('FileUploadAndRecording.record.pause')
                   : t('FileUploadAndRecording.record.resume')
               "
             >
-              <span
-                class="iconfont icon-bofang ml-0.5 text-xs"
-                v-if="!isRecording"
-              ></span>
-              <span class="iconfont icon-zanting text-xs" v-else></span>
-            </button>
+              <button
+                @click.stop.prevent="toggleRecording"
+                class="me-8 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#64748B]"
+              >
+                <nuxt-img preload v-if="!isRecording" class="ml-0.5 w-[9px]" src="/assets/images/home/play.svg" />
+                <nuxt-img preload v-else class="w-[8px]" src="/assets/images/home/pause.svg" />
+              </button>
+            </el-tooltip>
 
-            <button
-              @click.stop.prevent="stopRecording"
-              class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2"
-              :title="t('FileUploadAndRecording.record.endRecord')"
+            <el-tooltip
+              :show-arrow="false"
+              :content="t('FileUploadAndRecording.record.endRecord')"
             >
-              <div class="h-3 w-3 rounded-sm bg-subColor-normal"></div>
-            </button>
+              <button
+                @click.stop.prevent="stopRecording"
+                class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#64748B]"
+              >
+                <div class="h-3 w-3 rounded-sm bg-subColor-normal"></div>
+              </button>
+            </el-tooltip>
           </div>
         </div>
       </div>
@@ -92,7 +97,12 @@
       :audioBlob="audioBlob"
       :recordTitle="recordTitle"
       :parentId="parentId"
+      :formattedTime="formattedTime"
       @close="hideRecord = false"
+    />
+    <record-dialog-promat
+      v-model="promatDialogVisible"
+      @confirm="handlePromatConfirm"
     />
     <subscription-modal v-model="showSubModal" />
   </div>
@@ -122,7 +132,7 @@ dayjs.extend(utc);
 dayjs.tz.guess();
 // 最大录音时间（10小时）
 // todo 要改
-const MAX_RECORDING_TIME = 1 * 60 * 60; // 10小时，单位秒 * 60 * 60
+const MAX_RECORDING_TIME = 10 * 60 * 60; // 10小时，单位秒 * 60 * 60
 
 const options = computed(() => ({
   height: 20,
@@ -201,7 +211,8 @@ const stopRecording = async () => {
   if (props.justRecord) {
     emit("record", {
       audioBlob: audioBlob.value,
-      recordTitle: recordTitle.value
+      recordTitle: recordTitle.value,
+      formattedTime: formattedTime.value
     });
     return;
   }
@@ -219,7 +230,8 @@ const handleCompleteConfirm = () => {
   if (props.justRecord) {
     emit("record", {
       audioBlob: audioBlob.value,
-      recordTitle: recordTitle.value
+      recordTitle: recordTitle.value,
+      formattedTime: formattedTime.value
     });
   }
 };
@@ -257,9 +269,29 @@ const transcribeRecord = () => {
   resultDialogVisible.value = true;
   hideRecord.value = true;
 };
+
+const { promatDialogVisible } = storeToRefs(useRecordStore());
+watch(
+  () => promatDialogVisible.value,
+  () => {
+    if (promatDialogVisible.value) {
+      hideRecord.value = true;
+    }
+  }
+);
+const handlePromatConfirm = async (isEnd: boolean) => {
+  if (isEnd) {
+    if (!isStopped.value) {
+      await stopRecording();
+    }
+    transcribeRecord();
+    return;
+  }
+  hideRecord.value = false;
+};
 watchEffect(() => {
-  hideRecord.value = !!showSubModal.value;
-})
+  hideRecord.value = !!showSubModal.value || !!delDialogVisible.value;
+});
 
 const el = useTemplateRef<HTMLElement>("element");
 const elWidth = ref(0);
@@ -271,7 +303,7 @@ const initialPositionX = computed(() => {
   return pageWidth.value / 2 - elWidth.value / 2;
 });
 const initialPositionY = computed(() => {
-  return pageHeight.value - elHeight.value - 20;
+  return pageHeight.value - elHeight.value - 40;
 });
 
 // Track the initial x position relative to page width (as a percentage)
@@ -377,9 +409,6 @@ watchEffect(async () => {
 }
 
 .recording {
-  font-size: 1.375rem;
-  line-height: 1.875rem;
-  @apply mb-1;
 }
 
 :deep(.customer-button) {

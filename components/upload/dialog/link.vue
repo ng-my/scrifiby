@@ -6,15 +6,22 @@
       @closed="link = ''"
       @open="handleOpen"
       @close="handleClose"
-      :title="t('FileUploadAndRecording.upload.link.dialogTitle')"
+      class="customer-dialog-link"
+      append-to-body
+      :title="t('FileUploadAndRecording.upload.file.orTitle')"
     >
-      <upload-link v-model:link="link" />
+      <upload-link
+        v-model:link="link"
+        :is-overed="isOver"
+        :is-loading="loading || linkLoading"
+        @enter="confirm"
+      />
       <template #footer>
-        <el-button class="home-btn" @click="visible = false">
+        <el-button class="home-btn mb-2" @click="visible = false">
           {{ t("FileUploadAndRecording.upload.link.cancel") }}
         </el-button>
         <el-button
-          class="home-btn"
+          class="home-btn mb-2"
           :loading="loading || linkLoading"
           @click="confirm"
           type="primary"
@@ -73,6 +80,7 @@ function handleKeyPress(e: any) {
 
 const handleOpen = () => {
   isOver.value = false;
+  loading.value = false;
   emit("open");
   window.addEventListener("keypress", handleKeyPress);
 };

@@ -4,12 +4,13 @@
     class="m-auto flex h-[4.375rem] max-w-[75rem] items-center justify-between bg-black px-[1rem]"
   >
     <div class="flex cursor-pointer items-center space-x-2" @click="goToHome()">
-      <el-image
-        src="/assets/images/index_black/logo.svg"
-        alt="Scribify Logo"
+      <NuxtImg
+        src="/assets/logo3.png"
+        alt="Nevercap Logo"
         class="h-6 w-auto sm:h-[1.875rem]"
-        fit="cover"
-      ></el-image>
+        fit="contain"
+        loading="eager"
+      />
     </div>
     <div>
       <!-- <lazy-layout-header-language></lazy-layout-header-language> -->

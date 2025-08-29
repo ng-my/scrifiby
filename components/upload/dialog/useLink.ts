@@ -12,7 +12,9 @@ export const useLink = (emit?: any) => {
     /^https?:\/\/[^\/]*(twitter\.com|x\.com)\/.*$/,
     /^https?:\/\/[^\/]*dropbox\.com\/.*$/,
     /^https?:\/\/[^\/]*(drive\.google\.com|docs\.google\.com)\/.*$/,
-    /^https?:\/\/[^\/]*vimeo\.com\/.*$/
+    /^https?:\/\/[^\/]*vimeo\.com\/.*$/,
+    /^https?:\/\/[^\/]*tiktok\.com\/.*$/,
+    /^https?:\/\/[^\/]*(instagram\.com|instagr\.am)\/.*$/
   ];
   const route = useRoute();
   const handleConfirm = async (callback = () => {}) => {

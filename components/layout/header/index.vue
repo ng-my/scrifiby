@@ -10,12 +10,12 @@
       @click="goToHome()"
       class="pointer flex items-center font-medium text-gray-900"
     >
-      <el-image
+      <NuxtImg
         src="/assets/logo2.svg"
         class="me-2 h-6 w-auto sm:h-[1.875rem]"
-        fit="contain"
         alt=""
-      ></el-image>
+        loading="eager"
+      />
     </div>
 
     <!-- 右侧区域 -->
@@ -39,6 +39,7 @@ import loginUserInfo from "./userInfo.vue";
 import notLogin from "./notLogin.vue";
 import { useUserStore } from "~/stores/useUserStore";
 import { storeToRefs } from "pinia";
+import useJumpPage from "~/hooks/useJumpPage";
 const userStore = useUserStore();
 const { userInfo } = storeToRefs(userStore);
 const props = defineProps({
@@ -51,7 +52,7 @@ const props = defineProps({
     default: true
   }
 });
-
+const { $mitt } = useNuxtApp();
 const { t } = useI18n();
 const localePath = useLocalePath();
 const router = useRouter();
@@ -59,9 +60,7 @@ const isLogin = computed(() => !!(userInfo.value as any)?.userInfoVO?.userid);
 
 //登录
 const login = () => {
-  router.push({
-    path: localePath("/user/login")
-  });
+  $mitt.emit("goToEvent", { path: "/user/login" });
 };
 
 const goToHome = () => {

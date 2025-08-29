@@ -3,7 +3,6 @@
     <language v-if="showI18n"></language>
     <div
       v-if="showLoginBtn"
-      type="primary"
       @click="login"
       class="login-btn min-login-width max-login-width me-[0.5rem] flex !h-[2.125rem] cursor-pointer items-center justify-center !rounded-[0.5rem] !border-boxBgColor bg-boxBgColor !px-[1.375rem] !py-[0.5rem] !text-[0.875rem] text-black hover:bg-[#F1F2F5]"
     >
@@ -13,13 +12,12 @@
       >
     </div>
     <div
-      type="success"
       @click="signup"
       class="signup-btn min-signup-width max-signup-width flex !h-[2.125rem] cursor-pointer items-center justify-center !rounded-[0.5rem] !border-0 bg-mainColor-900 !px-[1rem] !py-[0.5rem] !text-[0.875rem] text-white hover:bg-[#719BFF]"
     >
       <span
         class="w-full truncate text-center md:overflow-visible md:text-clip md:whitespace-normal"
-        >{{ t("AccountSettingsPage.tryForFree") }}</span
+        >{{ t("HeadNavbar.StartFreeTrial") }}</span
       >
     </div>
   </div>
@@ -29,9 +27,9 @@
 import language from "./language.vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import useJumpPage from "~/hooks/useJumpPage";
 const { t } = useI18n();
-const localePath = useLocalePath();
-const router = useRouter();
+const { $mitt } = useNuxtApp();
 const props = defineProps({
   showI18n: {
     type: Boolean,
@@ -41,14 +39,10 @@ const props = defineProps({
 const showLoginBtn = inject("showLoginBtn") ?? true;
 //登录
 const login = () => {
-  router.push({
-    path: localePath("/user/login")
-  });
+  $mitt.emit("goToEvent", { path: "/user/login" });
 };
 const signup = () => {
-  router.push({
-    path: localePath("/user/signup")
-  });
+  $mitt.emit("goToEvent", { path: "/user/signup" });
 };
 </script>
 <style lang="scss">

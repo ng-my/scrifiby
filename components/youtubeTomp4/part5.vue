@@ -2,7 +2,7 @@
   <!--5、 下载器特色 -->
   <section class="m-auto max-w-[75rem] px-4">
     <h2 class="mb-10 text-center text-[2.5rem] font-bold">
-      Why Our Downloader Stands Out
+      {{ $i("title") }}
     </h2>
     <div class="grid grid-cols-1 gap-[1.25rem] sm:grid-cols-2 md:grid-cols-3">
       <div
@@ -19,10 +19,10 @@
           ></el-image>
         </div>
         <div class="mb-[0.875rem] text-[1.25rem] font-semibold">
-          {{ item.title }}
+          {{ $i(`cards[${index}].title`) }}
         </div>
         <div class="text-lg text-[rgba(255,255,255,0.7)]">
-          {{ item.content }}
+          {{ $i(`cards[${index}].content`) }}
         </div>
       </div>
     </div>
@@ -30,6 +30,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18nModule } from "~/utils/i18n";
+const $i = useI18nModule("Resources.YouTubeToMP4.part5");
 const list = ref([
   {
     icon: "1",

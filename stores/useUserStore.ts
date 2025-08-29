@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useSubscriptionStore } from "~/stores/useSubscriptionStore";
+import { useCrossDomainCookie } from "~/hooks/useCrossDomainCookie";
 
 export const useEmailStore = defineStore(
   "email",
@@ -45,22 +46,20 @@ export const useUserStore = defineStore(
       const subscriptionStore = useSubscriptionStore();
       const { subscriptionStatus } = storeToRefs(useSubscriptionStore());
       if (user?.token) {
-        localStorage.setItem("token", user.token);
-        const token = useCookie("token", {
-          default: () => null,
-          maxAge: 60 * 60 * 24 * 7, // 7天
-          secure: process.env.NODE_ENV !== "development",
-          domain: undefined, // 不设置domain，使用当前域名
-          sameSite: "lax" // ❗ 关键：从 'strict' 改为 'lax'
-        });
+        window?.localStorage.setItem("token", user.token);
+        const token = useCrossDomainCookie("token");
         token.value = user.token; // 设置值
         subscriptionStore.getStatusUserIdFetch();
         subscriptionStatus.value = user.userInfoVO.subscriptionStatus ?? null;
         // 这里调用 setEmail 方法
         emailStore.setEmail(user.userInfoVO?.email || "");
+        const userInfoEmailCookie = useCrossDomainCookie("userInfoEmail", {
+          maxAge: 60 * 60 * 24 * 7 // 7天（秒）
+        });
+        userInfoEmailCookie.value = user.userInfoVO?.email || "";
       } else {
-        localStorage.removeItem("token");
-        const token = useCookie("token");
+        window?.localStorage.removeItem("token");
+        const token = useCrossDomainCookie("token");
         token.value = "";
         emailStore.setEmail("");
         // 订阅信息

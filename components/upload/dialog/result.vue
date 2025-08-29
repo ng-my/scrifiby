@@ -129,11 +129,17 @@
                           ></span>
                         </div>
                         <div v-else-if="scope.row.status === 'error'">
-                          <span class="text-subColor-normal me-1">{{t('FolderPage.table.failed')}}</span>
+                          <span class="me-1 text-subColor-normal">{{
+                            t("FolderPage.table.failed")
+                          }}</span>
                           <span>{{ scope.row.errorText }}</span>
                         </div>
-                        <div v-else-if="scope.row.uploadText">
-                          <span>{{ scope.row.uploadText }}</span>
+                        <div
+                          class="flex items-center"
+                          v-else-if="scope.row.uploadText"
+                        >
+                          <span class="me-0.5">{{ scope.row.uploadText }}</span>
+                          <el-icon class="is-loading"><Loading /></el-icon>
                         </div>
                         <el-progress
                           v-else
@@ -178,11 +184,14 @@
                       ></span>
                     </div>
                     <div v-else-if="row.status === 'error'">
-                      <div class="text-subColor-normal">{{t('FolderPage.table.failed')}}</div>
+                      <div class="text-subColor-normal">
+                        {{ t("FolderPage.table.failed") }}
+                      </div>
                       <div class="text-fontColor">{{ row.errorText }}</div>
                     </div>
-                    <div v-else-if="row.uploadText">
-                      <span>{{ row.uploadText }}</span>
+                    <div class="flex items-center" v-else-if="row.uploadText">
+                      <span class="me-0.5">{{ row.uploadText }}</span>
+                      <el-icon class="is-loading"><Loading /></el-icon>
                     </div>
                     <el-progress
                       v-else
@@ -248,7 +257,11 @@
             :disabled="disabled"
             :loading="transcribing"
             type="primary"
-            >{{ t("FileUploadAndRecording.upload.confirm") }}</el-button
+            >{{
+              isUploading
+                ? `${t("FileUploadAndRecording.upload.linkUpload")}...`
+                : t("FileUploadAndRecording.upload.confirm")
+            }}</el-button
           >
         </div>
       </template>
@@ -277,6 +290,7 @@ import { Close } from "@element-plus/icons-vue";
 import { useSubscript } from "~/components/layout/header/useSubscript";
 import { Msg } from "~/utils/tools";
 import { ref } from "vue";
+import { Loading } from "@element-plus/icons-vue";
 
 const { t } = useI18n();
 
@@ -374,6 +388,9 @@ const disabled = computed(() => {
     !tableData.value.every((file) => file.status === "success") ||
     !lang.value?.transCode
   );
+});
+const isUploading = computed(() => {
+  return tableData.value.some((file) => file.status === "uploading");
 });
 
 const showDelDialog = ref(false);
@@ -527,6 +544,10 @@ const handleClose = () => {
 }
 :deep(.el-checkbox__label) {
   color: unset !important;
+}
+
+:deep(.el-table .cell) {
+  padding-left: 0 !important;
 }
 </style>
 <style>

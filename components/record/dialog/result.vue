@@ -42,12 +42,14 @@
   </div>
 
   <subscription-modal v-model="showSubModal" />
+  <speaker-promat v-model="showSpeakerModal" />
 </template>
 
 <script setup lang="ts">
 import { type UploadFile, useUpload } from "~/components/upload/useUpload";
 import { useSubscript } from "~/components/layout/header/useSubscript";
 import Utils from "~/utils/tools";
+import SpeakerPromat from "~/components/record/dialog/speakerPromat.vue";
 
 const { t } = useI18n();
 
@@ -56,6 +58,7 @@ const props = defineProps<{
   audioBlob: Blob | null;
   recordTitle: string;
   parentId?: string | number;
+  formattedTime?: string;
 }>();
 
 const emit = defineEmits(["update:modelValue", "close"]);
@@ -74,7 +77,7 @@ watchEffect(async () => {
     file.file = reactive(
       createFileObject(
         new File([props.audioBlob!], props.recordTitle, {
-          type: "audio/webm", // 根据实际格式调整（如 'audio/mp3'）
+          type: "audio/mp3", // 根据实际格式调整（如 'audio/mp3'）
           lastModified: Date.now() // 可选：设置最后修改时间
         })
       )
@@ -108,7 +111,20 @@ const showPro = () => {
   showSubModal.value = true;
 };
 
+const isTimeOver3h = computed(() => {
+  // todo 要改
+  const h = props.formattedTime
+    ? parseInt(props.formattedTime?.split(":")?.[1]) || 0
+    : 0;
+  return h >= 3;
+});
+const showSpeakerModal = ref(false);
 const handleTranscribe = async () => {
+  if (diarizeEnabled.value && isTimeOver3h.value) {
+    showSpeakerModal.value = true;
+    return;
+  }
+
   transcribing.value = true;
   try {
     await initUpload(file.file);
@@ -145,7 +161,9 @@ const handleTranscribe = async () => {
       showPro();
     }
   } finally {
-    transcribing.value = false;
+    setTimeout(() => {
+      transcribing.value = false;
+    }, 10000);
   }
 };
 

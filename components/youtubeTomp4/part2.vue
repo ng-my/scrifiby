@@ -4,8 +4,7 @@
     <h1
       class="m-auto mb-[2.125rem] w-full max-w-[62rem] text-center text-[2.5rem] font-bold"
     >
-      Here's how to turn a YouTube video into a downloadable MP4 file in 3 easy
-      steps
+      {{ $i("title") }}
     </h1>
     <!--2、 三步操作流程 -->
     <section
@@ -26,10 +25,10 @@
           class="mb-[0.625rem] flex items-center self-start text-[1.375rem] font-semibold leading-[1.875rem]"
         >
           <div class="index-circle">{{ item.icon }}</div>
-          {{ item.title }}
+          {{ $i(`steps[${index}].title`) }}
         </div>
         <div class="text-start text-lg leading-[1.75rem]">
-          {{ item.content }}
+          {{ $i(`steps[${index}].content`) }}
         </div>
       </div>
     </section>
@@ -38,7 +37,9 @@
 
 <script setup lang="ts">
 /* part1 组件 */
-const list = [
+import { useI18nModule } from "~/utils/i18n";
+const $i = useI18nModule("Resources.YouTubeToMP4.part2");
+const list = ref([
   {
     img: "1",
     icon: "1",
@@ -59,7 +60,7 @@ const list = [
     title: "Download the MP4",
     content: "Once processed, hit the download button to save your MP4 file."
   }
-];
+]);
 </script>
 
 <style scoped>

@@ -4,7 +4,7 @@
     v-if="isDateAndFree"
   >
     <div class="mb-[0.875rem] flex items-center font-bold">
-      <span>{{ t("AccountSettingsPage.freeversion") }}</span>
+      <span>{{ t("AccountSettingsPage.freeversion2") }}</span>
     </div>
     <div
       class="mb-[0.625rem] h-[0.5rem] w-full rounded border bg-mainColor-600"
@@ -56,7 +56,13 @@
               time: getTime(endTime, false, false, true)
             })
       }}
-      <p class="text-subColor-normal" v-if="selectPlanStatus === 3">
+      <p
+        class="text-subColor-normal"
+        v-if="
+          (selectPlanStatus === 3 || selectPlanStatus === 2) &&
+          !selectPlanStatusReal
+        "
+      >
         {{ t("AccountSettingsPage.automaticRenewal") }}
       </p>
       <!-- {{ getTime(endTime, false, true) }} -->
@@ -85,6 +91,8 @@ import { useSubscriptionStore } from "~/stores/useSubscriptionStore";
 const subscriptionStore = useSubscriptionStore();
 import { useUserStore } from "~/stores/useUserStore";
 import { useSubscribeVersion } from "~/components/subscriptionUpgrade/useSubscribeVersion";
+import { useRecordStore } from "~/stores/useRecordStore";
+import useJumpPage from "~/hooks/useJumpPage";
 const userStore = useUserStore();
 const { getTime } = useTime();
 const { paymentManageUser } = useSubscribeVersion();
@@ -92,8 +100,7 @@ const dailyCount = ref<{ todayCount: number; limitCount: number }>({
   todayCount: 0,
   limitCount: 0
 });
-const router = useRouter();
-const localePath = useLocalePath();
+const { $mitt } = useNuxtApp();
 const progress = ref<string>("0");
 const { fetchSubscript } = useSubscript();
 const loading = ref<boolean>(false);
@@ -109,6 +116,9 @@ const selectPlanCycle: any = computed(() => {
 });
 const selectPlanStatus: any = computed(() => {
   return subscriptionStore.subscriptionDetail?.status;
+});
+const selectPlanStatusReal: any = computed(() => {
+  return subscriptionStore.subscriptionDetail?.statusReal;
 });
 const showSubModal = ref(false);
 
@@ -159,7 +169,7 @@ const getDailyCount = async () => {
 };
 const manageSubscription = async () => {
   emits("change");
-  // loadingManage.value = true;
+  // showSubModal.value = true;
   // const res: any = await paymentManageUser();
   // if (res) {
   //   window.location.href = res;
@@ -167,13 +177,13 @@ const manageSubscription = async () => {
   // }
   // loadingManage.value = false;
 };
-const upgrade = () => {
+const upgrade = async () => {
+  const { showPromatDialog } = useRecordStore();
+  await showPromatDialog();
+
   if (!userNameEmail.value) {
     setTimeout(() => {
-      router.push({
-        path: localePath("/user/signup"),
-        query: { type: "noLogin" }
-      });
+      $mitt.emit("goToEvent", { path: "/user/signup?type=noLogin" });
     }, 300);
     return;
   }
