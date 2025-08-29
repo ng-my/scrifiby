@@ -4,27 +4,28 @@
     :dir="isRtl ? 'rtl' : 'ltr'"
     :rtl="isRtl"
   >
+    <!--    <HeadNavbar v-if="headerShow"></HeadNavbar>-->
     <NuxtPage />
 
     <client-only>
       <!--  录音  -->
       <record-wrap />
+      <!--  转录异步导出  -->
+      <export />
     </client-only>
   </el-config-provider>
 </template>
 
 <script setup lang="ts">
 import "core-js";
-import { useGuestUploadStore, useI18n } from "#imports";
+import { useI18n } from "#imports";
 import { ElConfigProvider } from "element-plus";
 import { ref, computed, watchEffect } from "vue";
 import { useScrollTitle } from "./utils/useScrollTitle";
 import { message as en_US } from "~/i18n/lang/en-US"; // 英语（美国）
 import { runI18nCheck } from "~/i18n/check.js";
-import { useCrossDomainCookie } from "~/hooks/useCrossDomainCookie";
-import { usePageJump } from "~/composables/usePageJump";
 useScrollTitle();
-const { jumpPage } = usePageJump();
+
 const route = useRoute();
 const { locale, locales, setLocaleMessage } = useI18n();
 const activeLanguage = useState("locale", () => locale.value);
@@ -94,42 +95,14 @@ watchEffect(async () => {
     localLang.value = undefined;
   }
 });
-// 跳转事件
-const { $mitt } = useNuxtApp();
-const goToEvent = (data) => {
-  jumpPage(data.path, data.newTab);
-};
-const times = ref(0);
-const saveInfoToStore = () => {
-  console.log("saveInfoToStoreMain", times.value);
-  if (times.value > 3) {
-    return;
-  }
-  times.value++;
-  const { setUserInfo } = useUserStore();
-  const { userInfo } = storeToRefs(useUserStore());
-  const userInfoCookie = useCrossDomainCookie("userInfoFromApp");
-  const token = useCrossDomainCookie("token");
-  if (!token.value) {
-    setUserInfo(null);
-    userInfoCookie.value = "";
-    return;
-  }
-  console.log("saveInfoToStore userInfoCookie", userInfoCookie.value);
-  if (userInfoCookie.value) {
-    setUserInfo(userInfoCookie.value);
-    setTimeout(() => {
-      if (!userInfo.value?.userInfoVO) {
-        saveInfoToStore();
-      } else {
-        userInfoCookie.value = "";
-      }
-    }, 100);
-  }
-};
 
 // 其它逻辑保持不变
+const headerShow = ref(false);
 if (process.client) {
+  headerShow.value = !!(
+    process.env.NODE_ENV === "development" ||
+    window.localStorage.getItem("zzTest")
+  );
   const config = useRuntimeConfig();
   console.log(
     process.env,
@@ -137,10 +110,10 @@ if (process.client) {
     config.public
   );
   if (window.localStorage.getItem("notShowHead")) {
+    headerShow.value = false;
   }
 }
 onMounted(async () => {
-  saveInfoToStore();
   if (route.meta.requireAuth) {
     const subscriptionStore = useSubscriptionStore();
     await subscriptionStore.getStatusUserIdFetch();
@@ -156,20 +129,7 @@ onMounted(async () => {
   } catch (error) {
     console.error("获取构建信息失败:", error);
   }
-  $mitt.on("goToEvent", goToEvent);
 });
-onUnmounted(() => {
-  $mitt.off("goToEvent", goToEvent);
-});
-
-const {clear} = useGuestUploadStore()
-const { clearSelectRawFiles } = useUploadStore();
-watch(() => route.path, () => {
-  if (!route.name?.includes("index")) {
-    clear()
-    clearSelectRawFiles()
-  }
-})
 </script>
 <style>
 html,

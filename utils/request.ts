@@ -1,28 +1,32 @@
 import { ofetch } from "ofetch";
 import { Msg } from "~/utils/tools";
 import { useErrorReporting } from "~/utils/fsReport";
-import { useCrossDomainCookie } from "~/hooks/useCrossDomainCookie";
-import useJumpPage from "~/hooks/useJumpPage";
 const { reportSystemError } = useErrorReporting();
 const config = useRuntimeConfig();
 const baseURL = config.public.baseUrl as string;
-const { $mitt } = useNuxtApp();
-function goToLogin() {
+const userNameEmail = () => {
+  try {
+    const userStore = useUserStore();
+    return userStore.userInfo &&
+      typeof userStore.userInfo === "object" &&
+      "userInfoVO" in userStore.userInfo
+      ? (userStore.userInfo as any).userInfoVO?.email || ""
+      : "";
+  } catch (e) {
+    return "";
+  }
+};
+function goToLogin(currentEmail: any) {
   if (process.client) {
     const userStore = useUserStore();
     const localePath = useLocalePath();
     userStore.setUserInfo("");
-    console.log(2222, "🚀===");
-
-    const userInfoEmailCookie = useCrossDomainCookie("userInfoEmail");
     setTimeout(() => {
-      if (!userInfoEmailCookie.value) {
-        userInfoEmailCookie.value = "";
+      if (!currentEmail) {
         navigateTo(localePath("/"));
         return;
       }
-      userInfoEmailCookie.value = "";
-      $mitt.emit("goToEvent", { path: "/user/login" });
+      navigateTo(localePath("/user/login"));
     }, 50);
   }
 }
@@ -63,8 +67,9 @@ const request = ofetch.create({
     let language = useNuxtApp().$i18n?.locale?.value || "en-US";
     const offset = -new Date().getTimezoneOffset() / 60;
     const utcOffset = `UTC${offset >= 0 ? "+" : ""}${offset}:00`;
-    const token = useCrossDomainCookie("token");
+    const token = useCookie("token");
     const headers = new Headers(options.headers);
+    const currentEmail = userNameEmail(); // 每次请求时实时获取
     const XLanguage = headers.get("X-Language"); // 接口已经传了【X-Language】
     if (!XLanguage) {
       headers.set("X-Language", `${language}`); // 当前系统语言
@@ -79,7 +84,7 @@ const request = ofetch.create({
       options.headers = headers;
     }
     // 添加邮箱到请求上下文，供后续使用
-    // options.context = { email: currentEmail };
+    options.context = { email: currentEmail };
   },
   // 响应拦截
   onResponse(res) {
@@ -93,10 +98,9 @@ const request = ofetch.create({
   // 错误处理
   onResponseError({ response, options }) {
     let data = response._data || {};
-    const userInfoEmailCookie = useCrossDomainCookie("userInfoEmail");
-    // const currentEmail = options.context?.email || ""; // 从请求上下文中获取邮箱
+    const currentEmail = options.context?.email || ""; // 从请求上下文中获取邮箱
     if ([401].includes(data?.code)) {
-      if (userInfoEmailCookie.value) {
+      if (currentEmail) {
         Msg({
           message:
             data?.message || data?.code || `${data?.error}【${data?.status}】`,
@@ -104,7 +108,7 @@ const request = ofetch.create({
         });
       }
 
-      goToLogin();
+      goToLogin(currentEmail);
       return Promise.reject(data);
     }
     try {

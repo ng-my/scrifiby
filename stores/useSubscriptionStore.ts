@@ -96,17 +96,15 @@ export const useSubscriptionStore = defineStore(
       limitCount: number;
       subscriptionStatus: 0 | 1 | 2 | 3 | -1;
     }) => {
-      todayCount.value = obj.todayCount;
-      limitCount.value = obj.limitCount;
+      if ([0, 2, -1].includes(obj.subscriptionStatus)) {
+        todayCount.value = obj.todayCount;
+        limitCount.value = obj.limitCount;
+      }
       subscriptionStatus.value = obj.subscriptionStatus;
     };
 
     const isNoTimes = computed(() => {
-      return (
-        isFreeUser.value &&
-        limitCount.value &&
-        todayCount.value >= limitCount.value
-      );
+      return isFreeUser.value && todayCount.value >= limitCount.value;
     });
     // 检查是否订阅过期
     const formHasItExpired = (val: string) => {

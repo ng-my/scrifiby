@@ -1,12 +1,8 @@
-import { useCrossDomainCookie } from "~/hooks/useCrossDomainCookie";
-
 export const useVisitor = () => {
   const visitorId = ref("");
 
   const getVisitorId = async () => {
-    const cookie = useCrossDomainCookie("fp", {
-      maxAge: 60 * 60 * 24 * 365 * 10 // 10年
-    });
+    const cookie = useCookie('fp')
     if (cookie.value) {
       visitorId.value = cookie.value;
       return;

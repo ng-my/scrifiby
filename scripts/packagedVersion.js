@@ -37,4 +37,4 @@ function generateBuildInfo() {
   console.log('构建信息已生成:', filePath);
 }
 
-generateBuildInfo(); 
+// generateBuildInfo(); 
